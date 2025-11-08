@@ -1,0 +1,57 @@
+# .NET Core
+**/bin/
+**/obj/
+**/*.user
+**/appsettings.Development.json
+**/.vs/
+**/packages/
+**/*.dll
+**/*.pdb
+**/*.cache
+
+# Node.js / Nuxt.js
+**/node_modules/
+**/.nuxt/
+**/dist/
+**/.env
+**/.env.local
+**/.env.*.local
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# IDE / Editor
+**/.vscode/
+**/.idea/
+**/*.swp
+**/*.swo
+**/*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# User uploaded files
+**/UserImages/
+**/VentaImages/
+homes.rar
+web_respaldo.zip
+
+# Logs
+**/*.log
+
+# Build outputs
+**/build/
+**/out/
+
+# Large archive files
+*.zip
+*.rar
+*.7z
+*.tar.gz
+homes.zip

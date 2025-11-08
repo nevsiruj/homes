@@ -1,0 +1,133 @@
+import { API_BASE_URL } from '../config'
+
+export default {
+
+
+/**
+ * Obtiene inmuebles paginados y filtrados.
+ * @param {number} pageNumber - El número de página solicitado.
+ * @param {number} pageSize - El tamaño de la página solicitado.
+ * @param {object} filters - Un objeto con los filtros a aplicar (ej. { Operaciones: 'Renta', Tipos: ['Casa'] }).
+ * @returns {Promise<object>} Un objeto con la lista de items, totalCount, etc., ya procesado.
+ */
+async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
+  try {
+    const params = new URLSearchParams();
+
+    // Mapear los nombres de los parámetros del frontend a los del backend (DTO)
+    // Se usa un objeto para mapear las claves del frontend a las del backend
+    const backendParamNames = {
+      operaciones: 'Operaciones',
+      tipos: 'Tipos',
+      ubicaciones: 'Ubicaciones',
+      habitaciones: 'Habitaciones',
+      caracteristicasPropiedad: 'Amenidades',
+      precioMinimo: 'PrecioMinimo',
+      precioMaximo: 'PrecioMaximo',
+      titulo: 'Titulo',
+      codigoPropiedad: 'CodigoPropiedad',
+      orden: 'Orden', // <-- ¡AQUÍ ESTÁ LA CLAVE! Mapea 'orden' a 'Orden'
+      luxury: 'Luxury',
+    };
+
+    params.append('PageNumber', pageNumber.toString());
+    params.append('PageSize', pageSize.toString());
+
+    // Añadir los filtros dinámicamente.
+    for (const key in filters) {
+      if (Object.prototype.hasOwnProperty.call(filters, key)) {
+        const value = filters[key];
+        const backendKey = backendParamNames[key.toLowerCase()] || key; // Usa el nombre mapeado
+        
+        if (Array.isArray(value)) {
+          value.forEach(item => params.append(backendKey, item.toString()));
+        } else if (value !== null && value !== undefined && value !== '') {
+          params.append(backendKey, value.toString());
+        }
+      }
+    }
+
+    const url = `${API_BASE_URL}/Inmueble?${params.toString()}`;
+    console.log("API URL:", url); // Log the API URL being called
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Error al obtener inmuebles paginados: ${response.statusText} (Status: ${response.status}). Detalles: ${errorBody}`);
+    }
+
+    const rawData = await response.json();
+    const pagedResult = {
+      items: rawData.items?.$values || [],
+      totalCount: rawData.totalCount,
+      pageNumber: rawData.pageNumber,
+      pageSize: rawData.pageSize,
+      totalPages: rawData.totalPages,
+      hasNextPage: rawData.hasNextPage,
+      hasPreviousPage: rawData.hasPreviousPage,
+    };
+
+    return pagedResult;
+  } catch (error) {
+    console.error("Error in inmuebleService.getInmueblesPaginados:", error); // Log any errors
+    throw error;
+  }
+},
+
+  
+  async getInmueble() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Inmueble`)
+      if (!response.ok) throw new Error('Error fetching inmuebles')
+      return await response.json()
+    } catch (error) {
+      //console.error('Error in inmuebleService.getInmueble:', error)
+      throw error
+    }
+  },
+
+
+  async getInmuebleById(id) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/Inmueble/${id}`)
+      if (!response.ok) throw new Error('Error fetching inmueble')
+      const data = await response.json()
+      //console.log('Inmueble data:', data) 
+      return data
+    } catch (error) {
+      //console.error('Error in inmuebleService.getInmuebleById:', error)
+      throw error
+    }
+  },
+
+  async getInmuebleBySlug(slug) {
+    try {
+      const safeSlug = encodeURIComponent(String(slug || '').trim());
+  
+      const response = await fetch(`${API_BASE_URL}/Inmueble/by-slug/${safeSlug}`, {
+        headers: { 'Accept': 'application/json' }
+      });
+  
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        throw new Error(`Error al buscar el inmueble: ${response.status} ${response.statusText}. ${body}`);
+      }
+  
+      const data = await response.json();
+  
+      // (Opcional) asegurar el campo por si llega con otra capitalización
+      if (!data.slugInmueble && data.SlugInmueble) {
+        data.slugInmueble = data.SlugInmueble;
+      }
+  
+      return data;
+    } catch (error) {
+      //console.error('Error en inmuebleService.getInmuebleBySlug:', error);
+      throw error;
+    }
+  }
+  
+ 
+
+  
+}
