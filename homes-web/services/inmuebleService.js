@@ -15,29 +15,28 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
     const params = new URLSearchParams();
 
     // Mapear los nombres de los parámetros del frontend a los del backend (DTO)
-    // Se usa un objeto para mapear las claves del frontend a las del backend
     const backendParamNames = {
       operaciones: 'Operaciones',
       tipos: 'Tipos',
       ubicaciones: 'Ubicaciones',
       habitaciones: 'Habitaciones',
-      caracteristicasPropiedad: 'Amenidades',
-      precioMinimo: 'PrecioMinimo',
-      precioMaximo: 'PrecioMaximo',
+      caracteristicaspropiedad: 'Amenidades',
+      preciominimo: 'PrecioMinimo',
+      preciomaximo: 'PrecioMaximo',
       titulo: 'Titulo',
-      codigoPropiedad: 'CodigoPropiedad',
-      orden: 'Orden', // <-- ¡AQUÍ ESTÁ LA CLAVE! Mapea 'orden' a 'Orden'
+      codigopropiedad: 'CodigoPropiedad',
+      orden: 'Orden',
       luxury: 'Luxury',
     };
 
     params.append('PageNumber', pageNumber.toString());
     params.append('PageSize', pageSize.toString());
 
-    // Añadir los filtros dinámicamente.
+    // Añadir los filtros dinámicamente
     for (const key in filters) {
       if (Object.prototype.hasOwnProperty.call(filters, key)) {
         const value = filters[key];
-        const backendKey = backendParamNames[key.toLowerCase()] || key; // Usa el nombre mapeado
+        const backendKey = backendParamNames[key.toLowerCase()] || key;
         
         if (Array.isArray(value)) {
           value.forEach(item => params.append(backendKey, item.toString()));
@@ -48,7 +47,7 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
     }
 
     const url = `${API_BASE_URL}/Inmueble?${params.toString()}`;
-    console.log("API URL:", url); // Log the API URL being called
+    console.log("API URL:", url);
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -69,7 +68,7 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
 
     return pagedResult;
   } catch (error) {
-    console.error("Error in inmuebleService.getInmueblesPaginados:", error); // Log any errors
+    console.error("Error in inmuebleService.getInmueblesPaginados:", error);
     throw error;
   }
 },

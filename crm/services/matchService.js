@@ -32,118 +32,98 @@ async function fetchWithTokenCheck(url, options = {}) {
 }
 
 const matchService = {
-  // 📥 Obtener todos los matches pendientes de un cliente
+  // 📥 Obtener todos los matches pendientes/sugeridos de un cliente
   async getPendientesByCliente(clienteId) {
-  if (!clienteId) throw new Error("clienteId requerido");
+    if (!clienteId) throw new Error("clienteId requerido");
 
-  try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/clientes/${clienteId}/matches-sugeridos`, {
-      method: "GET",
-    });
+    try {
+      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/clientes/${clienteId}/matches-sugeridos`, {
+        method: "GET",
+      });
 
-    if (response?.status === 404) {
-      console.log(`📭 No hay matches pendientes para cliente ${clienteId}`);
-      return [];
-    }
-    if (!response?.ok) {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener matches pendientes:", error);
-    throw error;
-  }
-},
-
-async getSugeridos(clienteId) {
-  if (!clienteId) throw new Error("clienteId requerido");
-
-  try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/clientes/${clienteId}/matches-sugeridos`, {
-      method: "GET",
-    });
-
-    if (response?.status === 404) {
-      console.log(`📭 No hay matches pendientes para cliente ${clienteId}`);
-      return [];
-    }
-    if (!response?.ok) {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener matches pendientes:", error);
-    throw error;
-  }
-},
-
-// 📥 Obtener todos los matches enviados de un cliente
-async getEnviadosByCliente(clienteId) {
-  if (!clienteId) throw new Error("clienteId requerido");
-
-  try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/cliente/${clienteId}/enviados`, {
-      method: "GET",
-    });
-
-    if (response?.status === 404) {
-      console.log(`📭 No hay matches enviados para cliente ${clienteId}`);
-      return [];
-    }
-    if (!response?.ok) {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener matches enviados:", error);
-    throw error;
-  }
-},
-
-// 🖋️ Marcar un match como enviado
-async marcarComoEnviado(matchId) {
-  if (!matchId) throw new Error("matchId requerido");
-  try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/${matchId}/enviar`, {
-      method: "PUT",
-    });
-
-    if (!response?.ok) {
-      let errJson = null;
-      try {
-        errJson = await response.json();
-      } catch {}
-      const errorMessage = errJson?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    let updated = null;
-    if (response.status !== 204) {
-      try {
-        updated = await response.json();
-      } catch {
-        updated = null;
+      if (response?.status === 404) {
+        console.log(`📭 No hay matches pendientes para cliente ${clienteId}`);
+        return [];
       }
-      if (updated?.$values && Array.isArray(updated.$values)) {
-        updated = updated.$values[0] || null;
+      if (!response?.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error al obtener matches pendientes:", error);
+      throw error;
     }
-    console.log("Match marcado como enviado", updated || "");
-    return { ok: true, match: updated || null };
-  } catch (error) {
-    console.error("Error al marcar el match como enviado:", error);
-    return { ok: false, error };
-  }
-},
+  },
+
+  // Alias para compatibilidad con código existente
+  getSugeridos(clienteId) {
+    return this.getPendientesByCliente(clienteId);
+  },
+
+  // 📥 Obtener todos los matches enviados de un cliente
+  async getEnviadosByCliente(clienteId) {
+    if (!clienteId) throw new Error("clienteId requerido");
+
+    try {
+      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/cliente/${clienteId}/enviados`, {
+        method: "GET",
+      });
+
+      if (response?.status === 404) {
+        console.log(`📭 No hay matches enviados para cliente ${clienteId}`);
+        return [];
+      }
+      if (!response?.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error al obtener matches enviados:", error);
+      throw error;
+    }
+  },
+
+  // 🖋️ Marcar un match como enviado
+  async marcarComoEnviado(matchId) {
+    if (!matchId) throw new Error("matchId requerido");
+    try {
+      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/${matchId}/enviar`, {
+        method: "PUT",
+      });
+
+      if (!response?.ok) {
+        let errJson = null;
+        try {
+          errJson = await response.json();
+        } catch {}
+        const errorMessage = errJson?.title || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      let updated = null;
+      if (response.status !== 204) {
+        try {
+          updated = await response.json();
+        } catch {
+          updated = null;
+        }
+        if (updated?.$values && Array.isArray(updated.$values)) {
+          updated = updated.$values[0] || null;
+        }
+      }
+      console.log("Match marcado como enviado", updated || "");
+      return { ok: true, match: updated || null };
+    } catch (error) {
+      console.error("Error al marcar el match como enviado:", error);
+      return { ok: false, error };
+    }
+  },
 
   // 📤 Crear un nuevo match
   async createMatch(payload) {
@@ -180,43 +160,6 @@ async marcarComoEnviado(matchId) {
       throw error;
     }
   },
-
-  // 🖋️ Marcar un match como enviado (devuelve {ok, match?})
-  // async marcarComoEnviado(matchId) {
-  //   if (!matchId) throw new Error("matchId requerido");
-  //   try {
-  //     const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/${matchId}/enviar`, {
-  //       method: "PUT",
-  //     });
-
-  //     if (!response?.ok) {
-  //       let errJson = null;
-  //       try {
-  //         errJson = await response.json();
-  //       } catch {}
-  //       const errorMessage = errJson?.title || `HTTP error! status: ${response.status}`;
-  //       throw new Error(errorMessage);
-  //     }
-
-  //     let updated = null;
-  //     // Algunos backends devuelven 204 No Content
-  //     if (response.status !== 204) {
-  //       try {
-  //         updated = await response.json();
-  //       } catch {
-  //         updated = null;
-  //       }
-  //       if (updated?.$values && Array.isArray(updated.$values)) {
-  //         updated = updated.$values[0] || null;
-  //       }
-  //     }
-  //     console.log("Match marcado como enviado", updated || "");
-  //     return { ok: true, match: updated || null };
-  //   } catch (error) {
-  //     console.error("Error al marcar el match como enviado:", error);
-  //     return { ok: false, error };
-  //   }
-  // },
 
   // 🗑️ Eliminar un match por ID
   async deleteMatch(matchId) {

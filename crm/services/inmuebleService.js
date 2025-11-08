@@ -20,33 +20,9 @@ let isAuthModalShown = false; // Global flag to track if the modal is already sh
 
 async function fetchWithTokenCheck(url, options = {}) {
   const token = localStorage.getItem('jwt-token');
-  if (!token) {
-    if (!isAuthModalShown) {
-      isAuthModalShown = true; // Set the flag to true to prevent duplicate modals
-      await Swal.fire({
-        icon: 'warning',
-        title: 'Sesión caducada',
-        text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
-        confirmButtonText: 'Aceptar',
-        allowOutsideClick: false, // Prevent closing the modal by clicking outside
-      }).then(() => {
-        // Reset the flag and redirect the user
-        isAuthModalShown = false;
-        window.location.href = "/";
-      });
-    }
-    return null; // Prevent further execution and stop error propagation
-  }
-
-  const headers = {
-    ...options.headers,
-    Authorization: `Bearer ${token}`,
-  };
-
-  const response = await fetch(url, { ...options, headers });
-
-  // Handle 401 Unauthorized explicitly
-  if (response.status === 401) {
+  
+  // Función helper para mostrar modal de autenticación
+  const showAuthModal = async () => {
     if (!isAuthModalShown) {
       isAuthModalShown = true;
       await Swal.fire({
@@ -61,6 +37,22 @@ async function fetchWithTokenCheck(url, options = {}) {
       });
     }
     return null;
+  };
+
+  if (!token) {
+    return showAuthModal();
+  }
+
+  const headers = {
+    ...options.headers,
+    Authorization: `Bearer ${token}`,
+  };
+
+  const response = await fetch(url, { ...options, headers });
+
+  // Handle 401 Unauthorized explicitly
+  if (response.status === 401) {
+    return showAuthModal();
   }
 
   return response;
@@ -109,26 +101,35 @@ export default {
 
       const rawData = await response.json()
 
-      // === Extracción robusta de items ===
-      let rawItems = []
-      if (Array.isArray(rawData)) {
-        rawItems = rawData
-      } else if (Array.isArray(rawData.$values)) {
-        rawItems = rawData.$values
-      } else if (rawData.items) {
-        if (Array.isArray(rawData.items)) {
-          rawItems = rawData.items
-        } else if (Array.isArray(rawData.items.$values)) {
-          rawItems = rawData.items.$values
+      // === Extracción robusta de items simplificada ===
+      const extractItems = (data) => {
+        if (Array.isArray(data)) return data;
+        if (Array.isArray(data.$values)) return data.$values;
+        if (data.items) {
+          if (Array.isArray(data.items)) return data.items;
+          if (Array.isArray(data.items.$values)) return data.items.$values;
         }
-      }
+        return [];
+      };
+
+      const rawItems = extractItems(rawData);
 
       // Mapear y normalizar cada inmueble para usar estructuras consistentes en UI
       const mappedItems = (rawItems || []).map((it) => {
         const precioNum = (it && (typeof it.precio === 'number')) ? it.precio : (it?.precio ? Number(it.precio) : 0)
-        const amen = Array.isArray(it?.amenidades)
-          ? it.amenidades.map(a => (typeof a === 'string' ? a : (a?.nombre || ''))).filter(Boolean)
-          : (Array.isArray(it?.amenidades?.$values) ? it.amenidades.$values.map(a => (a?.nombre || a)).filter(Boolean) : [])
+        
+        // Extraer amenidades de forma simplificada
+        const extractAmenidades = (item) => {
+          const amen = item?.amenidades;
+          if (!amen) return [];
+          if (Array.isArray(amen)) {
+            return amen.map(a => (typeof a === 'string' ? a : (a?.nombre || ''))).filter(Boolean);
+          }
+          if (Array.isArray(amen.$values)) {
+            return amen.$values.map(a => (a?.nombre || a)).filter(Boolean);
+          }
+          return [];
+        };
 
         return {
           // conservar todo lo original por si se necesita
@@ -152,7 +153,7 @@ export default {
           tipos: it?.tipos || it?.tipo || '',
           operaciones: it?.operaciones || it?.operacion || '',
           ubicaciones: it?.ubicaciones || it?.ubicacion || '',
-          amenidades: amen,
+          amenidades: extractAmenidades(it),
           luxury: Boolean(it?.luxury),
           video: it?.video || '',
         }
@@ -228,12 +229,7 @@ export default {
       console.log(`🔤 [inmuebleService] Buscando por código de propiedad: ${codigo}`);
       
       // Usar el endpoint paginado con filtro de búsqueda
-      const filters = {
-        searchTerm: codigo,
-        // Otros filtros si es necesario
-      };
-      
-      const result = await this.getInmueblesPaginados(1, 50, filters);
+      const result = await this.getInmueblesPaginados(1, 50, { searchTerm: codigo });
       
       console.log(`📊 [inmuebleService] Resultados de búsqueda por código:`, result);
       
@@ -244,24 +240,16 @@ export default {
       
       // Buscar coincidencia exacta del código
       const codigoUpper = codigo.toUpperCase();
-      let inmuebleEncontrado = result.items.find(item => 
+      const inmuebleEncontrado = result.items.find(item => 
         (item.codigoPropiedad || '').toUpperCase() === codigoUpper
-      );
+      ) || result.items[0]; // Si no hay coincidencia exacta, tomar el primero
       
-      // Si no hay coincidencia exacta, tomar el primero (búsqueda aproximada)
-      if (!inmuebleEncontrado && result.items.length > 0) {
+      if (inmuebleEncontrado !== result.items[0]) {
+        console.log(`✅ [inmuebleService] Coincidencia exacta encontrada`);
+      } else {
         console.warn(`⚠️ [inmuebleService] No hay coincidencia exacta, tomando el primero de ${result.items.length} resultados`);
-        inmuebleEncontrado = result.items[0];
       }
       
-      if (!inmuebleEncontrado) {
-        console.warn(`❌ [inmuebleService] No se encontró inmueble con código: ${codigo}`);
-        return null;
-      }
-      
-      console.log(`✅ [inmuebleService] Inmueble encontrado por código:`, inmuebleEncontrado);
-      
-      // El resultado de getInmueblesPaginados ya está normalizado
       return inmuebleEncontrado;
       
     } catch (error) {
