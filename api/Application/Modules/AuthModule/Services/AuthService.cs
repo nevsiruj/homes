@@ -14,6 +14,7 @@ using MailKit.Security;
 using MimeKit;
 using Domain.DTOs;
 using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 
 
 public interface IAuthService
@@ -70,15 +71,18 @@ public class AgenteService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
+    private readonly IMemoryCache _cache;
 
 
-    public AgenteService(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, IMapper mapper)
+    public AgenteService(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, IMapper mapper, IMemoryCache cache)
     {
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
         _roleManager = roleManager;
+        _mapper = mapper;
+        _cache = cache;
         _mapper = mapper;
 
     }
@@ -400,13 +404,25 @@ public class AgenteService : IAuthService
 
     public async Task<IEnumerable<string>> GetUserRoles(string userId)
     {
+        // Intentar obtener del cache primero
+        string cacheKey = $"UserRoles_{userId}";
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<string> cachedRoles))
+        {
+            return cachedRoles;
+        }
+
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
             return null;
         }
 
-        return await _userManager.GetRolesAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        
+        // Guardar en cache por 5 minutos
+        _cache.Set(cacheKey, roles, TimeSpan.FromMinutes(5));
+        
+        return roles;
     }
 
 
@@ -475,14 +491,6 @@ public class AgenteService : IAuthService
         userExists.Apellido = user.Apellido;
         userExists.Nombre = user.Nombre;
         userExists.Dni = user.Dni;
-
-        //IVAN
-        //mappear los campos para actualizar
-        //ej userExists.Especialidad = user.Especialidad
-
-
-
-
 
         await _userManager.UpdateAsync(userExists);
         return true;

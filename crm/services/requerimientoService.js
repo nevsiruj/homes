@@ -1,4 +1,5 @@
-import { API_BASE_URL } from '../config';
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 // Obtiene los encabezados con token de autenticación
 const getAuthHeaders = () => {
@@ -19,7 +20,7 @@ const requerimientoService = {
   // Obtener todas las preferencias
   async getAllPreferencias() {
     try {
-      const response = await fetch(`${API_BASE_URL}/Preferencia`, {
+      const response = await fetch(`${getApiBaseUrl()}/Preferencia`, {
         method: "GET",
         headers: getAuthHeaders()
       });
@@ -42,10 +43,10 @@ const requerimientoService = {
     const attempts = [];
     // Lista de intentos (ordenada por probabilidad / compatibilidad)
     const endpoints = [
-      { method: "GET", url: `${API_BASE_URL}/Preferencia/${preferenciaId}` },
-      { method: "GET", url: `${API_BASE_URL}/Preferencia/Get/${preferenciaId}` },
-      { method: "GET", url: `${API_BASE_URL}/Preferencia/GetById/${preferenciaId}` },
-      { method: "POST", url: `${API_BASE_URL}/Preferencia/Buscar`, body: JSON.stringify({ id: preferenciaId }) },
+      { method: "GET", url: `${getApiBaseUrl()}/Preferencia/${preferenciaId}` },
+      { method: "GET", url: `${getApiBaseUrl()}/Preferencia/Get/${preferenciaId}` },
+      { method: "GET", url: `${getApiBaseUrl()}/Preferencia/GetById/${preferenciaId}` },
+      { method: "POST", url: `${getApiBaseUrl()}/Preferencia/Buscar`, body: JSON.stringify({ id: preferenciaId }) },
     ];
 
     for (const e of endpoints) {
@@ -123,7 +124,7 @@ const requerimientoService = {
 
     // console.log(" Enviando nueva preferencia (limpia):", payload);
 
-    const response = await fetch(`${API_BASE_URL}/Preferencia`, {
+    const response = await fetch(`${getApiBaseUrl()}/Preferencia`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
@@ -194,7 +195,7 @@ const requerimientoService = {
       wrapped.preferenciaDto.Id = idNum;
       wrapped.preferenciaDto.PreferenciaId = idNum;
 
-      const response = await fetch(`${API_BASE_URL}/Preferencia/${preferenciaId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Preferencia/${preferenciaId}`, {
         method: "PUT",
         headers: getAuthHeaders(),
         body: JSON.stringify(wrapped),
@@ -248,7 +249,7 @@ const requerimientoService = {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/Preferencia/${preferenciaId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Preferencia/${preferenciaId}`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify(partialPayload),
@@ -279,7 +280,7 @@ const requerimientoService = {
   // Eliminar preferencia por ID
   async deletePreferencia(preferenciaId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Preferencia/${preferenciaId}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Preferencia/${preferenciaId}`, {
         method: "DELETE",
         headers: getAuthHeaders(),
       });

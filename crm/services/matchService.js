@@ -1,5 +1,7 @@
-import { API_BASE_URL } from '../config';
 import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 let isAuthModalShown = false; // Global flag to track if the modal is already shown
 
@@ -37,7 +39,7 @@ const matchService = {
   if (!clienteId) throw new Error("clienteId requerido");
 
   try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/clientes/${clienteId}/matches-sugeridos`, {
+    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/clientes/${clienteId}/matches-sugeridos`, {
       method: "GET",
     });
 
@@ -62,7 +64,7 @@ async getSugeridos(clienteId) {
   if (!clienteId) throw new Error("clienteId requerido");
 
   try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/clientes/${clienteId}/matches-sugeridos`, {
+    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/clientes/${clienteId}/matches-sugeridos`, {
       method: "GET",
     });
 
@@ -88,7 +90,7 @@ async getEnviadosByCliente(clienteId) {
   if (!clienteId) throw new Error("clienteId requerido");
 
   try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/cliente/${clienteId}/enviados`, {
+    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/cliente/${clienteId}/enviados`, {
       method: "GET",
     });
 
@@ -113,7 +115,7 @@ async getEnviadosByCliente(clienteId) {
 async marcarComoEnviado(matchId) {
   if (!matchId) throw new Error("matchId requerido");
   try {
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/${matchId}/enviar`, {
+    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/${matchId}/enviar`, {
       method: "PUT",
     });
 
@@ -148,7 +150,7 @@ async marcarComoEnviado(matchId) {
   // 📤 Crear un nuevo match
   async createMatch(payload) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -185,7 +187,7 @@ async marcarComoEnviado(matchId) {
   // async marcarComoEnviado(matchId) {
   //   if (!matchId) throw new Error("matchId requerido");
   //   try {
-  //     const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/${matchId}/enviar`, {
+  //     const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/${matchId}/enviar`, {
   //       method: "PUT",
   //     });
 
@@ -223,7 +225,7 @@ async marcarComoEnviado(matchId) {
     if (!matchId) throw new Error("matchId requerido");
 
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Match/${matchId}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/${matchId}`, {
         method: "DELETE",
       });
 

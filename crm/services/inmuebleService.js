@@ -1,6 +1,8 @@
 // inmuebleService.js
-import { API_BASE_URL } from '../config'
 import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 function normalizeNumber(n, fallback = 1) {
   // Cubre casos: number, string numérica, { value: ... }, ref/computed-like, null/undefined
@@ -96,7 +98,7 @@ export default {
         }
       }
 
-      const url = `${API_BASE_URL}/Inmueble?${params.toString()}`
+      const url = `${getApiBaseUrl()}/Inmueble?${params.toString()}`
       //console.log('Fetching URL:', url)
 
       const response = await fetchWithTokenCheck(url);
@@ -180,7 +182,7 @@ export default {
 
   async getInmueble() {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble`);
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble`);
       if (!response.ok) throw new Error('Error fetching inmuebles')
       return await response.json()
     } catch (error) {
@@ -199,7 +201,7 @@ export default {
       if (isNumericId) {
         console.log(`📡 [inmuebleService] Buscando por ID numérico: ${id}`);
         // Búsqueda por ID numérico (método original)
-        const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}`);
+        const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`);
         
         console.log(`📡 [inmuebleService] Response status: ${response.status}`);
         
@@ -302,7 +304,7 @@ export default {
 
   async createInmueble(payload) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -317,7 +319,7 @@ export default {
 
   async updateInmueble(id, data) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -342,7 +344,7 @@ export default {
 
   async deleteInmueble(id) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Error deleting inmueble')
@@ -357,7 +359,7 @@ export default {
     try {
       const payload = { precioActivo: !!nuevoEstado }
 
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}/precio-activo`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}/precio-activo`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

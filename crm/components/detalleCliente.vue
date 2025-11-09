@@ -747,6 +747,10 @@ const props = defineProps({
     required: true,
     default: false,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
   cliente: {
     type: Object,
     default: () => ({

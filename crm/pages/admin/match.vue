@@ -443,10 +443,11 @@ filteredClients.value = clientes.value.filter((cliente, index) => {
 const loadClientes = async () => {
   try {
     isLoading.value = true;
-    const response = await clienteService.getAllClientes();
+    const response = await clienteService.getAllClientes(1, 1000);
 
-    if (response.$values && Array.isArray(response.$values)) {
-      const listaClientes = response.$values.map(cliente => {
+    const clientesData = response.data || response.$values;
+    if (clientesData && Array.isArray(clientesData)) {
+      const listaClientes = clientesData.map(cliente => {
         let preferenciasRaw = {};
 
         if (

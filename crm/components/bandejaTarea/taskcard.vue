@@ -50,42 +50,29 @@
 </template>
 
 <script>
-import userService from "@/services/userService";
-
 export default {
   props: {
     task: {
       type: Object,
       required: true
+    },
+    agentesMap: {
+      type: Map,
+      required: true
     }
-  },
-  data() {
-    return {
-      agentes: [],
-    };
   },
   computed: {
     assignedAgent() {
-      return this.agentes.find((agente) => agente.id === this.task.agenteId);
+      if (!this.agentesMap || !this.task.agenteId) return null;
+      return this.agentesMap.get(this.task.agenteId) || null;
     },
   },
   methods: {
-    async fetchAgentes() {
-      try {
-        const response = await userService.getAllAgentes();
-        this.agentes = response.$values || [];
-      } catch (error) {
-        console.error("Error fetching agentes:", error);
-      }
-    },
     formatDate(dateString) {
       if (!dateString) return '';
       const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
       return new Date(dateString).toLocaleDateString('es-ES', options);
     }
-  },
-  mounted() {
-    this.fetchAgentes();
-  },
+  }
 };
 </script>

@@ -1,5 +1,10 @@
-import { API_BASE_URL } from "../config";
 import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => {
+  // Usar la configuración global inyectada por el plugin
+  return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234';
+};
 
 let isAuthModalShown = false; // Global flag to track if the modal is already shown
 
@@ -129,7 +134,7 @@ const authService = (() => {
 
   /* ================= Métodos públicos ================= */
   async function login(email, password) {
-    const res = await fetch(`${API_BASE_URL}/Agente/login`, {
+    const res = await fetch(`${getApiBaseUrl()}/Agente/login`, {
       method: "POST",
       credentials: "omit",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -156,12 +161,12 @@ const authService = (() => {
   }
 
   async function getCurrentUser() {
-    const url = `${API_BASE_URL}/Agente/GetLoggedUser`;
+    const url = `${getApiBaseUrl()}/Agente/GetLoggedUser`;
     return fetchWithAuth(url, { method: "GET" });
   }
 
   async function register(registerData) {
-    const url = `${API_BASE_URL}/Agente/register`;
+    const url = `${getApiBaseUrl()}/Agente/register`;
     return fetchWithAuth(url, {
       method: "POST",
       body: JSON.stringify(registerData),
@@ -169,7 +174,7 @@ const authService = (() => {
   }
 
   async function logout() {
-    const url = `${API_BASE_URL}/Agente/logout`;
+    const url = `${getApiBaseUrl()}/Agente/logout`;
     try {
       await fetchWithAuth(url, { method: "POST" });
     } catch (e) {
@@ -185,13 +190,13 @@ const authService = (() => {
   }
 
   async function getUserTenantId() {
-    const url = `${API_BASE_URL}/Agente/tenant-id`;
+    const url = `${getApiBaseUrl()}/Agente/tenant-id`;
     const data = await fetchWithAuth(url, { method: "GET" });
     return data?.TenantId ?? data?.tenantId ?? null;
   }
 
   async function getUsers() {
-    const url = `${API_BASE_URL}/user`;
+    const url = `${getApiBaseUrl()}/user`;
     return fetchWithAuth(url, { method: "GET" });
   }
 

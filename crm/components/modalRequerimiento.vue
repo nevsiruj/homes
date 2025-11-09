@@ -483,21 +483,25 @@ watch(
   { immediate: false }
 );
 
-onMounted(async () => {
-  try {
-    const data = await agenteService.getUsers();
-    agentes.value =
-      data.$values?.map((agente) => ({
-        id: agente.id,
-        nombreCompleto: `${agente.nombre} ${agente.apellido}`,
-      })) || [];
-  } catch (error) {
-    // console técnico comentado:
-    // console.error("Error al cargar agentes:", error);
-    // Mostrar mensaje opcional y amable al usuario no intrusivo (si corresponde)
-    // await Swal.fire("Atención", "No se pudieron cargar los agentes en este momento.", "warning");
+// === Cargar agentes solo cuando se abre el modal ===
+watch(
+  () => props.isOpen,
+  async (isOpen) => {
+    if (isOpen && agentes.value.length === 0) {
+      try {
+        const data = await agenteService.getUsers();
+        agentes.value =
+          data.$values?.map((agente) => ({
+            id: agente.id,
+            nombreCompleto: `${agente.nombre} ${agente.apellido}`,
+          })) || [];
+      } catch (error) {
+        // console técnico comentado:
+        // console.error("Error al cargar agentes:", error);
+      }
+    }
   }
-});
+);
 
 function resetForm() {
   formData.value = {

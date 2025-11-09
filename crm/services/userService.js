@@ -1,6 +1,8 @@
-import { API_BASE_URL } from '../config';
 import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2';
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 // Evita modales duplicados
 let isAuthModalShown = false;
@@ -39,7 +41,7 @@ async function fetchWithTokenCheck(endpoint, options = {}) {
     Authorization: `Bearer ${token}`,
   };
 
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${getApiBaseUrl()}${endpoint}`;
   const response = await fetch(url, { credentials: 'omit', ...options, headers });
 
   // Manejo explícito de 401 → modal y salir

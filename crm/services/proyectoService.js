@@ -1,5 +1,7 @@
-import { API_BASE_URL } from '../config'
 import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 let isAuthModalShown = false; // Global flag to track if the modal is already shown
 
@@ -34,7 +36,7 @@ async function fetchWithTokenCheck(url, options = {}) {
 export default {
   async getProyecto() {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Proyecto`);
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Proyecto`);
       if (!response.ok) throw new Error('Error fetching proyectos');
       return await response.json();
     } catch (error) {
@@ -45,7 +47,7 @@ export default {
 
   async getProyectoById(id) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Proyecto/${id}`);
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Proyecto/${id}`);
       if (!response.ok) throw new Error('Error fetching proyecto');
       const data = await response.json();
       //console.log('Proyecto data:', data);
@@ -58,7 +60,7 @@ export default {
 
   async createProyecto(payload) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Proyecto`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Proyecto`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +77,7 @@ export default {
 
   async updateProyecto(id, data) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Proyecto/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Proyecto/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +106,7 @@ export default {
 
   async deleteProyecto(id) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Proyecto/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Proyecto/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Error deleting proyecto');

@@ -76,7 +76,7 @@
           class="min-h-[100%] space-y-2 mt-2"
         >
           <template #item="{ element }">
-            <TaskCard :task="element" @open-contact="openContactModal" />
+            <TaskCard :task="element" :agentes-map="agentesMap" @open-contact="openContactModal" />
           </template>
         </draggable>
       </div>
@@ -459,9 +459,6 @@
         </div>
       </div>
     </div> -->
-    <task-component 
-      @open-inmueble="handleOpenInmueble"     
-    />
   </div>
 </template>
 
@@ -503,6 +500,7 @@ export default {
       showAddModal: false,
       contactModal: null,
       selectedTask: null,
+      isLoading: false, // Loader principal para carga de tareas
       isLoadingDetails: false, // Nuevo: para el loader de detalles
       clientDetails: null, // Nuevo: para datos generales del cliente
       preferencias: null, // Nuevo: para Preferencias del cliente
@@ -565,6 +563,7 @@ export default {
       ],
       tasks: [],
       agentesArray: [], // <- nuevo arreglo para todos los agentes
+      agentesMap: new Map(), // <- Map para acceso rápido a agentes por ID
       selectedAgent: "all", // <- nuevo dato para el agente seleccionado
       dateFilter: {
         startDate: "",
@@ -1220,21 +1219,32 @@ export default {
 
     // ===================== AQUÍ SE FILTRA POR ROL =====================
     async cargarTodosLosClientes() {
+      this.isLoading = true;
       try {
-        const response = await clienteService.getAllClientes();
-        const clientes = response?.$values || [];
+        // Solicitar 100 clientes para tener más datos en el dashboard
+        const response = await clienteService.getAllClientes(1, 100);
+        console.log("📦 Respuesta completa de getAllClientes:", response);
+        console.log("📦 Tipo de respuesta:", typeof response);
+        console.log("📦 Es array?:", Array.isArray(response));
+        console.log("📦 Tiene $values?:", response?.$values);
+        console.log("📦 Tiene data?:", response?.data);
+        
+        // La API ahora devuelve { data: [...], page, pageSize, totalCount, totalPages }
+        const clientes = response?.data || response?.$values || response || [];
+        console.log("📦 Clientes extraídos:", clientes);
+        console.log("📦 Total de clientes:", clientes.length);
 
-        // Cargar agentes para mapear nombres
-        let agentesMap = new Map();
+        // Cargar agentes para mapear nombres (usar this.agentesMap para compartir con TaskCard)
+        this.agentesMap = new Map();
         try {
           const agentesResp = await agenteService.getUsers();
           const agentesRaw = agentesResp?.$values || agentesResp || [];
           agentesRaw.forEach((ag) => {
             const id = ag.Id || ag.id || ag.userId || ag.usuarioId;
-            agentesMap.set(id, ag);
+            this.agentesMap.set(id, ag);
           });
         } catch (e) {
-          agentesMap = new Map();
+          this.agentesMap = new Map();
         }
 
         // Filtrar: admin => todos; no admin => solo clientes del agente
@@ -1256,7 +1266,7 @@ export default {
         filtrados.forEach((rawCliente) => {
           const agenteIdVal =
             rawCliente.AgenteId || rawCliente.agenteId || null;
-          const agenteObj = agentesMap.get(agenteIdVal) || {};
+          const agenteObj = this.agentesMap.get(agenteIdVal) || {};
           const agenteNombre = agenteObj.Nombre || agenteObj.nombre || "";
           const agenteApellido = agenteObj.Apellido || agenteObj.apellido || "";
           const task = {
@@ -1288,14 +1298,14 @@ export default {
 
         // Cargar todos los agentes (solo si es admin)
         if (this.isAdmin) {
-          this.agentesArray = Array.from(agentesMap.values()).map((ag) => ({
+          this.agentesArray = Array.from(this.agentesMap.values()).map((ag) => ({
             id: ag.Id || ag.id || ag.userId || ag.usuarioId,
             nombre: ag.Nombre || ag.nombre || "",
             apellido: ag.Apellido || ag.apellido || "",
           }));
         } else {
           // Si no es admin, cargar solo el propio agente
-          const propioAgente = agentesMap.get(this.agenteId) || {};
+          const propioAgente = this.agentesMap.get(this.agenteId) || {};
           this.agentesArray = [
             {
               id:
@@ -1308,14 +1318,21 @@ export default {
             },
           ];
         }
+        
+        console.log("✅ Tasks finales cargadas:", this.tasks.length);
+        console.log("✅ Primera tarea:", this.tasks[0]);
+        console.log("✅ AgentesArray:", this.agentesArray.length);
       } catch (error) {
-        //console.error("❌ Error al cargar clientes:", error?.message || error);
+        console.error("❌ Error al cargar clientes:", error?.message || error);
         Swal.fire({
           icon: "error",
           title: "Error",
           text: "No se pudieron cargar los clientes desde la API.",
           confirmButtonText: "Aceptar",
         });
+      } finally {
+        this.isLoading = false;
+        console.log("🏁 Carga completada. isLoading:", this.isLoading);
       }
     },
     // ==================================================================

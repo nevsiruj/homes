@@ -23,7 +23,7 @@ namespace Application.Modules.ProyectoModule.Services
     {
         private readonly IGenericRepository<Proyecto> _repository;
         private readonly IMapper _mapper;
-        private readonly ProjectDbContext _context; //Agreagado Ivan
+        private readonly ProjectDbContext _context; 
 
 
         public ProyectoService(IGenericRepository<Proyecto> repository, IMapper mapper, ProjectDbContext context)
@@ -31,7 +31,7 @@ namespace Application.Modules.ProyectoModule.Services
         {
             _repository = repository;
             _mapper = mapper;
-            _context = context; //Agreagado Ivan
+            _context = context; 
         }
 
         public override async Task<ProyectoDTO> GetByIdAsync(object id)

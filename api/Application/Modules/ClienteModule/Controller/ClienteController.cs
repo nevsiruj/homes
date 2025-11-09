@@ -73,7 +73,10 @@ namespace Application.Modules.ClienteModule.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] int page = 1, 
+            [FromQuery] int pageSize = 50,
+            [FromQuery] string? agenteId = null)
         {
             try
             {
@@ -84,15 +87,48 @@ namespace Application.Modules.ClienteModule.Controllers
                     return Unauthorized();
                 }
 
+                // Validar parámetros
+                if (page < 1) page = 1;
+                if (pageSize < 1) pageSize = 50;
+                if (pageSize > 2000) pageSize = 2000; // Límite máximo aumentado para cargar más clientes
 
                 var clientes = await _clienteService.GetAllAsync();
 
                 if (clientes == null || !clientes.Any())
                 {
-                    return NotFound("¡No se encontró ningún cliente o preferencia registrada!");
+                    return Ok(new 
+                    { 
+                        data = new List<ClienteDto>(),
+                        page = page,
+                        pageSize = pageSize,
+                        totalCount = 0,
+                        totalPages = 0
+                    });
                 }
 
-                return Ok(clientes);
+                // Filtrar por agente si se proporciona
+                if (!string.IsNullOrEmpty(agenteId))
+                {
+                    clientes = clientes.Where(c => c.AgenteId == agenteId).ToList();
+                }
+
+                // Aplicar paginación
+                var totalCount = clientes.Count();
+                var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+                
+                var pagedClientes = clientes
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                return Ok(new 
+                { 
+                    data = pagedClientes,
+                    page = page,
+                    pageSize = pageSize,
+                    totalCount = totalCount,
+                    totalPages = totalPages
+                });
             }
             catch (Exception ex)
             {

@@ -492,8 +492,8 @@ const loadRecordatorios = async () => {
   lastInteractions.value = [];
 
   try {
-    const clientesResponse = await clienteService.getAllClientes();
-    const clientesRaw = clientesResponse.$values || [];
+    const clientesResponse = await clienteService.getAllClientes(1, 1000);
+    const clientesRaw = clientesResponse.data || clientesResponse.$values || [];
     const clientesMap = new Map();
     clientesRaw.forEach((cliente) => {
       clientesMap.set(cliente.id, cliente);

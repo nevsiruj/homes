@@ -1,5 +1,7 @@
-import { API_BASE_URL } from "../config";
 import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 const redirectToLogin = (message = "La sesión ha caducado. Por favor, inicie sesión de nuevo.") => {
   Swal.fire({
@@ -11,6 +13,11 @@ const redirectToLogin = (message = "La sesión ha caducado. Por favor, inicie se
     window.location.href = "/";
   });
 };
+
+// Cache simple para evitar llamadas repetidas
+let clientesCache = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 30000; // 30 segundos
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("jwt-token");
@@ -26,9 +33,24 @@ const getAuthHeaders = () => {
 };
 
 export default {
-  async getAllClientes() {
+  async getAllClientes(page = 1, pageSize = 50, agenteId = null, useCache = true) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Cliente`, {
+      // Verificar si hay cache válido
+      const now = Date.now();
+      if (useCache && clientesCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+        return clientesCache;
+      }
+
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: pageSize.toString()
+      });
+      
+      if (agenteId) {
+        params.append('agenteId', agenteId.toString());
+      }
+
+      const response = await fetch(`${getApiBaseUrl()}/Cliente?${params}`, {
         method: "GET",
         headers: getAuthHeaders()
       });
@@ -42,15 +64,27 @@ export default {
         throw new Error(`HTTP status: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      
+      // Guardar en cache
+      clientesCache = data;
+      cacheTimestamp = now;
+      
+      return data;
     } catch (error) {
       throw error;
     }
   },
+  
+  // Método para limpiar el cache cuando se modifica un cliente
+  clearCache() {
+    clientesCache = null;
+    cacheTimestamp = null;
+  },
 
   async getClienteById(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Cliente/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Cliente/${id}`, {
         method: "GET",
         headers: getAuthHeaders()
       });
@@ -72,7 +106,7 @@ export default {
 
   async getClienteByTelefono(telefono) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Cliente/telefono/${telefono}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Cliente/telefono/${telefono}`, {
         method: "GET",
         headers: getAuthHeaders(),
       });
@@ -94,7 +128,7 @@ export default {
 
   async deleteCliente(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Cliente/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Cliente/${id}`, {
         method: "DELETE",
         headers: getAuthHeaders()
       });
@@ -107,6 +141,9 @@ export default {
       if (!response.ok) {
         throw new Error(`Error al eliminar el cliente (ID: ${id})`);
       }
+      
+      // Limpiar cache después de eliminar
+      this.clearCache();
     } catch (error) {
       throw error;
     }
@@ -114,7 +151,7 @@ export default {
 
   async addCliente(cliente) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Cliente`, {
+      const response = await fetch(`${getApiBaseUrl()}/Cliente`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(cliente)
@@ -131,6 +168,9 @@ export default {
         throw new Error(errorData?.message || `Error HTTP: ${response.status}`);
       }
 
+      // Limpiar cache después de crear
+      this.clearCache();
+      
       return await response.json(); // Devuelve el cliente creado
 
     } catch (error) {
@@ -142,7 +182,7 @@ export default {
 
   async updateCliente(id, payload) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Cliente/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Cliente/${id}`, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload.data || payload)
@@ -156,6 +196,9 @@ export default {
       if (!response.ok) {
         throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
       }
+
+      // Limpiar cache después de actualizar
+      this.clearCache();
 
       const text = await response.text();
       if (!text) {
@@ -175,7 +218,7 @@ export default {
 
   async patchCliente(id, payload) {
     try {
-      const response = await fetch(`${API_BASE_URL}/Cliente/${id}/status`, {
+      const response = await fetch(`${getApiBaseUrl()}/Cliente/${id}/status`, {
         method: "PATCH",
         headers: getAuthHeaders(),
         body: JSON.stringify(payload)
