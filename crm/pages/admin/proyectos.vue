@@ -6,9 +6,9 @@
       </h2>
     </div>
 
-    <div class="grid grid-cols-2 grid-rows-1 gap-4 mb-8">
-      <div>
-        <form @submit.prevent class="flex flex-col items-start max-w-lg">
+    <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3 xl:grid-cols-4">
+      <div class="lg:col-span-2 xl:col-span-3">
+        <form @submit.prevent class="flex flex-col items-start w-full">
           <label for="voice-search" class="sr-only">Buscar</label>
           <div class="relative w-full">
             <input
@@ -20,28 +20,6 @@
               required
             />
           </div>
-          <!-- <button
-            type="button"
-            @click="handleSearch"
-            class="inline-flex items-center py-2 px-3 ms-2 text-sm font-medium text-white bg-gray-700 rounded-lg border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300    "
-          >
-            <svg
-              class="w-4 h-4 me-2"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-              />
-            </svg>
-            Buscar
-          </button> -->
           <!-- Spinner y mensaje de búsqueda -->
           <div v-if="isSearching" class="mt-2 flex items-center space-x-2">
             <div class="spinner"></div>
@@ -51,12 +29,21 @@
           </div>
         </form>
       </div>
-      <div class="flex justify-end items-end">
+      <div class="flex justify-end items-end gap-2">
+        <select
+          v-model.number="itemsPerPage"
+          @change="currentPage = 1"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 p-2"
+        >
+          <option :value="20">20 por página</option>
+          <option :value="50">50 por página</option>
+          <option :value="100">100 por página</option>
+        </select>
         <button
           v-if="isAdmin"
           type="button"
           @click="openModal"
-          class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+          class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
         >
           Agregar registro
         </button>
@@ -89,8 +76,9 @@
         </thead>
         <tbody>
           <tr
-            v-for="proyecto in filteredProyectos"
+            v-for="proyecto in paginatedProyectos"
             :key="proyecto.id"
+            v-memo="[proyecto.id, proyecto.titulo, proyecto.precio]"
             class="odd:bg-white odd: even:bg-gray-50 even: border-b border-gray-200"
           >
             <td
@@ -226,6 +214,80 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Paginación -->
+    <div v-if="filteredProyectos.length > 0" class="flex items-center justify-between mt-4 px-4 py-3 bg-white border-t sm:px-6">
+      <div class="flex justify-between flex-1 sm:hidden">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Anterior
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="relative ml-3 inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Siguiente
+        </button>
+      </div>
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Mostrando
+            <span class="font-medium">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>
+            a
+            <span class="font-medium">{{ Math.min(currentPage * itemsPerPage, filteredProyectos.length) }}</span>
+            de
+            <span class="font-medium">{{ filteredProyectos.length }}</span>
+            proyectos
+          </p>
+        </div>
+        <div>
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <button
+              @click="prevPage"
+              :disabled="currentPage === 1"
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span class="sr-only">Anterior</span>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            
+            <!-- Números de página -->
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              @click="changePage(page)"
+              :class="[
+                'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
+                page === currentPage
+                  ? 'z-10 bg-gray-700 border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+              ]"
+            >
+              {{ page }}
+            </button>
+            
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span class="sr-only">Siguiente</span>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+
     <!-- Mensaje cuando no hay proyectos -->
     <div
       v-if="filteredProyectos.length === 0"
@@ -287,6 +349,10 @@ const proyectoSeleccionado = ref(null);
 const isSearching = ref(false); // Estado para el spinner
 const isLoading = ref(true); //Estado para el Loader
 
+// Paginación
+const currentPage = ref(1);
+const itemsPerPage = ref(20);
+
 
 const openDetailModal = async (id) => {
   const detalleProyecto = await fetchProyectoById(id);
@@ -317,13 +383,45 @@ const filteredProyectos = computed(() => {
   });
 });
 
+// Computed para paginación
+const paginatedProyectos = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredProyectos.value.slice(start, end);
+});
+
+const totalPages = computed(() => 
+  Math.ceil(filteredProyectos.value.length / itemsPerPage.value)
+);
+
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
+
 // Obtener proyectos
 onMounted(async () => {
+  console.log('🚀 onMounted ejecutándose en proyectos.vue');
   initFlowbite();
   try {
+    console.log('⏳ Iniciando carga de proyectos...');
     await loadProyectos();
+    console.log('✅ Carga de proyectos completada');
   } catch (error) {
-    //console.error("Error al cargar proyectos:", error);
+    console.error("❌ Error al cargar proyectos:", error);
     Swal.fire({
       icon: "error",
       title: "No se pudieron cargar los proyectos",
@@ -340,12 +438,15 @@ const loadProyectos = async () => {
   try {
     isLoading.value = true;
 
-    const response = await Promise.all([
-      proyectoService.getProyecto(), // Llamada real
-      delay(2000), // 👈 Delay de 2 segundos
-    ]).then(([res]) => res);
-
-    const data = response.$values || [];
+    const response = await proyectoService.getProyecto();
+    console.log('📦 Respuesta cruda de la API:', response);
+    
+    // La respuesta es directamente un array, no tiene $values
+    const data = Array.isArray(response) ? response : (response.$values || []);
+    console.log('📋 Data procesada:', data);
+    console.log('🔢 Es array?', Array.isArray(data));
+    console.log('📊 Cantidad de proyectos:', data.length);
+    
     const processedData = data.map((proyecto) => ({
       id: proyecto.id,
       codigoProyecto: proyecto.codigoProyecto || "",
@@ -367,17 +468,20 @@ const loadProyectos = async () => {
       video: proyecto.video || "",
     }));
 
+    console.log('✅ Proyectos procesados:', processedData);
+    console.log('📊 Total de proyectos:', processedData.length);
+
     proyectos.value = processedData;
     originalProyectos.value = [...processedData];
   } catch (error) {
-    //console.error("Error al procesar los proyectos:", error);
-    // Swal.fire(
-    //   "No fue posible cargar los proyectos",
-    //   "Ocurrió un error al obtener la lista de proyectos. Revisa tu conexión y vuelve a intentarlo.",
-    //   "error"
-    // );
+    console.error('❌ Error al cargar proyectos:', error);
+    Swal.fire(
+      "No fue posible cargar los proyectos",
+      "Ocurrió un error al obtener la lista de proyectos. Revisa tu conexión y vuelve a intentarlo.",
+      "error"
+    );
   } finally {
-    isLoading.value = false; // 👈 garantizado mínimo 2s
+    isLoading.value = false;
   }
 };
 
@@ -386,9 +490,8 @@ const handleSearch = async () => {
   isSearching.value = true; // Mostrar el spinner
   currentPage.value = 1; // Resetea a la primera página al buscar
   try {
-    if (searchTerm.value.trim() && !allLoaded.value) {
-      await loadAllInmuebles(); // Cargar todos los datos si no están cargados
-    }
+    // Pequeño delay para mostrar el spinner
+    await new Promise(resolve => setTimeout(resolve, 300));
   } finally {
     isSearching.value = false; // Ocultar el spinner
   }

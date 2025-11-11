@@ -62,6 +62,7 @@
       >
         <option :value="20">20 por página</option>
         <option :value="50">50 por página</option>
+        <option :value="100">100 por página</option>
       </select>
       <button
         type="button"
@@ -489,6 +490,9 @@ const agentesArray = computed(() => {
 
 const agentesMap = ref({});
 
+// Flag para prevenir actualizaciones durante el desmontaje
+const isUnmounting = ref(false);
+
 // --- Nuevo: estado para modal detalle de inmueble ---
 const showInmuebleModal = ref(false);
 const inmuebleSeleccionado = ref(null);
@@ -768,6 +772,8 @@ const openEditModal = async (cliente) => {
 
 // Cargar clientes
 const loadClientes = async () => {
+  if (isUnmounting.value) return; // No cargar si se está desmontando
+  
   if (isLoading.value) {
     console.log('⏸️ Ya hay una carga en progreso, saltando...');
     return; // Evitar cargas duplicadas
@@ -788,7 +794,10 @@ const loadClientes = async () => {
 
     const processedClients = clientesData.map((c) => {
       const preferencias = c.preferencias || {};
-      const agenteAsignado = agentesMap.value[c.agenteId] || null;
+      
+      // Buscar el agente en el mapa usando el agenteId
+      const agenteId = c.agenteId || c.AgenteId || null;
+      const agenteAsignado = agenteId ? agentesMap.value[agenteId] : null;
 
       return {
         id: c.id,
@@ -799,8 +808,8 @@ const loadClientes = async () => {
         email: c.email || "N/A",
         notas: c.notas || "",
         // importante para filtrar por dueño:
-        agenteId: c.agenteId || null,
-        agente: agenteAsignado, // objeto agente (si lo tenemos mapeado)
+        agenteId: agenteId,
+        agente: agenteAsignado || null, // objeto agente completo
         tipo: preferencias.tipo || "N/A",
         operacion: preferencias.operacion || "N/A",
         ubicacion: preferencias.ubicacion || "N/A",
@@ -825,12 +834,19 @@ const loadClientes = async () => {
       };
     });
 
-    clientes.value = processedClients;
+    // Solo actualizar el estado si el componente no se está desmontando
+    if (!isUnmounting.value) {
+      clientes.value = processedClients;
+    }
   } catch (err) {
-    //console.error("Error al cargar clientes:", err);
-    error.value = "No se pudieron cargar las preferencias";
+    console.error("Error al cargar clientes:", err);
+    if (!isUnmounting.value) {
+      error.value = "No se pudieron cargar las preferencias";
+    }
   } finally {
-    isLoading.value = false;
+    if (!isUnmounting.value) {
+      isLoading.value = false;
+    }
   }
 };
 
@@ -845,13 +861,30 @@ const loadAgentes = async () => {
   try {
     const data = await agenteService.getUsers();
     
+    // Limpiar el mapa antes de cargar
+    agentesMap.value = {};
+    
     if (data.$values && Array.isArray(data.$values)) {
       data.$values.forEach((agente) => {
-        agentesMap.value[agente.id] = agente;
+        agentesMap.value[agente.id] = {
+          id: agente.id,
+          nombre: agente.nombre || agente.Nombre || '',
+          apellido: agente.apellido || agente.Apellido || '',
+        };
+      });
+    } else if (Array.isArray(data)) {
+      // Si viene directamente como array
+      data.forEach((agente) => {
+        agentesMap.value[agente.id] = {
+          id: agente.id,
+          nombre: agente.nombre || agente.Nombre || '',
+          apellido: agente.apellido || agente.Apellido || '',
+        };
       });
     }
   } catch (error) {
     console.error("Error al cargar agentes:", error);
+    Swal.fire("Error", "No se pudieron cargar los agentes.", "error");
   } finally {
     isLoadingAgentes.value = false;
   }
@@ -912,7 +945,7 @@ const handleClientAddedOrUpdated = async () => {
 // --- Nuevo helper: normalizar objeto inmueble para el modal (imagenes como array de URLs, amenidades como objetos) ---
 function normalizeInmuebleForModal(raw) {
   if (!raw) return null;
-
+  
   const obj = { ...raw };
 
   // imagenesReferencia -> array de strings (urls)
@@ -930,6 +963,7 @@ function normalizeInmuebleForModal(raw) {
       .map((it) => (typeof it === "string" ? it : it?.url || ""))
       .filter(Boolean);
   }
+  
   obj.imagenesReferencia = imgs;
 
   // imagenPrincipal fallback
@@ -980,6 +1014,9 @@ function normalizeInmuebleForModal(raw) {
 
 // --- Nuevo: manejar evento desde detalleCliente -> abrir modal de inmueble ---
 async function handleOpenInmueble(payload) {
+  console.error('🚨🚨🚨 HANDLE OPEN INMUEBLE EJECUTÁNDOSE 🚨🚨🚨');
+  console.log('🎯🎯🎯 [handleOpenInmueble] FUNCIÓN LLAMADA con payload:', payload);
+  
   try {
     // Evitar que queden ambos modales visibles al mismo tiempo
     // guardamos si antes estaba abierto el detalleCliente para poder reabrirlo al cerrar
@@ -1027,8 +1064,12 @@ async function handleOpenInmueble(payload) {
       fetched = core || null;
     }
 
+    console.log('🎯 [handleOpenInmueble] ANTES de normalizar, fetched tiene:', fetched?.codigoPropiedad, 'con imágenes:', fetched?.imagenesReferencia?.length);
+    
     // Normalizar antes de asignar al modal para asegurar imagenes y amenidades correctas
     inmuebleSeleccionado.value = normalizeInmuebleForModal(fetched);
+    
+    console.log('🎯 [handleOpenInmueble] DESPUÉS de normalizar, inmuebleSeleccionado tiene imágenes:', inmuebleSeleccionado.value?.imagenesReferencia?.length);
 
     // Si antes estaba abierto detalleCliente y el evento vino del detalle, mantener esa información para restore
     // (isDetailsOpen fue puesto en false arriba). showInmuebleModal abre ahora.
@@ -1051,6 +1092,7 @@ function closeInmuebleModal() {
 
 // Modificar el evento de cierre del modal detalleCliente
 const closeDetailsModal = () => {
+  if (isUnmounting.value) return; // Prevenir actualizaciones durante desmontaje
   isDetailsOpen.value = false;
   selectedCliente.value = null; // Limpiar el cliente seleccionado
 };
@@ -1062,6 +1104,9 @@ let reloadTimeout = null;
 watch(
   [isModalOpen, isDetailsOpen, isRequerimientoModalOpen],
   ([modalOpen, detailsOpen, requerimientoOpen]) => {
+    // Prevenir actualizaciones si el componente se está desmontando
+    if (isUnmounting.value) return;
+    
     // Solo recargar cuando todos los modales están cerrados
     if (!modalOpen && !detailsOpen && !requerimientoOpen) {
       // Limpiar timeout previo
@@ -1070,7 +1115,9 @@ watch(
       }
       // Debounce de 300ms para evitar múltiples llamadas
       reloadTimeout = setTimeout(() => {
-        loadClientes();
+        if (!isUnmounting.value) { // Doble verificación antes de recargar
+          loadClientes();
+        }
       }, 300);
     }
   }
@@ -1083,14 +1130,17 @@ watch([searchTerm, selectedAgent, dateFrom, dateTo], () => {
 
 // Montaje
 onMounted(async () => {
-  await loadAgentes(); // Cargar agentes una sola vez
-  loadClientes(); // Cargar clientes
+  await loadAgentes(); // Cargar agentes primero y esperar
+  await loadClientes(); // Luego cargar clientes
 });
 
 // Limpiar timeouts al desmontar
 onBeforeUnmount(() => {
+  isUnmounting.value = true; // Marcar que el componente se está desmontando
+  
   if (reloadTimeout) {
     clearTimeout(reloadTimeout);
+    reloadTimeout = null;
   }
 });
 </script>

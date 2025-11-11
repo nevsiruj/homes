@@ -58,12 +58,66 @@
       </div>
     </div>
 
-    <div
-      v-if="isLoading"
-      class="text-center py-8 text-gray-500 "
-    >
-      Cargando recordatorios...
+    <!-- Skeleton de carga -->
+    <div v-if="isLoading" class="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">
+              <div class="flex items-center justify-between">
+                <span>Fecha Registro</span>
+                <span class="ml-1">↕️</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">
+              <div class="flex items-center justify-between">
+                <span>Cliente</span>
+                <span class="ml-1">↕️</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">
+              <div class="flex items-center justify-between">
+                <span>Agente</span>
+                <span class="ml-1">↕️</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">
+              <div class="flex items-center justify-between">
+                <span>Tipo de Contacto</span>
+                <span class="ml-1">↕️</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">
+              <div class="flex items-center justify-between">
+                <span>Estado</span>
+                <span class="ml-1">↕️</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">
+              <div class="flex items-center justify-between">
+                <span>Fecha Próximo Contacto</span>
+                <span class="ml-1">↕️</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3">Notas</th>
+            <th scope="col" class="px-6 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody class="animate-pulse">
+          <tr v-for="i in 5" :key="`skeleton-${i}`" class="border-b">
+            <td class="px-6 py-4"><div class="h-4 bg-gray-300 rounded w-24"></div></td>
+            <td class="px-6 py-4"><div class="h-4 bg-gray-300 rounded w-32"></div></td>
+            <td class="px-6 py-4"><div class="h-4 bg-gray-300 rounded w-28"></div></td>
+            <td class="px-6 py-4"><div class="h-4 bg-gray-300 rounded w-20"></div></td>
+            <td class="px-6 py-4"><div class="h-6 bg-gray-300 rounded w-32"></div></td>
+            <td class="px-6 py-4"><div class="h-4 bg-gray-300 rounded w-24"></div></td>
+            <td class="px-6 py-4"><div class="h-4 bg-gray-300 rounded w-40"></div></td>
+            <td class="px-6 py-4"><div class="h-4 bg-gray-300 rounded w-20"></div></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    
     <div
       v-else-if="apiError"
       class="text-center py-8 text-red-500 "
@@ -89,12 +143,42 @@
           class="text-xs text-gray-700 uppercase bg-gray-50   "
         >
           <tr>
-            <th scope="col" class="px-6 py-3">Fecha Registro</th>
-            <th scope="col" class="px-6 py-3">Cliente</th>
-            <th scope="col" class="px-6 py-3">Agente</th>
-            <th scope="col" class="px-6 py-3">Tipo de Contacto</th>
-            <th scope="col" class="px-6 py-3">Estado</th>
-            <th scope="col" class="px-6 py-3">Fecha Próximo Contacto</th>
+            <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('fechaRegistro')">
+              <div class="flex items-center justify-between">
+                <span>Fecha Registro</span>
+                <span class="ml-1">{{ getSortIcon('fechaRegistro') }}</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('clienteNombre')">
+              <div class="flex items-center justify-between">
+                <span>Cliente</span>
+                <span class="ml-1">{{ getSortIcon('clienteNombre') }}</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('agenteNombre')">
+              <div class="flex items-center justify-between">
+                <span>Agente</span>
+                <span class="ml-1">{{ getSortIcon('agenteNombre') }}</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('tipoInteraccion')">
+              <div class="flex items-center justify-between">
+                <span>Tipo de Contacto</span>
+                <span class="ml-1">{{ getSortIcon('tipoInteraccion') }}</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('estadoInteraccion')">
+              <div class="flex items-center justify-between">
+                <span>Estado</span>
+                <span class="ml-1">{{ getSortIcon('estadoInteraccion') }}</span>
+              </div>
+            </th>
+            <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('fechaProximoContacto')">
+              <div class="flex items-center justify-between">
+                <span>Fecha Próximo Contacto</span>
+                <span class="ml-1">{{ getSortIcon('fechaProximoContacto') }}</span>
+              </div>
+            </th>
             <th scope="col" class="px-6 py-3">Notas</th>
             <th scope="col" class="px-6 py-3">Acciones</th>
           </tr>
@@ -320,6 +404,10 @@ const searchTerm = ref("");
 const selectedAgent = ref('all'); // Default: todos los agentes
 const showUpdateModal = ref(false);
 
+// Variables para ordenamiento
+const sortColumn = ref('fechaRegistro'); // Columna por defecto
+const sortDirection = ref('desc'); // Descendente por defecto (más recientes primero)
+
 // Helper para búsqueda acento-insensible y lowercase (igual que en clientes.vue)
 function normalizeSearch(str) {
   if (!str && str !== 0) return "";
@@ -430,6 +518,26 @@ const getEstadoClass = (estadoDisplay) => {
   }
 };
 
+// Función para ordenar columnas
+const sortBy = (column) => {
+  if (sortColumn.value === column) {
+    // Si ya está ordenando por esta columna, cambiar dirección
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    // Nueva columna, ordenar ascendente
+    sortColumn.value = column;
+    sortDirection.value = 'asc';
+  }
+};
+
+// Función para obtener el icono de ordenamiento
+const getSortIcon = (column) => {
+  if (sortColumn.value !== column) {
+    return '↕️'; // Icono neutro cuando no está ordenando por esta columna
+  }
+  return sortDirection.value === 'asc' ? '↑' : '↓';
+};
+
 // Propiedad computada para filtrar y ordenar los recordatorios finales
 const finalRecordatorios = computed(() => {
   let recordsToShow = lastInteractions.value;
@@ -471,15 +579,49 @@ const finalRecordatorios = computed(() => {
     );
   }
 
-  // ...existing code...
+  // Ordenamiento dinámico por columna seleccionada
   recordsToShow.sort((a, b) => {
-    const dateA = a.fechaProximoContacto
-      ? new Date(a.fechaProximoContacto).getTime()
-      : Infinity;
-    const dateB = b.fechaProximoContacto
-      ? new Date(b.fechaProximoContacto).getTime()
-      : Infinity;
-    return dateA - dateB;
+    let valueA, valueB;
+
+    switch (sortColumn.value) {
+      case 'fechaRegistro':
+        valueA = a.fechaRegistro ? new Date(a.fechaRegistro).getTime() : 0;
+        valueB = b.fechaRegistro ? new Date(b.fechaRegistro).getTime() : 0;
+        break;
+      case 'clienteNombre':
+        valueA = (a.clienteNombre || '').toLowerCase();
+        valueB = (b.clienteNombre || '').toLowerCase();
+        break;
+      case 'agenteNombre':
+        valueA = (a.agenteNombre || '').toLowerCase();
+        valueB = (b.agenteNombre || '').toLowerCase();
+        break;
+      case 'tipoInteraccion':
+        valueA = (a.tipoInteraccion || '').toLowerCase();
+        valueB = (b.tipoInteraccion || '').toLowerCase();
+        break;
+      case 'estadoInteraccion':
+        valueA = (a.estadoInteraccionDisplay || '').toLowerCase();
+        valueB = (b.estadoInteraccionDisplay || '').toLowerCase();
+        break;
+      case 'fechaProximoContacto':
+        valueA = a.fechaProximoContacto ? new Date(a.fechaProximoContacto).getTime() : Infinity;
+        valueB = b.fechaProximoContacto ? new Date(b.fechaProximoContacto).getTime() : Infinity;
+        break;
+      default:
+        return 0;
+    }
+
+    // Comparar valores
+    let comparison = 0;
+    if (valueA < valueB) {
+      comparison = -1;
+    } else if (valueA > valueB) {
+      comparison = 1;
+    }
+
+    // Aplicar dirección de ordenamiento
+    return sortDirection.value === 'asc' ? comparison : -comparison;
   });
 
   return recordsToShow;
@@ -492,12 +634,27 @@ const loadRecordatorios = async () => {
   lastInteractions.value = [];
 
   try {
+    console.log("🔄 Iniciando carga de recordatorios...");
+    
     const clientesResponse = await clienteService.getAllClientes(1, 1000);
+    console.log("📥 Respuesta de clientes:", clientesResponse);
+    
     const clientesRaw = clientesResponse.data || clientesResponse.$values || [];
+    console.log("📋 Clientes procesados:", clientesRaw.length);
+    console.log("🔍 Primer cliente (ejemplo):", clientesRaw[0]);
+    console.log("🔑 Claves del primer cliente:", clientesRaw[0] ? Object.keys(clientesRaw[0]) : 'No hay clientes');
+    
     const clientesMap = new Map();
     clientesRaw.forEach((cliente) => {
-      clientesMap.set(cliente.id, cliente);
+      // Soportar tanto 'id' como 'Id' o 'ID'
+      const clienteId = cliente.id || cliente.Id || cliente.ID;
+      if (clienteId) {
+        clientesMap.set(clienteId, cliente);
+      }
     });
+    
+    console.log("🗺️ ClientesMap size:", clientesMap.size);
+    console.log("🔑 Primeras 5 claves del map:", Array.from(clientesMap.keys()).slice(0, 5));
 
     // Cargar agentes para mostrar nombre en la vista y poder filtrar por agente
     let agentesMap = new Map();
@@ -505,23 +662,55 @@ const loadRecordatorios = async () => {
       const agenteService = (await import("../../services/agenteService")).default;
       const agentesResp = await agenteService.getUsers();
       const agentesRaw = agentesResp.$values || agentesResp || [];
+      console.log("👥 Agentes cargados:", agentesRaw.length);
+      
       agentesRaw.forEach((ag) => {
         agentesMap.set(ag.id, ag);
       });
       // Guardar en la lista reactiva de agentes
       agentesArray.value = Array.from(agentesMap.values());
     } catch (e) {
+      console.warn("⚠️ Error al cargar agentes:", e);
       // no bloquear si falla la carga de agentes
       agentesMap = new Map();
     }
 
     const interaccionesResponse =
       await interaccionService.getAllInteracciones();
-    const interaccionesRaw = interaccionesResponse.$values || [];
+    console.log("📞 Respuesta de interacciones:", interaccionesResponse);
+    console.log("📞 Tipo de respuesta:", typeof interaccionesResponse);
+    console.log("📞 Es array:", Array.isArray(interaccionesResponse));
+    console.log("📞 Tiene $values:", interaccionesResponse?.$values);
+    
+    // Normalizar respuesta - puede venir directamente como array o dentro de $values
+    const interaccionesRaw = Array.isArray(interaccionesResponse) 
+      ? interaccionesResponse 
+      : (interaccionesResponse.$values || interaccionesResponse.data || []);
+    
+    console.log("📋 Interacciones procesadas:", interaccionesRaw.length);
+    console.log("🔍 Primera interacción (ejemplo):", interaccionesRaw[0]);
+    
     const latestInteractionsMap = new Map();
 
+    let processedCount = 0;
+    let skippedCount = 0;
+    
     interaccionesRaw.forEach((interaccion) => {
-      const cliente = clientesMap.get(interaccion.clienteId);
+      // Intentar con diferentes variaciones del ID
+      const clienteId = interaccion.clienteId || interaccion.ClienteId || interaccion.CLIENTEID;
+      const cliente = clientesMap.get(clienteId);
+      
+      if (!cliente) {
+        skippedCount++;
+        if (skippedCount <= 3) {
+          console.warn(`⚠️ Cliente no encontrado. ClienteId de interacción: ${clienteId} (tipo: ${typeof clienteId}), InteraccionId: ${interaccion.id}`);
+          console.warn(`🔍 Claves disponibles en map:`, Array.from(clientesMap.keys()).slice(0, 10));
+        }
+        return;
+      }
+      
+      processedCount++;
+      
       if (cliente) {
         // Obtener el estado numérico y convertirlo a texto
         const estadoNumerico = cliente.status;
@@ -564,10 +753,21 @@ const loadRecordatorios = async () => {
       }
     });
 
+    console.log(`📊 Interacciones con cliente: ${processedCount}, sin cliente: ${skippedCount}`);
+    
     lastInteractions.value = Array.from(latestInteractionsMap.values());
+    console.log("✅ Recordatorios procesados:", lastInteractions.value.length);
   } catch (err) {
-    //console.error("Error al cargar recordatorios:", err);
+    console.error("❌ Error al cargar recordatorios:", err);
     apiError.value = "Error al cargar datos: " + (err.message || err);
+    
+    // Mostrar alerta amigable
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error al cargar recordatorios',
+      text: 'No fue posible cargar la lista de recordatorios. Por favor, intenta nuevamente.',
+      confirmButtonText: 'Entendido'
+    });
   } finally {
     isLoading.value = false;
   }
@@ -769,4 +969,18 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Estilos para las columnas ordenables */
+th.cursor-pointer {
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+th.cursor-pointer:hover {
+  background-color: #f3f4f6 !important;
+}
+
+th.cursor-pointer:active {
+  background-color: #e5e7eb !important;
+}
+</style>

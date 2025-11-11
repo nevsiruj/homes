@@ -230,6 +230,7 @@
 import { ref, computed } from "vue";
 import clienteService from "@/services/clienteService";
 import inmuebleService from "@/services/inmuebleService";
+import agenteService from "@/services/agenteService";
 import DetalleCliente from "@/components/detalleCliente.vue";
 import { useAuthStore } from "@/stores/auth";
 import Swal from "sweetalert2";
@@ -255,6 +256,9 @@ const uniquePreferences = ref({
   ubicaciones: [],
   amenities: []
 });
+
+// === Mapa de agentes ===
+const agentesMap = ref({});
 
 // === Variables para modal de detalle cliente ===
 const isDetailsOpen = ref(false);
@@ -439,6 +443,37 @@ filteredClients.value = clientes.value.filter((cliente, index) => {
   }
 }
 
+// === Cargar agentes para mapear nombres ===
+const loadAgentes = async () => {
+  try {
+    const data = await agenteService.getUsers();
+    
+    // Limpiar el mapa antes de cargar
+    agentesMap.value = {};
+    
+    if (data.$values && Array.isArray(data.$values)) {
+      data.$values.forEach((agente) => {
+        agentesMap.value[agente.id] = {
+          id: agente.id,
+          nombre: agente.nombre || agente.Nombre || '',
+          apellido: agente.apellido || agente.Apellido || '',
+        };
+      });
+    } else if (Array.isArray(data)) {
+      // Si viene directamente como array
+      data.forEach((agente) => {
+        agentesMap.value[agente.id] = {
+          id: agente.id,
+          nombre: agente.nombre || agente.Nombre || '',
+          apellido: agente.apellido || agente.Apellido || '',
+        };
+      });
+    }
+  } catch (error) {
+    console.error("Error al cargar agentes:", error);
+  }
+};
+
 // === Cargar todos los clientes desde API con preferencias completas ===
 const loadClientes = async () => {
   try {
@@ -476,15 +511,19 @@ const loadClientes = async () => {
           preferenciasRaw.precioMax ?? -Infinity
         );
 
+        // Buscar el agente en el mapa usando el agenteId
+        const agenteId = cliente.agenteId || cliente.AgenteId || null;
+        const agenteAsignado = agenteId ? agentesMap.value[agenteId] : null;
+
         return {
           id: cliente.id,
           nombre: cliente.nombre || "N/A",
           apellido: cliente.apellido || "",
           telefono: cliente.telefono || "N/A",
           email: cliente.email || "N/A",
-          agenteId: cliente.agenteId, 
-          agenteNombre: cliente.agente?.nombre || cliente.agenteNombre || null,
-          agenteApellido: cliente.agente?.apellido || cliente.agenteApellido || null,
+          agenteId: agenteId, 
+          agenteNombre: agenteAsignado?.nombre || null,
+          agenteApellido: agenteAsignado?.apellido || null,
           preferencias: {
             tipo: (preferenciasRaw.tipo || "N/A").trim(),
             tipoNorm: normalize(preferenciasRaw.tipo || ""),
@@ -523,8 +562,11 @@ const loadClientes = async () => {
 };
 
 
-// === Cargar clientes al inicio ===
-loadClientes();
+// === Cargar agentes y clientes al inicio ===
+(async () => {
+  await loadAgentes();
+  await loadClientes();
+})();
 
 // === Extraer valores únicos de preferencias desde DB ===
 function extractUniquePreferences() {

@@ -203,6 +203,11 @@ export default {
         // Búsqueda por ID numérico (método original)
         const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`);
         
+        if (!response) {
+          console.error(`❌ [inmuebleService] No se recibió respuesta (token expirado?)`);
+          return null;
+        }
+        
         console.log(`📡 [inmuebleService] Response status: ${response.status}`);
         
         if (!response.ok) {
@@ -213,7 +218,12 @@ export default {
         const data = await response.json();
         console.log(`📊 [inmuebleService] Raw response (by ID):`, data);
         
-        return this.normalizeInmuebleData(data);
+        // IMPORTANTE: Normalizar los datos antes de retornar
+        const normalized = this.normalizeInmuebleData(data);
+        console.log(`✅ [inmuebleService] Datos normalizados retornados:`, normalized);
+        console.log(`🖼️ [inmuebleService] Array de imágenes en normalized:`, normalized.imagenesReferencia);
+        
+        return normalized;
       } else {
         console.log(`🔤 [inmuebleService] Buscando por código alfanumérico: ${id}`);
         // Búsqueda por código usando el endpoint paginado
@@ -273,11 +283,39 @@ export default {
   },
 
   normalizeInmuebleData(data) {
-    console.log(`🔧 [inmuebleService] Normalizando datos del inmueble...`);
+    console.log(`🔧 [inmuebleService] Normalizando inmueble: ${data?.codigoPropiedad || data?.id}`);
+    console.log(`🖼️ [inmuebleService] Imágenes raw:`, data.imagenesReferencia?.length || 0);
+    
+    // Normalizar las imágenes de referencia
+    let imagenesNormalizadas = [];
+    if (Array.isArray(data.imagenesReferencia?.$values)) {
+      imagenesNormalizadas = data.imagenesReferencia.$values
+        .map(img => {
+          if (typeof img === 'string') return img;
+          if (img?.url) return img.url;
+          if (img?.imagen) return img.imagen;
+          if (img?.imagenUrl) return img.imagenUrl;
+          return null;
+        })
+        .filter(Boolean);
+    } else if (Array.isArray(data.imagenesReferencia)) {
+      imagenesNormalizadas = data.imagenesReferencia
+        .map(img => {
+          if (typeof img === 'string') return img;
+          if (img?.url) return img.url;
+          if (img?.imagen) return img.imagen;
+          if (img?.imagenUrl) return img.imagenUrl;
+          return null;
+        })
+        .filter(Boolean);
+    }
+    
+    console.log(`✅ [inmuebleService] Imágenes normalizadas: ${imagenesNormalizadas.length}`);
     
     // Normalizar la respuesta para uso consistente
     const normalizedData = {
       ...data,
+      imagenesReferencia: imagenesNormalizadas,
       // Normalizar amenidades a array simple de strings
       amenidades: Array.isArray(data.amenidades?.$values) 
         ? data.amenidades.$values.map(a => a.nombre || a.Nombre || a)
@@ -285,19 +323,6 @@ export default {
           ? data.amenidades.map(a => typeof a === 'string' ? a : (a?.nombre || a?.Nombre || ''))
           : [])
     };
-    
-    console.log(`✅ [inmuebleService] Datos normalizados:`, {
-      id: normalizedData.id,
-      codigoPropiedad: normalizedData.codigoPropiedad,
-      titulo: normalizedData.titulo,
-      tipos: normalizedData.tipos,
-      operaciones: normalizedData.operaciones,
-      ubicaciones: normalizedData.ubicaciones,
-      precio: normalizedData.precio,
-      habitaciones: normalizedData.habitaciones,
-      banos: normalizedData.banos,
-      amenidades: normalizedData.amenidades
-    });
     
     return normalizedData;
   },

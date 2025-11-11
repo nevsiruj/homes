@@ -22,7 +22,7 @@ async function fetchWithTokenCheck(url, options = {}) {
         window.location.href = "/";
       });
     }
-    return null; // Prevent further execution and stop error propagation
+    throw new Error('No authentication token'); // Throw error instead of returning null
   }
 
   const headers = {
@@ -36,11 +36,24 @@ async function fetchWithTokenCheck(url, options = {}) {
 export default {
   async getProyecto() {
     try {
+      console.log('🔍 Llamando a API:', `${getApiBaseUrl()}/Proyecto`);
       const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Proyecto`);
-      if (!response.ok) throw new Error('Error fetching proyectos');
-      return await response.json();
+      
+      if (!response) {
+        console.error('❌ No response from fetchWithTokenCheck');
+        return null;
+      }
+      
+      if (!response.ok) {
+        console.error('❌ Response not OK:', response.status, response.statusText);
+        throw new Error('Error fetching proyectos');
+      }
+      
+      const data = await response.json();
+      console.log('✅ Data recibida del API:', data);
+      return data;
     } catch (error) {
-      //console.error('Error in proyectoService.getProyecto:', error);
+      console.error('❌ Error in proyectoService.getProyecto:', error);
       throw error;
     }
   },
