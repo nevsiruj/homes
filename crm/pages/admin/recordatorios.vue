@@ -56,6 +56,13 @@
           </button>
         </form>
       </div>
+      <div class="flex items-end justify-end">
+        <PaginationControls
+          v-model:itemsPerPage="itemsPerPage"
+          v-model:currentPage="currentPage"
+          :perPageOptions="[10,20,50]"
+        />
+      </div>
     </div>
 
     <!-- Skeleton de carga -->
@@ -144,39 +151,51 @@
         >
           <tr>
             <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('fechaRegistro')">
-              <div class="flex items-center justify-between">
-                <span>Fecha Registro</span>
-                <span class="ml-1">{{ getSortIcon('fechaRegistro') }}</span>
+              <div class="flex items-center gap-2">
+                Fecha Registro
+                <span v-if="sortColumn === 'fechaRegistro'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </div>
             </th>
             <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('clienteNombre')">
-              <div class="flex items-center justify-between">
-                <span>Cliente</span>
-                <span class="ml-1">{{ getSortIcon('clienteNombre') }}</span>
+              <div class="flex items-center gap-2">
+                Cliente
+                <span v-if="sortColumn === 'clienteNombre'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </div>
             </th>
             <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('agenteNombre')">
-              <div class="flex items-center justify-between">
-                <span>Agente</span>
-                <span class="ml-1">{{ getSortIcon('agenteNombre') }}</span>
+              <div class="flex items-center gap-2">
+                Agente
+                <span v-if="sortColumn === 'agenteNombre'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </div>
             </th>
             <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('tipoInteraccion')">
-              <div class="flex items-center justify-between">
-                <span>Tipo de Contacto</span>
-                <span class="ml-1">{{ getSortIcon('tipoInteraccion') }}</span>
+              <div class="flex items-center gap-2">
+                Tipo de Contacto
+                <span v-if="sortColumn === 'tipoInteraccion'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </div>
             </th>
             <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('estadoInteraccion')">
-              <div class="flex items-center justify-between">
-                <span>Estado</span>
-                <span class="ml-1">{{ getSortIcon('estadoInteraccion') }}</span>
+              <div class="flex items-center gap-2">
+                Estado
+                <span v-if="sortColumn === 'estadoInteraccion'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </div>
             </th>
             <th scope="col" class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none" @click="sortBy('fechaProximoContacto')">
-              <div class="flex items-center justify-between">
-                <span>Fecha Próximo Contacto</span>
-                <span class="ml-1">{{ getSortIcon('fechaProximoContacto') }}</span>
+              <div class="flex items-center gap-2">
+                Fecha Próximo Contacto
+                <span v-if="sortColumn === 'fechaProximoContacto'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </div>
             </th>
             <th scope="col" class="px-6 py-3">Notas</th>
@@ -185,7 +204,7 @@
         </thead>
         <tbody>
           <tr
-            v-for="recordatorio in finalRecordatorios"
+            v-for="recordatorio in paginatedRecordatorios"
             :key="recordatorio.interaccionId"
             class="odd:bg-white odd: even:bg-gray-50 even: border-b  border-gray-200"
           >
@@ -223,6 +242,49 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Controles de paginación -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
+      <div class="text-sm text-gray-700">
+        Mostrando {{ ((currentPage - 1) * itemsPerPage) + 1 }} a
+        {{ Math.min(currentPage * itemsPerPage, totalRecordatorios) }} de
+        {{ totalRecordatorios }} recordatorios
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          @click="currentPage = 1"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          ‹‹ Primera
+        </button>
+        <button
+          @click="currentPage--"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          ‹ Anterior
+        </button>
+        <span class="px-3 py-1 text-sm">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <button
+          @click="currentPage++"
+          :disabled="currentPage >= totalPages"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          Siguiente ›
+        </button>
+        <button
+          @click="currentPage = totalPages"
+          :disabled="currentPage >= totalPages"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          Última ››
+        </button>
+      </div>
     </div>
 
     <div
@@ -372,6 +434,7 @@
 import { ref, onMounted, computed } from "vue";
 import Swal from "sweetalert2";
 import { initFlowbite } from "flowbite";
+import PaginationControls from "../../components/PaginationControls.vue";
 
 // Ajusta rutas si es necesario
 import clienteService from "../../services/clienteService";
@@ -403,6 +466,19 @@ const apiError = ref(null);
 const searchTerm = ref("");
 const selectedAgent = ref('all'); // Default: todos los agentes
 const showUpdateModal = ref(false);
+
+// Paginación local
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+
+const paginatedRecordatorios = computed(() => {
+  const list = finalRecordatorios.value || [];
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  return list.slice(start, start + itemsPerPage.value);
+});
+
+const totalRecordatorios = computed(() => (finalRecordatorios.value || []).length);
+const totalPages = computed(() => Math.max(1, Math.ceil(totalRecordatorios.value / itemsPerPage.value)));
 
 // Variables para ordenamiento
 const sortColumn = ref('fechaRegistro'); // Columna por defecto
@@ -528,14 +604,6 @@ const sortBy = (column) => {
     sortColumn.value = column;
     sortDirection.value = 'asc';
   }
-};
-
-// Función para obtener el icono de ordenamiento
-const getSortIcon = (column) => {
-  if (sortColumn.value !== column) {
-    return '↕️'; // Icono neutro cuando no está ordenando por esta columna
-  }
-  return sortDirection.value === 'asc' ? '↑' : '↓';
 };
 
 // Propiedad computada para filtrar y ordenar los recordatorios finales

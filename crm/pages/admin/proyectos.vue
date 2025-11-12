@@ -30,15 +30,11 @@
         </form>
       </div>
       <div class="flex justify-end items-end gap-2">
-        <select
-          v-model.number="itemsPerPage"
-          @change="currentPage = 1"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 p-2"
-        >
-          <option :value="20">20 por página</option>
-          <option :value="50">50 por página</option>
-          <option :value="100">100 por página</option>
-        </select>
+        <PaginationControls
+          v-model:itemsPerPage="itemsPerPage"
+          v-model:currentPage="currentPage"
+          :perPageOptions="[20,50,100]"
+        />
         <button
           v-if="isAdmin"
           type="button"
@@ -57,20 +53,78 @@
       <table class="w-full text-sm text-left rtl:text-right text-gray-500">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3">Código</th>
-            <th scope="col" class="px-6 py-3">Título</th>
-            <!-- <th scope="col" class="px-6 py-3">Descripcion</th> -->
-            <th scope="col" class="px-6 py-3">Tipo</th>
-            <!-- <th scope="col" class="px-6 py-3">Imagen</th> -->
-            <!-- <th scope="col" class="px-6 py-3">Operación</th> -->
-            <th scope="col" class="px-6 py-3">Ubicación</th>
-            <th scope="col" class="px-6 py-3">Precio</th>
-            <!--<th scope="col" class="px-6 py-3">Habitaciones</th> -->
-            <!-- <th scope="col" class="px-6 py-3">Amenidades</th> -->
-            <!-- <th scope="col" class="px-6 py-3">Baños</th> -->
-            <!-- <th scope="col" class="px-6 py-3">Parqueos</th> -->
-            <th scope="col" class="px-6 py-3">m²</th>
-            <!-- <th scope="col" class="px-6 py-3">Lujosa</th> -->
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('codigoProyecto')"
+            >
+              <div class="flex items-center gap-2">
+                Código
+                <span v-if="sortColumn === 'codigoProyecto'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('titulo')"
+            >
+              <div class="flex items-center gap-2">
+                Título
+                <span v-if="sortColumn === 'titulo'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('tipos')"
+            >
+              <div class="flex items-center gap-2">
+                Tipo
+                <span v-if="sortColumn === 'tipos'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('ubicaciones')"
+            >
+              <div class="flex items-center gap-2">
+                Ubicación
+                <span v-if="sortColumn === 'ubicaciones'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('precio')"
+            >
+              <div class="flex items-center gap-2">
+                Precio
+                <span v-if="sortColumn === 'precio'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('metrosCuadrados')"
+            >
+              <div class="flex items-center gap-2">
+                m²
+                <span v-if="sortColumn === 'metrosCuadrados'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
             <th scope="col" class="px-6 py-3">Acciones</th>
           </tr>
         </thead>
@@ -326,6 +380,7 @@ import modalDetalleProyecto from "../../components/modalDetalleProyecto.vue";
 import { initFlowbite } from "flowbite";
 import Loader from "~/components/Loader.vue";
 import { useAuthStore } from "@/stores/auth";
+import PaginationControls from "../../components/PaginationControls.vue";
 
 const auth = useAuthStore();
 const isAdmin = computed(() =>
@@ -353,6 +408,40 @@ const isLoading = ref(true); //Estado para el Loader
 const currentPage = ref(1);
 const itemsPerPage = ref(20);
 
+// Estado para ordenamiento
+const sortColumn = ref(null);
+const sortDirection = ref('asc');
+
+// Función para manejar el ordenamiento por columnas
+const handleSort = (column) => {
+  if (sortColumn.value === column) {
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortColumn.value = column;
+    sortDirection.value = 'asc';
+  }
+  currentPage.value = 1;
+};
+
+// Función para obtener el valor de una columna para ordenar
+const getColumnValue = (proyecto, column) => {
+  switch (column) {
+    case 'codigoProyecto':
+      return (proyecto.codigoProyecto || '').toLowerCase();
+    case 'titulo':
+      return (proyecto.titulo || '').toLowerCase();
+    case 'tipos':
+      return (proyecto.tipos || '').toLowerCase();
+    case 'ubicaciones':
+      return (proyecto.ubicaciones || '').toLowerCase();
+    case 'precio':
+      return parseFloat(proyecto.precio) || 0;
+    case 'metrosCuadrados':
+      return parseFloat(proyecto.metrosCuadrados) || 0;
+    default:
+      return '';
+  }
+};
 
 const openDetailModal = async (id) => {
   const detalleProyecto = await fetchProyectoById(id);
@@ -364,23 +453,40 @@ const openDetailModal = async (id) => {
 
 // Computed property para filtrar proyectos
 const filteredProyectos = computed(() => {
-  if (!searchTerm.value.trim()) {
-    return proyectos.value;
+  let list = proyectos.value;
+
+  // Filtrar por término de búsqueda
+  if (searchTerm.value.trim()) {
+    const term = searchTerm.value.toLowerCase().trim();
+    list = list.filter((proyecto) => {
+      return (
+        (proyecto.titulo && proyecto.titulo.toLowerCase().includes(term)) ||
+        (proyecto.codigoProyecto &&
+          proyecto.codigoProyecto.toLowerCase().includes(term)) ||
+        (proyecto.ubicaciones &&
+          proyecto.ubicaciones.toLowerCase().includes(term)) ||
+        (proyecto.tipos && proyecto.tipos.toLowerCase().includes(term)) ||
+        (proyecto.operaciones &&
+          proyecto.operaciones.toLowerCase().includes(term))
+      );
+    });
   }
 
-  const term = searchTerm.value.toLowerCase().trim();
-  return proyectos.value.filter((proyecto) => {
-    return (
-      (proyecto.titulo && proyecto.titulo.toLowerCase().includes(term)) ||
-      (proyecto.codigoProyecto &&
-        proyecto.codigoProyecto.toLowerCase().includes(term)) ||
-      (proyecto.ubicaciones &&
-        proyecto.ubicaciones.toLowerCase().includes(term)) ||
-      (proyecto.tipos && proyecto.tipos.toLowerCase().includes(term)) ||
-      (proyecto.operaciones &&
-        proyecto.operaciones.toLowerCase().includes(term))
-    );
-  });
+  // Aplicar ordenamiento
+  if (sortColumn.value) {
+    list = [...list].sort((a, b) => {
+      const aValue = getColumnValue(a, sortColumn.value);
+      const bValue = getColumnValue(b, sortColumn.value);
+      
+      let comparison = 0;
+      if (aValue < bValue) comparison = -1;
+      if (aValue > bValue) comparison = 1;
+      
+      return sortDirection.value === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  return list;
 });
 
 // Computed para paginación

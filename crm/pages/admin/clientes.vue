@@ -55,15 +55,11 @@
     </div>
 
     <div class="flex justify-end items-end gap-2">
-      <select
-        v-model.number="itemsPerPage"
-        @change="currentPage = 1"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 p-2"
-      >
-        <option :value="20">20 por página</option>
-        <option :value="50">50 por página</option>
-        <option :value="100">100 por página</option>
-      </select>
+      <PaginationControls
+        v-model:itemsPerPage="itemsPerPage"
+        v-model:currentPage="currentPage"
+        :perPageOptions="[20,50,100]"
+      />
       <button
         type="button"
         @click.prevent="openModal"
@@ -442,6 +438,7 @@ import Swal from "sweetalert2";
 import agenteService from "../../services/agenteService";
 import { useAuthStore } from "@/stores/auth";
 import modalRequerimiento from "../../components/modalRequerimiento.vue";
+import PaginationControls from "../../components/PaginationControls.vue";
 
 // === Auth / Roles ===
 const auth = useAuthStore();

@@ -27,22 +27,23 @@
           </div>
         </form>
       </div>
-      <div class="flex justify-end items-end">
+      <div class="flex justify-end items-end gap-2">
+        <PaginationControls v-model:itemsPerPage="itemsPerPage" v-model:currentPage="currentPage" :perPageOptions="[9,20,50]" />
         <button
           v-if="isAdmin"
           type="button"
           @click="openModal"
-          class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none"
+          class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
         >
           Agregar registro
         </button>
         <button
-    type="button"
-    @click="downloadExcelAll"
-    class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none mb-2"
-  >
-    Descargar Excel
-  </button>
+          type="button"
+          @click="downloadExcelAll"
+          class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+        >
+          Descargar Excel
+        </button>
       </div>
     </div>
 
@@ -52,22 +53,132 @@
       <table class="w-full text-sm text-left rtl:text-right text-gray-500">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3">Código</th>
-            <th scope="col" class="px-6 py-3">Título</th>
-            <th scope="col" class="px-6 py-3">Tipo</th>
-            <th scope="col" class="px-6 py-3">Operación</th>
-            <th scope="col" class="px-6 py-3">Ubicación</th>
-            <th scope="col" class="px-6 py-3">Precio</th>
-            <th scope="col" class="px-6 py-3">Habitaciones</th>
-            <th scope="col" class="px-6 py-3">Baños</th>
-            <th scope="col" class="px-6 py-3">Parqueos</th>
-            <th scope="col" class="px-6 py-3">m²</th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('codigoPropiedad')"
+            >
+              <div class="flex items-center gap-2">
+                Código
+                <span v-if="sortColumn === 'codigoPropiedad'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('titulo')"
+            >
+              <div class="flex items-center gap-2">
+                Título
+                <span v-if="sortColumn === 'titulo'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('tipos')"
+            >
+              <div class="flex items-center gap-2">
+                Tipo
+                <span v-if="sortColumn === 'tipos'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('operaciones')"
+            >
+              <div class="flex items-center gap-2">
+                Operación
+                <span v-if="sortColumn === 'operaciones'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('ubicaciones')"
+            >
+              <div class="flex items-center gap-2">
+                Ubicación
+                <span v-if="sortColumn === 'ubicaciones'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('precio')"
+            >
+              <div class="flex items-center gap-2">
+                Precio
+                <span v-if="sortColumn === 'precio'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('habitaciones')"
+            >
+              <div class="flex items-center gap-2">
+                Habitaciones
+                <span v-if="sortColumn === 'habitaciones'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('banos')"
+            >
+              <div class="flex items-center gap-2">
+                Baños
+                <span v-if="sortColumn === 'banos'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('parqueos')"
+            >
+              <div class="flex items-center gap-2">
+                Parqueos
+                <span v-if="sortColumn === 'parqueos'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
+            <th 
+              scope="col" 
+              class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+              @click="handleSort('metrosCuadrados')"
+            >
+              <div class="flex items-center gap-2">
+                m²
+                <span v-if="sortColumn === 'metrosCuadrados'" class="text-gray-500">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </div>
+            </th>
             <th scope="col" class="px-6 py-3">Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="inmueble in inmuebles"
+            v-for="inmueble in sortedInmuebles"
             :key="inmueble.id"
             class="odd:bg-white even:bg-gray-50 border-b border-gray-200"
           >
@@ -188,35 +299,47 @@
       </table>
     </div>
 
-    <div class="flex flex-wrap justify-center items-center mt-4 gap-2">
-      <button
-        @click="goToPreviousPage"
-        :disabled="currentPage === 1"
-        class="px-3 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50"
-      >
-        ‹ Anterior
-      </button>
+    <!-- Controles de Paginación -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
+      <div class="text-sm text-gray-700">
+        Mostrando {{ ((currentPage - 1) * itemsPerPage) + 1 }} a
+        {{ Math.min(currentPage * itemsPerPage, totalPropiedades) }} de
+        {{ totalPropiedades }} propiedades
+      </div>
 
-      <button
-        v-for="page in visiblePages"
-        :key="page"
-        @click="goToPage(page)"
-        :class="{
-          'bg-gray-700 text-white': page === currentPage,
-          'bg-black text-white hover:bg-gray-800': page !== currentPage,
-        }"
-        class="px-3 py-2 text-sm font-medium rounded-lg"
-      >
-        {{ page }}
-      </button>
-
-      <button
-        @click="goToNextPage"
-        :disabled="currentPage === effectiveTotalPages"
-        class="px-3 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50"
-      >
-        Siguiente ›
-      </button>
+      <div class="flex gap-2">
+        <button
+          @click="currentPage = 1"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          ‹‹ Primera
+        </button>
+        <button
+          @click="currentPage--"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          ‹ Anterior
+        </button>
+        <span class="px-3 py-1 text-sm">
+          Página {{ currentPage }} de {{ effectiveTotalPages }}
+        </span>
+        <button
+          @click="currentPage++"
+          :disabled="currentPage >= effectiveTotalPages"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          Siguiente ›
+        </button>
+        <button
+          @click="currentPage = effectiveTotalPages"
+          :disabled="currentPage >= effectiveTotalPages"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          Última ››
+        </button>
+      </div>
     </div>
 
     <div v-if="inmuebles.length === 0" class="text-center py-8 text-gray-500">
@@ -245,7 +368,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import Swal from "sweetalert2";
 import inmuebleService from "../../services/inmuebleService.js";
 import modalAgInmueble from "~/components/modalAgInmueble.vue";
@@ -254,6 +377,7 @@ import { initFlowbite } from "flowbite";
 import Loader from "~/components/Loader.vue";
 import debounce from "lodash/debounce";
 import { useAuthStore } from "@/stores/auth";
+import PaginationControls from "../../components/PaginationControls.vue";
 
 const auth = useAuthStore();
 const isAdmin = computed(() =>
@@ -304,8 +428,13 @@ const isSearching = ref(false);
 const hasLoaded = ref(false); // Track if the initial load is complete
 
 const totalPages = ref(1);
-const itemsPerPage = 9;
+const totalPropiedades = ref(0);
+const itemsPerPage = ref(9);
 const currentPage = ref(1);
+
+// Estado para ordenamiento
+const sortColumn = ref(null);
+const sortDirection = ref('asc');
 
 /* Formateador de precio para usar en el template */
 const fmtPrice = new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 });
@@ -325,6 +454,44 @@ const debouncedSearch = debounce(async (term) => {
     isSearching.value = false;
   }
 }, 300);
+
+// Función para manejar el ordenamiento por columnas (client-side, para los datos cargados en la página actual)
+const handleSort = (column) => {
+  if (sortColumn.value === column) {
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortColumn.value = column;
+    sortDirection.value = 'asc';
+  }
+};
+
+// Función para obtener el valor de una columna para ordenar
+const getColumnValue = (inmueble, column) => {
+  switch (column) {
+    case 'codigoPropiedad':
+      return (inmueble.codigoPropiedad || '').toLowerCase();
+    case 'titulo':
+      return (inmueble.titulo || '').toLowerCase();
+    case 'tipos':
+      return (inmueble.tipos || '').toLowerCase();
+    case 'operaciones':
+      return (inmueble.operaciones || '').toLowerCase();
+    case 'ubicaciones':
+      return (inmueble.ubicaciones || '').toLowerCase();
+    case 'precio':
+      return parseFloat(inmueble.precio) || 0;
+    case 'habitaciones':
+      return parseInt(inmueble.habitaciones) || 0;
+    case 'banos':
+      return parseInt(inmueble.banos) || 0;
+    case 'parqueos':
+      return parseInt(inmueble.parqueos) || 0;
+    case 'metrosCuadrados':
+      return parseFloat(inmueble.metrosCuadrados) || 0;
+    default:
+      return '';
+  }
+};
 
 /* ========= Al escribir: disparar búsqueda en el servidor + ir a pág 1 ========= */
 const handleSearch = () => {
@@ -373,6 +540,24 @@ const openDetailModal = async (id) => {
     showModalDetalle.value = true;
   }
 };
+
+/* ========= Ordenamiento de inmuebles ========= */
+const sortedInmuebles = computed(() => {
+  if (!sortColumn.value) {
+    return inmuebles.value;
+  }
+
+  return [...inmuebles.value].sort((a, b) => {
+    const aValue = getColumnValue(a, sortColumn.value);
+    const bValue = getColumnValue(b, sortColumn.value);
+    
+    let comparison = 0;
+    if (aValue < bValue) comparison = -1;
+    if (aValue > bValue) comparison = 1;
+    
+    return sortDirection.value === 'asc' ? comparison : -comparison;
+  });
+});
 
 /* ========= Total efectivo para el paginador ========= */
 const effectiveTotalPages = computed(() => {
@@ -428,7 +613,7 @@ const loadInmuebles = async (page = 1, term = "") => {
   try {
     isLoading.value = true;
     const t0 = performance.now();
-    const pageSize = itemsPerPage;
+  const pageSize = itemsPerPage.value;
 
     const filters = {};
     if (term) {
@@ -457,6 +642,12 @@ const loadInmuebles = async (page = 1, term = "") => {
       totalPages.value = 1;
     }
 
+    if (typeof response.totalCount === "number") {
+      totalPropiedades.value = response.totalCount;
+    } else {
+      totalPropiedades.value = processedData.length;
+    }
+
     currentPage.value = response.pageNumber || page;
   } catch (error) {
     if (error.message === "Falta el token de autenticación") {
@@ -471,6 +662,17 @@ const loadInmuebles = async (page = 1, term = "") => {
     isLoading.value = false;
   }
 };
+
+// React to pagination changes (page size or page number)
+watch(itemsPerPage, (newVal, oldVal) => {
+  // cuando cambia el tamaño de página, recargar la página 1
+  currentPage.value = 1;
+  loadInmuebles(1, searchTerm.value);
+});
+
+watch(currentPage, (newVal) => {
+  loadInmuebles(newVal, searchTerm.value);
+});
 
 /* ========= Navegación ========= */
 const goToPage = async (page) => {
