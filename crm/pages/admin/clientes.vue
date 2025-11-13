@@ -782,8 +782,8 @@ const loadClientes = async () => {
     // Forzar recarga sin cache
     const response = await clienteService.getAllClientes(1, 1000, null, false);
     
-    // Verificar si viene en el nuevo formato con data
-    const clientesData = response.data || response;
+    // Verificar si viene en el nuevo formato con data o $values
+    const clientesData = response.$values || response.data || response;
     
     if (!Array.isArray(clientesData)) {
       throw new Error("Datos inválidos desde la API");
