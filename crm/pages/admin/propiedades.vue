@@ -780,6 +780,20 @@ const fetchInmuebleById = async (id) => {
     const response = await inmuebleService.getInmuebleById(id);
     if (!response) throw new Error("No se encontró el inmueble");
 
+    // Normalizar imagenesReferencia: puede venir como array directo, con $values, o ser objetos con url
+    let imagenesReferenciaArray = [];
+    if (Array.isArray(response.imagenesReferencia?.$values)) {
+      // Caso 1: viene con $values
+      imagenesReferenciaArray = response.imagenesReferencia.$values.map((img) => 
+        typeof img === 'string' ? img : (img.url || img)
+      );
+    } else if (Array.isArray(response.imagenesReferencia)) {
+      // Caso 2: es array directo
+      imagenesReferenciaArray = response.imagenesReferencia.map((img) => 
+        typeof img === 'string' ? img : (img.url || img)
+      );
+    }
+
     return {
       id: response.id,
       codigoPropiedad: response.codigoPropiedad || "",
@@ -811,10 +825,8 @@ const fetchInmuebleById = async (id) => {
       luxury: Boolean(response.luxury),
       video: response.video || "",
       precioActivo: Boolean(response.precioActivo),
-      // Imágenes de referencia:
-      imagenesReferencia: Array.isArray(response.imagenesReferencia?.$values)
-        ? response.imagenesReferencia.$values.map((img) => img.url || img)
-        : [],
+      // Imágenes de referencia normalizadas:
+      imagenesReferencia: imagenesReferenciaArray,
     };
   } catch (error) {
     if (error.message === "Falta el token de autenticación") {
