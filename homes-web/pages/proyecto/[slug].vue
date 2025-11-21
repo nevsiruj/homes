@@ -1,5 +1,16 @@
 <template>
     <Header />
+    
+    <!-- Breadcrumbs -->
+    <div class="max-w-[1080px] mx-auto px-4 mt-24 lg:mt-28 mb-4" v-if="!isLoading && !notFound && proyectoDetalle">
+      <Breadcrumbs 
+        :breadcrumbs="[
+          { name: 'Inicio', url: '/' },
+          { name: 'Proyectos', url: '/proyectos-inmobiliarios' },
+          { name: proyectoDetalle.titulo || 'Proyecto', url: route.fullPath }
+        ]" 
+      />
+    </div>
 
     <!-- <Loader v-if="isLoading" /> -->
     <SlugSkeleton v-if="isLoading" />
@@ -184,44 +195,6 @@
             >
               Código: {{ proyectoDetalle.codigoProyecto }}
             </h1>
-            <hr class="w-48 mx-auto text-gray-300" />
-  
-            <div
-              class="grid grid-cols-2 gap-2 justify-items-center text-sm md:text-base"
-            >
-              <div class="flex items-center justify-between">
-                <svg
-                  class="w-5 h-5 me-2"
-                  viewBox="0 0 192 192"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                >
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <path
-                      stroke="#000000"
-                      stroke-width="12"
-                      d="M96 22a51.88 51.88 0 0 0-36.77 15.303A52.368 52.368 0 0 0 44 74.246c0 16.596 4.296 28.669 20.811 48.898a163.733 163.733 0 0 1 20.053 28.38C90.852 163.721 90.146 172 96 172c5.854 0 5.148-8.279 11.136-20.476a163.723 163.723 0 0 1 20.053-28.38C143.704 102.915 148 90.841 148 74.246a52.37 52.37 0 0 0-15.23-36.943A51.88 51.88 0 0 0 96 22Z"
-                    ></path>
-                    <circle
-                      cx="96"
-                      cy="74"
-                      r="20"
-                      stroke="#000000"
-                      stroke-width="12"
-                    ></circle>
-                  </g>
-                </svg>
-                {{ proyectoDetalle.ubicaciones }}
-              </div>
-            </div>
-            <hr class="w-48 mx-auto text-gray-300" />
-  
             <div class="flex flex-wrap justify-center gap-2 mt-4 mb-4">
               <span
                 v-for="(amenidad, index) in proyectoDetalle.amenidades"
@@ -308,7 +281,7 @@
   </template>
   
   <script setup>
-import { ref, computed, onMounted, nextTick } from "vue";
+import { ref, computed, onMounted, nextTick, watch } from "vue";
 import { useRoute, useAsyncData, createError } from "#imports";
 import proyectoService from "../../services/proyectoService";
 import Header from "../../components/header.vue";
@@ -317,6 +290,8 @@ import RedesFlotantes from "../../components/redesFlotantes.vue";
 import Loader from "../../components/Loader.vue";
 import SugerenciaCard from "~/components/SugerenciaCard.vue";
 import slugSkeleton from "~/components/slugSkeleton.vue";
+import Breadcrumbs from "~/components/Breadcrumbs.vue";
+import { useProjectSchema, useBreadcrumbSchema, useJsonldSchema } from "~/composables/useStructuredData";
 
 // Swiper
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -463,9 +438,11 @@ const pageImage = computed(() => {
     ? img
     : `${DOMINIO_IMAGENES}/${img}`;
 });
+
 const propertyUrl = computed(() => {
   return `https://homesguatemala.com${route.fullPath}`;
 });
+
 const allMedia = computed(() => {
   const media = [];
   if (proyectoDetalle.value?.imagenPrincipal)
@@ -476,6 +453,7 @@ const allMedia = computed(() => {
     media.push({ url: proyectoDetalle.value.video, type: "video", thumbnail: getVideoThumbnail(proyectoDetalle.value.video) });
   return media;
 });
+
 const videoEmbedUrl = computed(() => {
   const videoUrl = proyectoDetalle.value?.video;
   if (!videoUrl || videoUrl === "string") return "";
@@ -485,6 +463,7 @@ const videoEmbedUrl = computed(() => {
   if (vm?.[1]) return `https://player.vimeo.com/video/${vm[1]}`;
   return "";
 });
+
 const formattedDescription = computed(() => {
   const c = proyectoDetalle.value?.contenido ?? "";
   const looksLikeHtml = /<\s*(p|br|ul|ol|li|h[1-6]|div|span)\b/i.test(c);
@@ -494,12 +473,13 @@ const formattedDescription = computed(() => {
     .map((p) => `<p>${p.replace(/\r?\n/g, "<br>")}</p>`)
     .join("");
 });
+
 const whatsappLink = computed(() => {
   const phoneNumber = "50256330961";
-  // const title = proyectoDetalle.value?.titulo || "este proyecto";
   const message = `Me interesa esta propiedad ${propertyUrl.value}`;
   return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
 });
+
 const formattedPrice = computed(() => {
   if (!proyectoDetalle.value?.precio) return "";
   const number = parseInt(proyectoDetalle.value.precio, 10);
@@ -511,26 +491,30 @@ const formattedPrice = computed(() => {
   }).format(number);
 });
 
-// ✅ useSeoMeta se llama aquí con las propiedades computadas, que ya tienen los datos del servidor
-useSeoMeta({
-  title: pageTitle,
-  description: pageDescription,
-  ogTitle: pageTitle,
-  ogDescription: pageDescription,
-  ogImage: pageImage,
-  ogUrl: propertyUrl,
-  ogType: "website",
-  twitterCard: "summary_large_image",
-  twitterTitle: pageTitle,
-  twitterDescription: pageDescription,
-  twitterImage: pageImage,
+// Schema.org structured data for SEO
+const projectSchema = computed(() => {
+  if (!proyectoDetalle.value) return null;
+  return useProjectSchema(proyectoDetalle.value);
 });
 
-// ===== Watchers y Hooks =====
+const breadcrumbSchema = computed(() => {
+  if (!proyectoDetalle.value) return null;
+  return useBreadcrumbSchema([
+    { name: 'Inicio', url: 'https://homesguatemala.com' },
+    { name: 'Proyectos', url: 'https://homesguatemala.com/proyectos-inmobiliarios' },
+    { name: proyectoDetalle.value.titulo || 'Proyecto', url: propertyUrl.value }
+  ]);
+});
+
+watch([projectSchema, breadcrumbSchema], ([project, breadcrumb]) => {
+  if (project) useJsonldSchema(project);
+  if (breadcrumb) useJsonldSchema(breadcrumb);
+}, { immediate: true });
+
 watch(
   allMedia,
   (newMedia) => {
-    if (newMedia.length > 0) {
+    if (newMedia && newMedia.length > 0) {
       const m = newMedia[currentMediaIndex.value] ?? newMedia[0];
       setMainContent(m.url, m.type);
     } else {
