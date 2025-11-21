@@ -25,6 +25,45 @@ const redirectToLogin = (message = "La sesión ha caducado. Por favor, inicie se
 };
 
 const authService = (() => {
+  /* ================= Helper para Retry con Timeout ================= */
+  const fetchWithRetry = async (url, options = {}, maxRetries = 3) => {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+        
+        const response = await fetch(url, {
+          ...options,
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        return response;
+        
+      } catch (error) {
+        const isLastAttempt = attempt === maxRetries - 1;
+        const isNetworkError = error.name === 'AbortError' || 
+                               error.name === 'TypeError' ||
+                               error.message.includes('fetch') ||
+                               error.message.includes('network');
+        
+        // Si es error de red y no es el último intento, reintentar
+        if (isNetworkError && !isLastAttempt) {
+          const delay = Math.min(1000 * Math.pow(2, attempt), 5000); // Max 5s
+          console.log(`Reintentando petición (${attempt + 1}/${maxRetries})...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+        
+        // En el último intento o si no es error de red, lanzar error mejorado
+        if (error.name === 'AbortError') {
+          throw new Error('La petición tardó demasiado. Verifica tu conexión a internet.');
+        }
+        throw error;
+      }
+    }
+  };
+
   /* ================= Helpers de Cookie & Token ================= */
   const setCookie = (name, value, days = 30) => {
     if (typeof document === "undefined") return;
@@ -134,12 +173,12 @@ const authService = (() => {
 
   /* ================= Métodos públicos ================= */
   async function login(email, password) {
-    const res = await fetch(`${getApiBaseUrl()}/Agente/login`, {
+    const res = await fetchWithRetry(`${getApiBaseUrl()}/Agente/login`, {
       method: "POST",
       credentials: "omit",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({ email, password }),
-    });
+    }, 3); // 3 intentos para login
 
     const data = await safeParse(res);
     if (!res.ok) {
