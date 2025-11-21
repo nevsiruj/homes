@@ -102,6 +102,7 @@ export default defineNuxtConfig({
 
   // -------------------- Modules & Global Styles --------------------
   modules: [
+    "@nuxt/image-edge",
     "@nuxtjs/seo",
     "@nuxt/content",
     "@pinia/nuxt",
@@ -191,9 +192,16 @@ export default defineNuxtConfig({
         baseURL: "/fonts",
       },
     ],
-    compressPublicAssets: false,
+    compressPublicAssets: true,
     routeRules: {
       "/luxury-homes/**": { proxy: "https://homesguatemala.com/**" },
     },
+  },
+
+  image: {
+    // Allowed domains for remote images
+    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar'],
+    // Default provider - can switch to a CDN or provider if needed
+    providers: {}
   },
 });

@@ -908,9 +908,17 @@ if (Array.isArray(amenidadesArray)) {
 
 const loadAllInmueblesForCounts = async () => {
   try {
-    const result = await inmuebleService.getInmueblesPaginados(1, 1000);
-    if (result && result.items) {
-      allInmueblesForCounts.value = result.items;
+    // Mejor approach: solicitar pocas páginas en paralelo y sumarizar conteos
+    const pagesToFetch = 3; // Ajustable según la carga
+    const pageSize = 200; // 200 * 3 = 600 elementos max (mucho menos que 1000)
+    const fetches = [];
+    for (let i = 1; i <= pagesToFetch; i++) {
+      fetches.push(inmuebleService.getInmueblesPaginados(i, pageSize));
+    }
+    const results = await Promise.all(fetches);
+    const combined = results.flatMap(r => (r && r.items) ? r.items : []);
+    if (combined && combined.length > 0) {
+      allInmueblesForCounts.value = combined;
       calculatePropertyCounts();
     }
   } catch (error) {

@@ -4,7 +4,7 @@
       class="container mx-auto flex px-5 lg:py-12 md:flex-row flex-col items-center py-6"
     >
       <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
-        <img
+        <img loading="lazy"
           class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
           alt="hero"
           src="https://app-pool.vylaris.online/dcmigserver/homes/f64ca937-cba0-4276-b350-9aca8a1b51bc.webp"
@@ -43,7 +43,7 @@
       class="container mx-auto flex px-5 lg:py-12 md:flex-row flex-col items-center py-6"
     >
       <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 order-1 md:order-2">
-        <img
+        <img loading="lazy"
           class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
           alt="hero"
           src="https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp"
@@ -79,7 +79,7 @@
       class="container mx-auto flex px-5 lg:py-12 md:flex-row flex-col items-center mb-6"
     >
       <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
-        <img
+        <img loading="lazy"
           class="object-cover w-140 object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
           alt="hero"
           src="https://app-pool.vylaris.online/dcmigserver/homes/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp"
@@ -502,35 +502,30 @@ const loadFeaturedProperties = async () => {
       'apartamento-amueblado-en-venta-zona-10-aav5776'
     ];
 
-    const featuredPropertiesData = [];
+    // Fetch all featured properties in parallel for faster loading
+    const fetchPromises = featuredSlugs.map((slug) =>
+      inmuebleService.getInmuebleBySlug(slug).catch((err) => {
+        console.warn(`No se pudo cargar la propiedad con slug: ${slug}`, err);
+        return null; // always resolve so Promise.all won't fail on a single request
+      })
+    );
 
-    // Obtener cada propiedad específica por su slug
-    for (const slug of featuredSlugs) {
-      try {
-        const property = await inmuebleService.getInmuebleBySlug(slug);
-        if (property) {
-          // Procesar la propiedad de la misma manera que otras propiedades
-          const plainProperty = JSON.parse(JSON.stringify(property));
-          
-          const processedProperty = {
-            ...plainProperty,
-            imagenesReferencia:
-              plainProperty.imagenesReferencia?.$values ||
-              plainProperty.imagenesReferencia ||
-              [],
-            amenidades:
-              plainProperty.amenidades?.$values || plainProperty.amenidades || [],
-            // Asegurar que precio esté disponible
-            precioActivo: plainProperty.precio != null && plainProperty.precio > 0,
-          };
-          
-          featuredPropertiesData.push(processedProperty);
-        }
-      } catch (slugError) {
-        console.warn(`No se pudo cargar la propiedad con slug: ${slug}`, slugError);
-        // Continúa con las demás propiedades si una falla
-      }
-    }
+    const resolved = await Promise.all(fetchPromises);
+    const featuredPropertiesData = resolved
+      .filter(Boolean)
+      .map((property) => {
+        const plainProperty = JSON.parse(JSON.stringify(property));
+        return {
+          ...plainProperty,
+          imagenesReferencia:
+            plainProperty.imagenesReferencia?.$values ||
+            plainProperty.imagenesReferencia ||
+            [],
+          amenidades:
+            plainProperty.amenidades?.$values || plainProperty.amenidades || [],
+          precioActivo: plainProperty.precio != null && plainProperty.precio > 0,
+        };
+      });
 
     featuredProperties.value = featuredPropertiesData;
 
