@@ -385,11 +385,11 @@
                 <div class="flex flex-wrap gap-4 mt-4">
                   <div
                     v-for="(imagen, index) in referenceImagesPreviews"
-                    :key="index"
+                    :key="imagen.uniqueId || index"
                     class="relative w-22 h-22 group"
                   >
                     <img
-                      :src="imagen"
+                      :src="imagen.preview || imagen.url"
                       alt="Preview"
                       class="w-full h-full object-cover rounded-lg"
                     />
@@ -435,20 +435,20 @@
                 />
 
                 <draggable
-                  v-model="referenceImagesPreviews"
-                  tag="div"
-                  :animation="200"
-                  item-key="url"
-                  class="flex flex-wrap gap-4 mt-4"
-                  @end="onImageDragEnd"
-                >
-                  <template #item="{ element: imagen, index }">
-                    <div class="relative w-22 h-22 group">
-                      <img
-                        :src="imagen"
-                        alt="Preview"
-                        class="w-full h-full object-cover rounded-lg"
-                      />
+                    v-model="referenceImagesPreviews"
+                    tag="div"
+                    :animation="200"
+                    item-key="uniqueId"
+                    class="flex flex-wrap gap-4 mt-4"
+                    @end="onImageDragEnd"
+                  >
+                    <template #item="{ element: imagen, index }">
+                      <div class="relative w-22 h-22 group">
+                        <img
+                          :src="imagen.preview || imagen.url"
+                          alt="Preview"
+                          class="w-full h-full object-cover rounded-lg"
+                        />
                       <button
                         @click.prevent="eliminarImagen(index)"
                         type="button"
@@ -615,6 +615,15 @@ const referenceImagesPreviews = ref([]);
 const mainImageInputRef = ref(null);
 const referenceImagesInputRef = ref(null);
 
+// Contador para generar IDs únicos a cada imagen de referencia
+let imageIdCounter = 0;
+
+function extractPathFromUrl(url) {
+  if (typeof url !== "string" || !url.includes("/")) return null;
+  const parts = url.split("/");
+  return parts[parts.length - 1];
+}
+
 /**
  * Limpia y normaliza una cadena para crear un slug.
  * @param {string} str - La cadena de texto.
@@ -639,12 +648,10 @@ function slugify(str) {
  */
 function onImageDragEnd(event) {
   const { oldIndex, newIndex } = event;
-  // Sincroniza el array de datos con el nuevo orden visual
-  const draggedItem = form.value.imagenesReferenciaProyecto.splice(
-    oldIndex,
-    1
-  )[0];
-  form.value.imagenesReferenciaProyecto.splice(newIndex, 0, draggedItem);
+  // Sincroniza el array de datos con el nuevo orden visual a partir de referenceImagesPreviews
+  form.value.imagenesReferenciaProyecto = referenceImagesPreviews.value.map(
+    (r) => form.value.imagenesReferenciaProyecto.find((f) => f.uniqueId === r.uniqueId) || r
+  );
   console.log("IMÁGENES REORDENADAS:", form.value.imagenesReferenciaProyecto);
 }
 
@@ -705,12 +712,19 @@ function handleReferenceImagesUpload(event) {
   const files = Array.from(event.target.files);
   if (!files.length) return;
   files.forEach((file) => {
+    const uniqueId = `new-${Date.now()}-${imageIdCounter++}`;
     const reader = new FileReader();
     reader.onload = () => {
-      referenceImagesPreviews.value.push(reader.result);
+      const obj = {
+        uniqueId,
+        preview: reader.result,
+        file,
+        isNew: true,
+      };
+      referenceImagesPreviews.value.push(obj);
+      form.value.imagenesReferenciaProyecto.push(obj);
     };
     reader.readAsDataURL(file);
-    form.value.imagenesReferenciaProyecto.push(file);
   });
   if (referenceImagesInputRef.value) referenceImagesInputRef.value.value = "";
 }
@@ -726,8 +740,11 @@ function eliminarImagen(index) {
     cancelButtonText: "Cancelar",
   }).then((result) => {
     if (result.isConfirmed) {
-      form.value.imagenesReferenciaProyecto.splice(index, 1);
+      const uniqueIdToRemove = referenceImagesPreviews.value[index]?.uniqueId;
       referenceImagesPreviews.value.splice(index, 1);
+      form.value.imagenesReferenciaProyecto = form.value.imagenesReferenciaProyecto.filter(
+        (img) => img.uniqueId !== uniqueIdToRemove
+      );
       if (referenceImagesInputRef.value)
         referenceImagesInputRef.value.value = "";
     }
@@ -843,17 +860,33 @@ watch(
       tipos: newVal.tipos || "",
       ubicaciones: newVal.ubicaciones || "",
       imagenPrincipal: newVal.imagenPrincipal || null,
-      imagenesReferenciaProyecto: Array.isArray(
-        newVal.imagenesReferenciaProyecto
-      )
-        ? newVal.imagenesReferenciaProyecto.map((url_string) => ({
-            url: url_string,
-          }))
-        : [],
+      // Normalizar imagenesReferenciaProyecto a un array de objetos
+      imagenesReferenciaProyecto: [],
     };
+    // Normalizar y construir objetos existentes con uniqueId
+    const rawImgs = Array.isArray(newVal.imagenesReferenciaProyecto?.$values)
+      ? newVal.imagenesReferenciaProyecto.$values
+      : Array.isArray(newVal.imagenesReferenciaProyecto)
+      ? newVal.imagenesReferenciaProyecto
+      : [];
+
+    console.log("[modalAgProyecto] proyectoToEdit.imagenesReferenciaProyecto (raw):", rawImgs);
+
+    const imagenesReferenciaExistentes = rawImgs.map((it, idx) => {
+      const url = typeof it === "string" ? it : it?.url || it;
+      return {
+        uniqueId: `existing-${idx}-${Date.now()}`,
+        url,
+        preview: url,
+        path: extractPathFromUrl(url),
+        isNew: false,
+      };
+    });
+
+    form.value.imagenesReferenciaProyecto = imagenesReferenciaExistentes;
+    console.log("[modalAgProyecto] Normalized imagenesReferenciaProyecto:", form.value.imagenesReferenciaProyecto);
     mainImagePreview.value = form.value.imagenPrincipal || "";
-    referenceImagesPreviews.value =
-      form.value.imagenesReferenciaProyecto.map((img) => img.url) || [];
+    referenceImagesPreviews.value = [...imagenesReferenciaExistentes];
     userEditedSlug.value = !!form.value.slugProyecto;
   },
   { deep: true, immediate: true }
@@ -895,33 +928,29 @@ async function handleSubmit() {
     } // 2. Procesar imágenes de referencia //    a) Subir solo las nuevas imágenes (los 'File's)
 
     const filesToUpload = form.value.imagenesReferenciaProyecto.filter(
-      (item) => item instanceof File
+      (item) => item.isNew && item.file
     );
     const uploadedNewImages = await Promise.all(
-      filesToUpload.map((file) => uploadImage(file, true))
+      filesToUpload.map((fileObj) => uploadImage(fileObj.file, true))
     );
     const newImageUrls = uploadedNewImages
       .filter((result) => result && result.url)
       .map((result) => result.url); //    b) Reconstruir el array final de URLs respetando el orden de la UI
 
     let newUrlIndex = 0;
-    const finalReferenceImages = referenceImagesPreviews.value.map(
-      (previewUrl) => {
-        if (previewUrl.startsWith("data:")) {
-          // Si es una imagen nueva, toma la URL del array de subidas
-          const newUrl = newImageUrls[newUrlIndex++];
-          if (!newUrl) {
-            throw new Error(
-              "La URL de una imagen subida no se encontró. Hay una discrepancia en los datos."
-            );
-          }
-          return { url: newUrl };
-        } else {
-          // Si es una imagen existente, su URL ya está en la vista previa
-          return { url: previewUrl };
+    const finalReferenceImages = referenceImagesPreviews.value.map((imgObj) => {
+      if (imgObj.isNew && imgObj.file) {
+        const newUrl = newImageUrls[newUrlIndex++];
+        if (!newUrl) {
+          throw new Error(
+            "La URL de una imagen subida no se encontró. Hay una discrepancia en los datos."
+          );
         }
+        return { url: newUrl };
+      } else {
+        return { url: imgObj.url };
       }
-    ); // 3. Mapear amenidades
+    }); // 3. Mapear amenidades
 
     const amenidadesMapped = form.value.amenidades.map((id) => {
       const amenidad = amenidadesDisponibles.value.find((a) => a.id === id);

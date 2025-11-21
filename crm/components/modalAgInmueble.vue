@@ -455,7 +455,7 @@
                   v-if="referenceImagesPreviews.length"
                   type="button"
                   @click="eliminarTodasImagenes"
-                  class="text-red-600 text-sm font-medium hover:underline"
+                  class="text-red-600 text-sm font-regular hover:underline"
                 >
                   Eliminar todas
                 </button>

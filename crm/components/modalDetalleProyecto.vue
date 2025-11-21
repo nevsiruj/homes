@@ -67,6 +67,7 @@
                   alt="Imagen principal"
                   class="w-full h-96 object-cover"
                   v-if="proyecto.imagenPrincipal"
+                  @error="onImageError"
                 />
                 <div v-else class="w-full h-96 bg-gray-200 flex items-center justify-center">
                   <span class="text-gray-400">Sin imagen disponible</span>
@@ -104,24 +105,25 @@
               </div>
 
               <!-- Imágenes de referencia -->
-              <div v-if="proyecto.imagenesReferenciaProyecto && proyecto.imagenesReferenciaProyecto.length" class="bg-white rounded-xl shadow-md p-6">
+              <div v-if="normalizedReferenceImages.length" class="bg-white rounded-xl shadow-md p-6">
                 <h4 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                   </svg>
-                  Galería ({{ proyecto.imagenesReferenciaProyecto.length }} imágenes)
+                  Galería ({{ normalizedReferenceImages.length }} imágenes)
                 </h4>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   <div
-                    v-for="(url, index) in proyecto.imagenesReferenciaProyecto"
+                    v-for="(img, index) in normalizedReferenceImages"
                     :key="index"
                     @click="openLightbox(index)"
                     class="relative group cursor-pointer overflow-hidden rounded-lg shadow hover:shadow-xl transition-all duration-300"
                   >
                     <img
-                      :src="url"
-                      :alt="`Imagen ${index + 1} de ${proyecto.imagenesReferenciaProyecto.length}`"
+                      :src="getImageUrl(img)"
+                      :alt="`Imagen ${index + 1} de ${normalizedReferenceImages.length}`"
                       class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-300"
+                      @error="onImageError"
                     />
                     <!-- Overlay con icono de zoom -->
                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
@@ -131,7 +133,7 @@
                     </div>
                     <!-- Número de imagen -->
                     <div class="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full">
-                      {{ index + 1 }}/{{ proyecto.imagenesReferenciaProyecto.length }}
+                      {{ index + 1 }}/{{ normalizedReferenceImages.length }}
                     </div>
                   </div>
                 </div>
@@ -154,7 +156,7 @@
                 
                 <!-- Botón anterior -->
                 <button
-                  v-if="proyecto.imagenesReferenciaProyecto.length > 1"
+                  v-if="normalizedReferenceImages.length > 1"
                   @click.stop="previousImage"
                   class="absolute left-4 text-white hover:bg-white/20 rounded-full p-3 transition-all"
                 >
@@ -166,18 +168,19 @@
                 <!-- Imagen actual -->
                 <div @click.stop class="max-w-6xl max-h-[90vh] relative">
                   <img
-                    :src="proyecto.imagenesReferenciaProyecto[currentImageIndex]"
+                    :src="getImageUrl(normalizedReferenceImages[currentImageIndex])"
                     :alt="`Imagen ${currentImageIndex + 1}`"
                     class="max-w-full max-h-[90vh] object-contain rounded-lg"
+                    @error="onImageError"
                   />
                   <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-full text-sm">
-                    {{ currentImageIndex + 1 }} / {{ proyecto.imagenesReferenciaProyecto.length }}
+                    {{ currentImageIndex + 1 }} / {{ normalizedReferenceImages.length }}
                   </div>
                 </div>
                 
                 <!-- Botón siguiente -->
                 <button
-                  v-if="proyecto.imagenesReferenciaProyecto.length > 1"
+                  v-if="normalizedReferenceImages.length > 1"
                   @click.stop="nextImage"
                   class="absolute right-4 text-white hover:bg-white/20 rounded-full p-3 transition-all"
                 >
@@ -256,7 +259,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue"; // <-- **SE AÑADE 'ref' y 'watch'**
+import { ref, watch, computed } from "vue"; // <-- Añadir 'computed'
 import LoaderModal from "./LoaderModal.vue";
 
 const props = defineProps({
@@ -293,7 +296,26 @@ const emit = defineEmits(["close"]);
 // CORRECCIÓN: **Se declara la variable de estado `isLoading`**
 const isLoading = ref(true); 
 const lightboxOpen = ref(false);
-const currentImageIndex = ref(0); 
+const currentImageIndex = ref(0);
+
+// Normaliza lista de imagenes de referencia para aceptar strings o objetos { url }
+const normalizedReferenceImages = computed(() => {
+  const arr = props.proyecto?.imagenesReferenciaProyecto || [];
+  if (!Array.isArray(arr)) return [];
+  return arr
+    .map((it) => {
+      if (!it) return null;
+      if (typeof it === "string") return { url: it, preview: it };
+      if (typeof it === "object") return { url: it.url || it.preview || "", preview: it.url || it.preview || "", ...it };
+      return null;
+    })
+    .filter(Boolean);
+});
+
+function getImageUrl(img) {
+  if (!img) return "";
+  return typeof img === "string" ? img : img.url || img.preview || "";
+}
 
 const formatPrice = (price) => {
   return Number(price).toLocaleString("es-GT");
@@ -315,6 +337,8 @@ watch(
         setTimeout(() => {
           isLoading.value = false;
         }, 2000); // Delay de 2 segundos
+        // Debug: mostrar imágenes normalizadas
+        console.log("[modalDetalleProyecto] normalized images:", normalizedReferenceImages.value);
       }
     }
   },
@@ -324,6 +348,10 @@ watch(
 const closeModal = () => {
   emit("close");
 };
+
+function onImageError(event) {
+  event.target.src = "https://via.placeholder.com/1024x768?text=Imagen+no+disponible";
+}
 
 // Funciones del lightbox
 const openLightbox = (index) => {
@@ -341,7 +369,9 @@ const closeLightbox = () => {
 };
 
 const nextImage = () => {
-  if (currentImageIndex.value < props.proyecto.imagenesReferenciaProyecto.length - 1) {
+  const len = normalizedReferenceImages.value.length;
+  if (!len) return;
+  if (currentImageIndex.value < len - 1) {
     currentImageIndex.value++;
   } else {
     currentImageIndex.value = 0; // Volver al inicio
@@ -349,10 +379,12 @@ const nextImage = () => {
 };
 
 const previousImage = () => {
+  const len = normalizedReferenceImages.value.length;
+  if (!len) return;
   if (currentImageIndex.value > 0) {
     currentImageIndex.value--;
   } else {
-    currentImageIndex.value = props.proyecto.imagenesReferenciaProyecto.length - 1; // Ir al final
+    currentImageIndex.value = len - 1; // Ir al final
   }
 };
 
@@ -377,6 +409,14 @@ watch(lightboxOpen, (isOpen) => {
     window.removeEventListener('keydown', handleKeyPress);
   }
 });
+
+// Mantener currentImageIndex dentro del rango si cambia el array de imágenes
+watch(
+  () => normalizedReferenceImages.value.length,
+  (len) => {
+    if (currentImageIndex.value >= len) currentImageIndex.value = 0;
+  }
+);
 </script>
 
 <style scoped>

@@ -706,11 +706,16 @@ const fetchProyectoById = async (id) => {
       video: response.video || "",
 
       // 👇 Mapeo correcto de las imágenes de referencia:
+      // Devolver siempre objetos con 'url' para mantener consistencia
       imagenesReferenciaProyecto: Array.isArray(
         response.imagenesReferenciaProyecto?.$values
       )
-        ? response.imagenesReferenciaProyecto.$values.map(
-            (img) => img.url || img
+        ? response.imagenesReferenciaProyecto.$values.map((img) =>
+            typeof img === "string" ? { url: img } : img || {}
+          )
+        : Array.isArray(response.imagenesReferenciaProyecto)
+        ? response.imagenesReferenciaProyecto.map((img) =>
+            typeof img === "string" ? { url: img } : img || {}
           )
         : [],
     };
