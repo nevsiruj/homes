@@ -5,8 +5,30 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: false },
   ssr: false,
-  generate: { fallback: true },
-  target: 'static',
+  
+  // Deshabilitar app manifest para evitar errores 404 en producción
+  app: {
+    buildAssetsDir: '/_nuxt/',
+  },
+  
+  experimental: {
+    appManifest: false, // Desactiva los manifests que causan 404 en producción estática
+    payloadExtraction: false // Desactiva la extracción de payloads en SPA
+  },
+  
+  // Configuración específica para SPA
+  generate: { 
+    fallback: '200.html', // Usar 200.html en lugar de 404.html para SPAs
+    routes: ['/'] // Solo generar la ruta raíz
+  },
+  
+  hooks: {
+    // Desactivar generación de payloads completamente
+    'nitro:build:before': (nitro) => {
+      nitro.options.prerender = nitro.options.prerender || {}
+      nitro.options.prerender.crawlLinks = false
+    }
+  },
   
   // Variables de entorno disponibles en runtime
   runtimeConfig: {
