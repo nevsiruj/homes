@@ -76,11 +76,11 @@
 
       <div class="flex items-center justify-center">
         <div class="px-3">
-          <img src="https://app-pool.vylaris.online/dcmigserver/homes/9fe1b0ae-acdd-41a6-b457-e8909866c9fc.webp" alt=""
+          <img loading="lazy" src="https://app-pool.vylaris.online/dcmigserver/homes/9fe1b0ae-acdd-41a6-b457-e8909866c9fc.webp" alt=""
             class="rounded-md   object-cover h-[200px] w-[400px]" />
         </div>
         <div class="px-3">
-          <img src="https://app-pool.vylaris.online/dcmigserver/homes/b9af180a-4652-4da7-8601-6d0ef2109e06.webp" alt=""
+          <img loading="lazy" src="https://app-pool.vylaris.online/dcmigserver/homes/b9af180a-4652-4da7-8601-6d0ef2109e06.webp" alt=""
             class="rounded-md   object-cover h-[200px] w-[400px]" />
         </div>
       </div>
@@ -97,16 +97,16 @@
       </div>
 
       <div class="grid grid-cols-4 grid-rows-2 gap-2">
-        <div><img src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06270-682x512.jpg" alt="" /></div>
-        <div><img src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06273-682x512.jpg" alt="" /></div>
+        <div><img loading="lazy" src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06270-682x512.jpg" alt="" /></div>
+        <div><img loading="lazy" src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06273-682x512.jpg" alt="" /></div>
         <div class="col-start-1 row-start-2">
-          <img src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06277-682x512.jpg" alt="" />
+          <img loading="lazy" src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06277-682x512.jpg" alt="" />
         </div>
         <div class="col-start-2 row-start-2">
-          <img src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06281-682x512.jpg" alt="" />
+          <img loading="lazy" src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06281-682x512.jpg" alt="" />
         </div>
         <div class="col-span-2 row-span-2 col-start-3 row-start-1">
-          <img src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06283-682x512.jpg" alt="" />
+          <img loading="lazy" src="https://homesguatemala.com/wp-content/uploads/2022/10/DSC06283-682x512.jpg" alt="" />
         </div>
       </div> -->
     </div>

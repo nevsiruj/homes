@@ -83,6 +83,32 @@
             </svg>
           </button> -->
         </div>
+        
+        <!-- Información del usuario -->
+        <div class="flex items-center">
+          <div class="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-2 border border-gray-200">
+            <!-- Avatar -->
+            <div class="flex-shrink-0">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+                {{ userInitials }}
+              </div>
+            </div>
+            
+            <!-- Info del usuario -->
+            <div class="hidden md:block text-left">
+              <p class="text-sm font-semibold text-gray-900">{{ auth.user?.name || 'Usuario' }}</p>
+              <p class="text-xs text-gray-500 mb-1">{{ auth.user?.email || 'usuario@email.com' }}</p>
+              <div class="flex items-center gap-2 text-xs text-gray-600">
+                <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+                  {{ userRole }}
+                </span>
+                <span class="text-gray-400">•</span>
+                <span>{{ companyName }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <!-- <div class="flex items-center">
           <div class="flex items-center ms-3">
             <div>
@@ -243,6 +269,7 @@
       'w-20': !sidebarOpen && !isMobile,
       '-translate-x-full': !sidebarOpen && isMobile,
     }"
+    :aria-hidden="!sidebarOpen && isMobile ? 'true' : 'false'"
     aria-label="Sidebar"
   >
     <div class="h-full px-3 pb-4 overflow-y-auto bg-white  ">
@@ -271,6 +298,30 @@
               class="ms-3 whitespace-nowrap"
               :class="{ 'sr-only': !sidebarOpen && !isMobile }"
               >Dashboard</span
+            >
+          </NuxtLink>
+        </li>
+        <li>
+          <NuxtLink
+            to="/admin/pipeline"
+            class="flex items-center p-2 text-gray-900 rounded-lg    hover:bg-gray-100    group"
+          >
+            <svg
+              class="w-5 h-5 text-gray-500 transition duration-75   group-hover:text-gray-900   "
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <rect x="2" y="5" width="3" height="3" rx="1"/>
+              <rect x="2" y="9" width="3" height="3" rx="1"/>
+              <rect x="2" y="13" width="3" height="3" rx="1"/>
+              <rect x="2" y="17" width="3" height="3" rx="1"/>
+            </svg>
+            <span
+              class="ms-3 whitespace-nowrap"
+              :class="{ 'sr-only': !sidebarOpen && !isMobile }"
+              >Pipeline</span
             >
           </NuxtLink>
         </li>
@@ -596,7 +647,7 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref, onBeforeUnmount } from "vue";
+import { onMounted, ref, onBeforeUnmount, computed } from "vue";
 import { initFlowbite } from "flowbite";
 import { useAuthStore } from "@/stores/auth";
 
@@ -615,6 +666,28 @@ const onLogout = async () => {
     await navigateTo("/");               
   }
 };
+
+// Computed properties para la info del usuario
+const userInitials = computed(() => {
+  const name = auth.user?.name || 'U';
+  const parts = name.trim().split(' ');
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+});
+
+const userRole = computed(() => {
+  const roles = auth.user?.roles || [];
+  if (roles.includes('admin')) return 'Administrador';
+  if (roles.includes('agente')) return 'Agente';
+  if (roles.includes('gerente')) return 'Gerente';
+  return 'Usuario';
+});
+
+const companyName = computed(() => {
+  return 'Homes Guatemala';
+});
 
 const checkScreenSize = () => {
   isMobile.value = window.innerWidth < 640; // sm breakpoint de Tailwind

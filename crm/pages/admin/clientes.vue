@@ -54,11 +54,16 @@
       </form>
     </div>
 
-    <div class="flex justify-end items-end">
+    <div class="flex justify-end items-end gap-2">
+      <PaginationControls
+        v-model:itemsPerPage="itemsPerPage"
+        v-model:currentPage="currentPage"
+        :perPageOptions="[20,50,100]"
+      />
       <button
         type="button"
         @click.prevent="openModal"
-        class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full sm:w-auto focus:outline-none"
+        class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
       >
         Agregar cliente
       </button>
@@ -71,19 +76,86 @@
     <table class="w-full text-sm text-left rtl:text-right text-gray-500">
       <thead class="text-xs text-gray-700 uppercase bg-gray-50">
         <tr>
-          <th scope="col" class="px-6 py-3">Fecha registro</th>
-          <th scope="col" class="px-6 py-3">Nombre y apellido</th>
+          <th 
+            scope="col" 
+            class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+            @click="handleSort('fechaRegistro')"
+          >
+            <div class="flex items-center gap-2">
+              Fecha registro
+              <span v-if="sortColumn === 'fechaRegistro'" class="text-gray-500">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </div>
+          </th>
+          <th 
+            scope="col" 
+            class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+            @click="handleSort('nombre')"
+          >
+            <div class="flex items-center gap-2">
+              Nombre y apellido
+              <span v-if="sortColumn === 'nombre'" class="text-gray-500">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </div>
+          </th>
           <!-- <th scope="col" class="px-6 py-3">DNI</th> -->
-          <th scope="col" class="px-6 py-3">Telefono</th>
+          <th 
+            scope="col" 
+            class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+            @click="handleSort('telefono')"
+          >
+            <div class="flex items-center gap-2">
+              Telefono
+              <span v-if="sortColumn === 'telefono'" class="text-gray-500">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </div>
+          </th>
           <!-- <th scope="col" class="px-6 py-3">Direccion</th> -->
-          <th scope="col" class="px-6 py-3">Email</th>
-          <th scope="col" class="px-6 py-3">Agente Asignado</th>
+          <th 
+            scope="col" 
+            class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+            @click="handleSort('email')"
+          >
+            <div class="flex items-center gap-2">
+              Email
+              <span v-if="sortColumn === 'email'" class="text-gray-500">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </div>
+          </th>
+          <th 
+            scope="col" 
+            class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+            @click="handleSort('notas')"
+          >
+            <div class="flex items-center gap-2">
+              Notas
+              <span v-if="sortColumn === 'notas'" class="text-gray-500">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </div>
+          </th>
+          <th 
+            scope="col" 
+            class="px-6 py-3 cursor-pointer hover:bg-gray-100 select-none"
+            @click="handleSort('agente')"
+          >
+            <div class="flex items-center gap-2">
+              Agente Asignado
+              <span v-if="sortColumn === 'agente'" class="text-gray-500">
+                {{ sortDirection === 'asc' ? '↑' : '↓' }}
+              </span>
+            </div>
+          </th>
           <th scope="col" class="px-6 py-3">Accion</th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="cliente in filteredClientes"
+          v-for="cliente in paginatedClientes"
           :key="cliente.id"
           class="odd:bg-white odd: even:bg-gray-50 even: border-b border-gray-200"
         >
@@ -98,6 +170,21 @@
           <td class="px-6 py-4">{{ cliente.telefono }}</td>
           <!-- <td class="px-6 py-4">{{ cliente.direccion }}</td> -->
           <td class="px-6 py-4">{{ cliente.email || "-" }}</td>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-gray-600 truncate max-w-[200px] block">
+                {{ cliente.notas || "-" }}
+              </span>
+              <button
+                v-if="cliente.notas && cliente.notas.length > 30"
+                @click="openNotasModal(cliente.notas)"
+                class="text-blue-600 hover:text-blue-800 text-xs whitespace-nowrap flex-shrink-0"
+                title="Ver nota completa"
+              >
+                Ver más
+              </button>
+            </div>
+          </td>
           <td class="px-6 py-4">
             {{
               cliente.agente
@@ -233,6 +320,49 @@
     </table>
   </div>
 
+  <!-- Controles de Paginación -->
+  <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
+    <div class="text-sm text-gray-700">
+      Mostrando {{ ((currentPage - 1) * itemsPerPage) + 1 }} a 
+      {{ Math.min(currentPage * itemsPerPage, totalClientes) }} de 
+      {{ totalClientes }} clientes
+    </div>
+    
+    <div class="flex gap-2">
+      <button
+        @click="currentPage = 1"
+        :disabled="currentPage === 1"
+        class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+      >
+        ‹‹ Primera
+      </button>
+      <button
+        @click="currentPage--"
+        :disabled="currentPage === 1"
+        class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+      >
+        ‹ Anterior
+      </button>
+      <span class="px-3 py-1 text-sm">
+        Página {{ currentPage }} de {{ totalPages }}
+      </span>
+      <button
+        @click="currentPage++"
+        :disabled="currentPage >= totalPages"
+        class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+      >
+        Siguiente ›
+      </button>
+      <button
+        @click="currentPage = totalPages"
+        :disabled="currentPage >= totalPages"
+        class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+      >
+        Última ››
+      </button>
+    </div>
+  </div>
+
   <AgregarClienteModal
     :isOpen="isModalOpen"
     :cliente="selectedCliente"
@@ -265,10 +395,40 @@
     :preferenciaId="prefIdForRequerimiento"
     @close="closeRequerimientoModal"
   />
+
+  <!-- Modal pequeño para mostrar notas completas -->
+  <div
+    v-if="showNotasModal"
+    class="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
+    @click.self="closeNotasModal"
+  >
+    <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Notas del Cliente</h3>
+        <button
+          @click="closeNotasModal"
+          class="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+        >
+          ×
+        </button>
+      </div>
+      <div class="text-gray-700 whitespace-pre-wrap max-h-96 overflow-y-auto">
+        {{ selectedNotas }}
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button
+          @click="closeNotasModal"
+          class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch, onBeforeUnmount } from "vue";
 import AgregarClienteModal from "../../components/agregarClienteModal.vue";
 import clienteService from "../../services/clienteService";
 import detalleCliente from "~/components/detalleCliente.vue";
@@ -278,6 +438,7 @@ import Swal from "sweetalert2";
 import agenteService from "../../services/agenteService";
 import { useAuthStore } from "@/stores/auth";
 import modalRequerimiento from "../../components/modalRequerimiento.vue";
+import PaginationControls from "../../components/PaginationControls.vue";
 
 // === Auth / Roles ===
 const auth = useAuthStore();
@@ -291,6 +452,12 @@ const isAdmin = computed(() =>
 const clientes = ref([]);
 const isLoading = ref(false);
 const error = ref(null);
+const isLoadingAgentes = ref(false); // Flag para evitar cargas duplicadas de agentes
+
+// Paginación
+const currentPage = ref(1);
+const itemsPerPage = ref(20);
+const totalClientes = ref(0);
 
 const isModalOpen = ref(false);
 const selectedCliente = ref(null);
@@ -300,6 +467,14 @@ const selectedAgent = ref("all");
 const showModal = ref(false);
 const dateFrom = ref(null);
 const dateTo = ref(null);
+
+// Estado para ordenamiento
+const sortColumn = ref(null); // Columna actual para ordenar
+const sortDirection = ref('asc'); // 'asc' o 'desc'
+
+// Estado para modal de notas
+const showNotasModal = ref(false);
+const selectedNotas = ref('');
 
 // Convertir el mapa de agentes a un array para el select
 const agentesArray = computed(() => {
@@ -311,6 +486,9 @@ const agentesArray = computed(() => {
 });
 
 const agentesMap = ref({});
+
+// Flag para prevenir actualizaciones durante el desmontaje
+const isUnmounting = ref(false);
 
 // --- Nuevo: estado para modal detalle de inmueble ---
 const showInmuebleModal = ref(false);
@@ -372,9 +550,16 @@ definePageMeta({
 // === Lista base según rol ===
 // Si es admin => todos; si es agente => solo los que tengan agenteId === auth.user.id
 const baseClientes = computed(() => {
-  if (isAdmin.value) return clientes.value;
+  if (isAdmin.value) {
+    return clientes.value;
+  }
+  
   const me = auth?.user?.id || auth?.user?.nameid || auth?.user?.sub || null;
-  if (!me) return []; // si no hay user aún, mejor lista vacía
+  
+  if (!me) {
+    return [];
+  }
+  
   return clientes.value.filter((c) => c.agenteId === me);
 });
 
@@ -387,11 +572,44 @@ function normalizeSearch(str) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+// Función para manejar el ordenamiento por columnas
+const handleSort = (column) => {
+  if (sortColumn.value === column) {
+    // Si ya estaba ordenado por esta columna, cambiar dirección
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    // Nueva columna, ordenar ascendente por defecto
+    sortColumn.value = column;
+    sortDirection.value = 'asc';
+  }
+  currentPage.value = 1; // Resetear a la primera página al ordenar
+};
+
+// Función para obtener el valor de una columna para ordenar
+const getColumnValue = (cliente, column) => {
+  switch (column) {
+    case 'fechaRegistro':
+      return new Date(cliente.fechaRegistro).getTime();
+    case 'nombre':
+      return `${cliente.nombre || ''} ${cliente.apellido || ''}`.toLowerCase();
+    case 'telefono':
+      return cliente.telefono || '';
+    case 'email':
+      return (cliente.email || '').toLowerCase();
+    case 'notas':
+      return (cliente.notas || '').toLowerCase();
+    case 'agente':
+      const agenteNombre = agentesMap.value[cliente.agenteId]?.nombre || '';
+      const agenteApellido = agentesMap.value[cliente.agenteId]?.apellido || '';
+      return `${agenteNombre} ${agenteApellido}`.toLowerCase();
+    default:
+      return '';
+  }
+};
+
 // Reemplazado: filteredClientes soporta múltiples palabras (todas deben coincidir - AND)
 const filteredClientes = computed(() => {
-  const list = baseClientes.value
-    .slice() // Crear una copia para no mutar el original
-    .sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro)); // Ordenar por fecha de registro
+  const list = baseClientes.value.slice(); // Crear una copia para no mutar el original
 
   // Primero filtramos por el agente seleccionado
   let filteredList = list;
@@ -425,13 +643,14 @@ const filteredClientes = computed(() => {
   const tokens = normalizeSearch(raw).split(/\s+/).filter(Boolean);
 
   if (tokens.length) {
-    return filteredList.filter((c) => {
+    filteredList = filteredList.filter((c) => {
       const searchFields = [
         c.nombre,
         c.apellido,
         `${c.nombre} ${c.apellido}`,
         c.telefono,
         c.email,
+        c.notas,
       ];
 
       const haystack = normalizeSearch(searchFields.join(" "));
@@ -439,7 +658,40 @@ const filteredClientes = computed(() => {
     });
   }
 
+  // Aplicar ordenamiento si hay una columna seleccionada
+  if (sortColumn.value) {
+    filteredList.sort((a, b) => {
+      const aValue = getColumnValue(a, sortColumn.value);
+      const bValue = getColumnValue(b, sortColumn.value);
+      
+      let comparison = 0;
+      if (aValue < bValue) comparison = -1;
+      if (aValue > bValue) comparison = 1;
+      
+      return sortDirection.value === 'asc' ? comparison : -comparison;
+    });
+  } else {
+    // Ordenar por fecha de registro descendente por defecto si no hay ordenamiento
+    filteredList.sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro));
+  }
+
   return filteredList;
+});
+
+// Computed para obtener la lista paginada
+const paginatedClientes = computed(() => {
+  const filtered = filteredClientes.value;
+  totalClientes.value = filtered.length;
+  
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  
+  return filtered.slice(start, end);
+});
+
+// Computed para calcular el total de páginas
+const totalPages = computed(() => {
+  return Math.ceil(totalClientes.value / itemsPerPage.value);
 });
 
 // Abre el modal en modo creación
@@ -517,17 +769,32 @@ const openEditModal = async (cliente) => {
 
 // Cargar clientes
 const loadClientes = async () => {
+  if (isUnmounting.value) return; // No cargar si se está desmontando
+  
+  if (isLoading.value) {
+    console.log('⏸️ Ya hay una carga en progreso, saltando...');
+    return; // Evitar cargas duplicadas
+  }
+  
   isLoading.value = true;
   try {
-    // Opción simple (siempre trae todo y filtramos por rol en el front)
-    const response = await clienteService.getAllClientes();
-    if (!response || !Array.isArray(response.$values)) {
+    // Aumentar pageSize a 1000 para cargar más clientes
+    // Forzar recarga sin cache
+    const response = await clienteService.getAllClientes(1, 1000, null, false);
+    
+    // Verificar si viene en el nuevo formato con data o $values
+    const clientesData = response.$values || response.data || response;
+    
+    if (!Array.isArray(clientesData)) {
       throw new Error("Datos inválidos desde la API");
     }
 
-    const processedClients = response.$values.map((c) => {
+    const processedClients = clientesData.map((c) => {
       const preferencias = c.preferencias || {};
-      const agenteAsignado = agentesMap.value[c.agenteId] || null;
+      
+      // Buscar el agente en el mapa usando el agenteId
+      const agenteId = c.agenteId || c.AgenteId || null;
+      const agenteAsignado = agenteId ? agentesMap.value[agenteId] : null;
 
       return {
         id: c.id,
@@ -536,9 +803,10 @@ const loadClientes = async () => {
         apellido: c.apellido || "",
         telefono: c.telefono || "N/A",
         email: c.email || "N/A",
+        notas: c.notas || "",
         // importante para filtrar por dueño:
-        agenteId: c.agenteId || null,
-        agente: agenteAsignado, // objeto agente (si lo tenemos mapeado)
+        agenteId: agenteId,
+        agente: agenteAsignado || null, // objeto agente completo
         tipo: preferencias.tipo || "N/A",
         operacion: preferencias.operacion || "N/A",
         ubicacion: preferencias.ubicacion || "N/A",
@@ -563,12 +831,59 @@ const loadClientes = async () => {
       };
     });
 
-    clientes.value = processedClients;
+    // Solo actualizar el estado si el componente no se está desmontando
+    if (!isUnmounting.value) {
+      clientes.value = processedClients;
+    }
   } catch (err) {
-    //console.error("Error al cargar clientes:", err);
-    error.value = "No se pudieron cargar las preferencias";
+    console.error("Error al cargar clientes:", err);
+    if (!isUnmounting.value) {
+      error.value = "No se pudieron cargar las preferencias";
+    }
   } finally {
-    isLoading.value = false;
+    if (!isUnmounting.value) {
+      isLoading.value = false;
+    }
+  }
+};
+
+// Cargar agentes solo una vez
+const loadAgentes = async () => {
+  if (isLoadingAgentes.value || Object.keys(agentesMap.value).length > 0) {
+    return; // Ya están cargados o cargando
+  }
+  
+  isLoadingAgentes.value = true;
+  
+  try {
+    const data = await agenteService.getUsers();
+    
+    // Limpiar el mapa antes de cargar
+    agentesMap.value = {};
+    
+    if (data.$values && Array.isArray(data.$values)) {
+      data.$values.forEach((agente) => {
+        agentesMap.value[agente.id] = {
+          id: agente.id,
+          nombre: agente.nombre || agente.Nombre || '',
+          apellido: agente.apellido || agente.Apellido || '',
+        };
+      });
+    } else if (Array.isArray(data)) {
+      // Si viene directamente como array
+      data.forEach((agente) => {
+        agentesMap.value[agente.id] = {
+          id: agente.id,
+          nombre: agente.nombre || agente.Nombre || '',
+          apellido: agente.apellido || agente.Apellido || '',
+        };
+      });
+    }
+  } catch (error) {
+    console.error("Error al cargar agentes:", error);
+    Swal.fire("Error", "No se pudieron cargar los agentes.", "error");
+  } finally {
+    isLoadingAgentes.value = false;
   }
 };
 
@@ -577,6 +892,18 @@ const formatDate = (dateString) =>
   dateString
     ? new Date(dateString).toLocaleDateString()
     : "Fecha no disponible";
+
+// Abrir modal de notas
+const openNotasModal = (notas) => {
+  selectedNotas.value = notas || 'Sin notas';
+  showNotasModal.value = true;
+};
+
+// Cerrar modal de notas
+const closeNotasModal = () => {
+  showNotasModal.value = false;
+  selectedNotas.value = '';
+};
 
 // Eliminar cliente
 const eliminarCliente = async (id) => {
@@ -615,7 +942,7 @@ const handleClientAddedOrUpdated = async () => {
 // --- Nuevo helper: normalizar objeto inmueble para el modal (imagenes como array de URLs, amenidades como objetos) ---
 function normalizeInmuebleForModal(raw) {
   if (!raw) return null;
-
+  
   const obj = { ...raw };
 
   // imagenesReferencia -> array de strings (urls)
@@ -633,6 +960,7 @@ function normalizeInmuebleForModal(raw) {
       .map((it) => (typeof it === "string" ? it : it?.url || ""))
       .filter(Boolean);
   }
+  
   obj.imagenesReferencia = imgs;
 
   // imagenPrincipal fallback
@@ -683,6 +1011,9 @@ function normalizeInmuebleForModal(raw) {
 
 // --- Nuevo: manejar evento desde detalleCliente -> abrir modal de inmueble ---
 async function handleOpenInmueble(payload) {
+  console.error('🚨🚨🚨 HANDLE OPEN INMUEBLE EJECUTÁNDOSE 🚨🚨🚨');
+  console.log('🎯🎯🎯 [handleOpenInmueble] FUNCIÓN LLAMADA con payload:', payload);
+  
   try {
     // Evitar que queden ambos modales visibles al mismo tiempo
     // guardamos si antes estaba abierto el detalleCliente para poder reabrirlo al cerrar
@@ -730,8 +1061,12 @@ async function handleOpenInmueble(payload) {
       fetched = core || null;
     }
 
+    console.log('🎯 [handleOpenInmueble] ANTES de normalizar, fetched tiene:', fetched?.codigoPropiedad, 'con imágenes:', fetched?.imagenesReferencia?.length);
+    
     // Normalizar antes de asignar al modal para asegurar imagenes y amenidades correctas
     inmuebleSeleccionado.value = normalizeInmuebleForModal(fetched);
+    
+    console.log('🎯 [handleOpenInmueble] DESPUÉS de normalizar, inmuebleSeleccionado tiene imágenes:', inmuebleSeleccionado.value?.imagenesReferencia?.length);
 
     // Si antes estaba abierto detalleCliente y el evento vino del detalle, mantener esa información para restore
     // (isDetailsOpen fue puesto en false arriba). showInmuebleModal abre ahora.
@@ -754,33 +1089,56 @@ function closeInmuebleModal() {
 
 // Modificar el evento de cierre del modal detalleCliente
 const closeDetailsModal = () => {
+  if (isUnmounting.value) return; // Prevenir actualizaciones durante desmontaje
   isDetailsOpen.value = false;
   selectedCliente.value = null; // Limpiar el cliente seleccionado
 };
 
-// Watch para refrescar datos al abrir o cerrar cualquier modal
+// Variable para timeout del debounce
+let reloadTimeout = null;
+
+// Watch para refrescar datos al abrir o cerrar cualquier modal (con debounce)
 watch(
   [isModalOpen, isDetailsOpen, isRequerimientoModalOpen],
   ([modalOpen, detailsOpen, requerimientoOpen]) => {
+    // Prevenir actualizaciones si el componente se está desmontando
+    if (isUnmounting.value) return;
+    
+    // Solo recargar cuando todos los modales están cerrados
     if (!modalOpen && !detailsOpen && !requerimientoOpen) {
-      loadClientes();
+      // Limpiar timeout previo
+      if (reloadTimeout) {
+        clearTimeout(reloadTimeout);
+      }
+      // Debounce de 300ms para evitar múltiples llamadas
+      reloadTimeout = setTimeout(() => {
+        if (!isUnmounting.value) { // Doble verificación antes de recargar
+          loadClientes();
+        }
+      }, 300);
     }
   }
 );
 
+// Resetear a la primera página cuando cambian los filtros
+watch([searchTerm, selectedAgent, dateFrom, dateTo], () => {
+  currentPage.value = 1;
+});
+
 // Montaje
 onMounted(async () => {
-  try {
-    const data = await agenteService.getUsers();
-    if (data.$values && Array.isArray(data.$values)) {
-      data.$values.forEach((agente) => {
-        agentesMap.value[agente.id] = agente;
-      });
-    }
-  } catch (error) {
-    //console.error("Error al cargar agentes:", error);
+  await loadAgentes(); // Cargar agentes primero y esperar
+  await loadClientes(); // Luego cargar clientes
+});
+
+// Limpiar timeouts al desmontar
+onBeforeUnmount(() => {
+  isUnmounting.value = true; // Marcar que el componente se está desmontando
+  
+  if (reloadTimeout) {
+    clearTimeout(reloadTimeout);
+    reloadTimeout = null;
   }
-  loadClientes();
 });
 </script>
 

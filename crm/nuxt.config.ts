@@ -5,8 +5,38 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: false },
   ssr: false,
-  generate: { fallback: true },
-  target: 'static',  
+  
+  // Deshabilitar app manifest para evitar errores 404 en producción
+  app: {
+    buildAssetsDir: '/_nuxt/',
+  },
+  
+  experimental: {
+    appManifest: false, // Desactiva los manifests que causan 404 en producción estática
+    payloadExtraction: false // Desactiva la extracción de payloads en SPA
+  },
+  
+  // Configuración específica para SPA
+  generate: { 
+    fallback: '200.html', // Usar 200.html en lugar de 404.html para SPAs
+    routes: ['/'] // Solo generar la ruta raíz
+  },
+  
+  hooks: {
+    // Desactivar generación de payloads completamente
+    'nitro:build:before': (nitro) => {
+      nitro.options.prerender = nitro.options.prerender || {}
+      nitro.options.prerender.crawlLinks = false
+    }
+  },
+  
+  // Variables de entorno disponibles en runtime
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://localhost:7234'
+    }
+  },
+  
   app: {
     // baseURL: '/homes/crm',
     
@@ -18,6 +48,12 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+      ],
+      
+      script: [
+        {
+          children: `window.$config = { apiBaseUrl: '${process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://localhost:7234'}' };`
+        }
       ]
     }    
   }, 
@@ -43,6 +79,19 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       include: ['flowbite']
+    },
+    build: {
+      sourcemap: false, // Deshabilitar source maps para mejor rendimiento
+      minify: 'esbuild', // Usar esbuild para minificación más rápida
+      chunkSizeWarningLimit: 1000
+    },
+    server: {
+      hmr: {
+        overlay: false // Deshabilitar overlay de errores para mejor rendimiento
+      },
+      watch: {
+        usePolling: false // Mejorar rendimiento del file watcher
+      }
     }
   },
 

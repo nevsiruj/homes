@@ -419,6 +419,10 @@ const props = defineProps({
     required: true,
     default: false,
   },
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
   cliente: {
     type: Object,
     default: null,
@@ -685,23 +689,28 @@ watch(
     } finally {
       isLoadingCliente.value = false;
     }
-  },
-  { immediate: true }
+  }
+  // Removido { immediate: true } - no necesitamos ejecutar en mount
 );
 
-// === Cargar agentes ===
-onMounted(async () => {
-  try {
-    const data = await agenteService.getUsers(); // Asegúrate que este método exista
-    agentes.value =
-      data.$values?.map((agente) => ({
-        id: agente.id,
-        nombreCompleto: `${agente.nombre} ${agente.apellido}`,
-      })) || [];
-  } catch (error) {
-    //console.error("Error al cargar agentes:", error);
+// === Cargar agentes solo cuando se abre el modal ===
+watch(
+  () => props.isOpen,
+  async (isOpen) => {
+    if (isOpen && agentes.value.length === 0) {
+      try {
+        const data = await agenteService.getUsers();
+        agentes.value =
+          data.$values?.map((agente) => ({
+            id: agente.id,
+            nombreCompleto: `${agente.nombre} ${agente.apellido}`,
+          })) || [];
+      } catch (error) {
+        //console.error("Error al cargar agentes:", error);
+      }
+    }
   }
-});
+);
 
 // Helper NUEVO: formatear ISO a valor para input date (sin hora)
 function isoToDateInput(iso) {

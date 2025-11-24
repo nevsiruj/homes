@@ -1,5 +1,7 @@
-import { API_BASE_URL } from '../config';
 import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 let isAuthModalShown = false; // Global flag to track if the modal is already shown
 
@@ -36,7 +38,7 @@ const interaccionService = {
   // 📥 Obtener todas las interacciones
   async getAllInteracciones() {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Interaccion`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Interaccion`, {
         method: "GET",
       });
 
@@ -57,7 +59,7 @@ const interaccionService = {
   async addInteraccion(payload) {
     //console.log("📞 Enviando nueva interacción:", payload);
 
-    const response = await fetchWithTokenCheck(`${API_BASE_URL}/Interaccion`, {
+    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Interaccion`, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +81,7 @@ const interaccionService = {
   // 🖋️ Actualizar una interacción por ID
   async updateInteraccion(id, payload) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Interaccion/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Interaccion/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +105,7 @@ const interaccionService = {
   // 🗑️ Eliminar una interacción por ID
   async deleteInteraccion(id) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Interaccion/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Interaccion/${id}`, {
         method: "DELETE",
       });
 
@@ -154,7 +156,7 @@ const interaccionService = {
   // 🖋️ Actualizar solo el estado de una interacción por ID
   async patchStatus(id, nuevoStatus) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Interaccion/${id}/status`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Interaccion/${id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

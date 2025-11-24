@@ -114,16 +114,15 @@ namespace Application.Modules.ClienteModule.Services
             return _mapper.Map<ClienteDto>(clienteExistente); // 👈 devolvemos el cliente actualizado
         }
 
-
-        // Agregado por ivan
+      
         public async Task<List<ClienteDto>> GetAllAsync()
         {
+            // Cargar solo los datos esenciales sin todas las relaciones
+            // Las interacciones y amenidades se cargan solo cuando se necesitan (GetById)
             var clientes = await _context.Clientes
-                .Include(e => e.Interacciones)
-                .ThenInclude(a => a.Agente)
-                // Se corrigió el Include para la colección de preferencias
-                .Include(n => n.Preferencias)
-                .ThenInclude(p => p.PreferenciaAmenidades)
+                .Include(n => n.Preferencias) // Solo preferencias básicas
+                .OrderByDescending(c => c.FechaRegistro) // Ordenar por fecha más reciente primero
+                .AsNoTracking() // Mejora el rendimiento al no rastrear cambios
                 .ToListAsync();
 
             return _mapper.Map<List<ClienteDto>>(clientes);

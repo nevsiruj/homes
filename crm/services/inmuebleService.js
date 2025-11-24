@@ -1,6 +1,8 @@
 // inmuebleService.js
-import { API_BASE_URL } from '../config'
 import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 function normalizeNumber(n, fallback = 1) {
   // Cubre casos: number, string numérica, { value: ... }, ref/computed-like, null/undefined
@@ -96,7 +98,7 @@ export default {
         }
       }
 
-      const url = `${API_BASE_URL}/Inmueble?${params.toString()}`
+      const url = `${getApiBaseUrl()}/Inmueble?${params.toString()}`
       //console.log('Fetching URL:', url)
 
       const response = await fetchWithTokenCheck(url);
@@ -180,7 +182,7 @@ export default {
 
   async getInmueble() {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble`);
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble`);
       if (!response.ok) throw new Error('Error fetching inmuebles')
       return await response.json()
     } catch (error) {
@@ -199,7 +201,12 @@ export default {
       if (isNumericId) {
         console.log(`📡 [inmuebleService] Buscando por ID numérico: ${id}`);
         // Búsqueda por ID numérico (método original)
-        const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}`);
+        const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`);
+        
+        if (!response) {
+          console.error(`❌ [inmuebleService] No se recibió respuesta (token expirado?)`);
+          return null;
+        }
         
         console.log(`📡 [inmuebleService] Response status: ${response.status}`);
         
@@ -211,7 +218,12 @@ export default {
         const data = await response.json();
         console.log(`📊 [inmuebleService] Raw response (by ID):`, data);
         
-        return this.normalizeInmuebleData(data);
+        // IMPORTANTE: Normalizar los datos antes de retornar
+        const normalized = this.normalizeInmuebleData(data);
+        console.log(`✅ [inmuebleService] Datos normalizados retornados:`, normalized);
+        console.log(`🖼️ [inmuebleService] Array de imágenes en normalized:`, normalized.imagenesReferencia);
+        
+        return normalized;
       } else {
         console.log(`🔤 [inmuebleService] Buscando por código alfanumérico: ${id}`);
         // Búsqueda por código usando el endpoint paginado
@@ -271,11 +283,39 @@ export default {
   },
 
   normalizeInmuebleData(data) {
-    console.log(`🔧 [inmuebleService] Normalizando datos del inmueble...`);
+    console.log(`🔧 [inmuebleService] Normalizando inmueble: ${data?.codigoPropiedad || data?.id}`);
+    console.log(`🖼️ [inmuebleService] Imágenes raw:`, data.imagenesReferencia?.length || 0);
+    
+    // Normalizar las imágenes de referencia
+    let imagenesNormalizadas = [];
+    if (Array.isArray(data.imagenesReferencia?.$values)) {
+      imagenesNormalizadas = data.imagenesReferencia.$values
+        .map(img => {
+          if (typeof img === 'string') return img;
+          if (img?.url) return img.url;
+          if (img?.imagen) return img.imagen;
+          if (img?.imagenUrl) return img.imagenUrl;
+          return null;
+        })
+        .filter(Boolean);
+    } else if (Array.isArray(data.imagenesReferencia)) {
+      imagenesNormalizadas = data.imagenesReferencia
+        .map(img => {
+          if (typeof img === 'string') return img;
+          if (img?.url) return img.url;
+          if (img?.imagen) return img.imagen;
+          if (img?.imagenUrl) return img.imagenUrl;
+          return null;
+        })
+        .filter(Boolean);
+    }
+    
+    console.log(`✅ [inmuebleService] Imágenes normalizadas: ${imagenesNormalizadas.length}`);
     
     // Normalizar la respuesta para uso consistente
     const normalizedData = {
       ...data,
+      imagenesReferencia: imagenesNormalizadas,
       // Normalizar amenidades a array simple de strings
       amenidades: Array.isArray(data.amenidades?.$values) 
         ? data.amenidades.$values.map(a => a.nombre || a.Nombre || a)
@@ -284,25 +324,12 @@ export default {
           : [])
     };
     
-    console.log(`✅ [inmuebleService] Datos normalizados:`, {
-      id: normalizedData.id,
-      codigoPropiedad: normalizedData.codigoPropiedad,
-      titulo: normalizedData.titulo,
-      tipos: normalizedData.tipos,
-      operaciones: normalizedData.operaciones,
-      ubicaciones: normalizedData.ubicaciones,
-      precio: normalizedData.precio,
-      habitaciones: normalizedData.habitaciones,
-      banos: normalizedData.banos,
-      amenidades: normalizedData.amenidades
-    });
-    
     return normalizedData;
   },
 
   async createInmueble(payload) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -317,7 +344,7 @@ export default {
 
   async updateInmueble(id, data) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -342,7 +369,7 @@ export default {
 
   async deleteInmueble(id) {
     try {
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) throw new Error('Error deleting inmueble')
@@ -357,7 +384,7 @@ export default {
     try {
       const payload = { precioActivo: !!nuevoEstado }
 
-      const response = await fetchWithTokenCheck(`${API_BASE_URL}/Inmueble/${id}/precio-activo`, {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}/precio-activo`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

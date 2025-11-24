@@ -27,6 +27,16 @@
     v-if="!isLoading && !notFound"
     class="max-w-[1080px] mx-auto p-4 bg-white mt-24 lg:mt-12"
   >
+    <!-- Breadcrumbs -->
+    <Breadcrumbs 
+      v-if="inmuebleDetalle"
+      :breadcrumbs="[
+        { name: 'Inicio', url: '/' },
+        { name: 'Propiedades', url: '/propiedades' },
+        { name: inmuebleDetalle.titulo || 'Propiedad', url: $route.fullPath }
+      ]" 
+    />
+
     <div class="mb-5 mt-5">
       <h1
         ref="tituloRef"
@@ -220,7 +230,16 @@
                   ></circle>
                 </g>
               </svg>
-              {{ inmuebleDetalle.ubicaciones }}
+              <div class="flex flex-col">
+                <span>{{ inmuebleDetalle.ubicaciones }}</span>
+                <NuxtLink 
+                  v-if="inmuebleDetalle.ubicaciones"
+                  :to="`/propiedades/zona/${slugifyZona(inmuebleDetalle.ubicaciones)}`"
+                  class="text-xs text-blue-600 hover:underline mt-1"
+                >
+                  Ver más en {{ inmuebleDetalle.ubicaciones }}
+                </NuxtLink>
+              </div>
             </div>
             <div class="flex items-center justify-between">
               <svg
@@ -563,6 +582,7 @@ const propertyUrl = computed(() => {
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
+  canonical: propertyUrl,
   ogTitle: pageTitle,
   ogDescription: pageDescription,
   ogImage: pageImage,
@@ -573,6 +593,27 @@ useSeoMeta({
   twitterDescription: pageDescription,
   twitterImage: pageImage,
 });
+
+// Schema.org structured data for SEO
+const realEstateSchema = computed(() => {
+  if (!inmuebleDetalle.value) return null;
+  return useRealEstateListingSchema(inmuebleDetalle.value);
+});
+
+const breadcrumbSchema = computed(() => {
+  if (!inmuebleDetalle.value) return null;
+  return useBreadcrumbSchema([
+    { name: 'Inicio', url: 'https://homesguatemala.com' },
+    { name: 'Propiedades', url: 'https://homesguatemala.com/propiedades' },
+    { name: inmuebleDetalle.value.titulo || 'Propiedad', url: propertyUrl.value }
+  ]);
+});
+
+// Insert schemas into head
+watch([realEstateSchema, breadcrumbSchema], ([realEstate, breadcrumb]) => {
+  if (realEstate) useJsonldSchema(realEstate);
+  if (breadcrumb) useJsonldSchema(breadcrumb);
+}, { immediate: true });
 
 // Vista / media / formato
 const isMobile = ref(false);
@@ -647,6 +688,17 @@ const getYouTubeThumbnail = (url) => {
     ? url.split("v=")[1] || url.split("youtu.be/")[1]
     : "";
   return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
+};
+
+// Helper para convertir zona a slug
+const slugifyZona = (zona) => {
+  if (!zona) return '';
+  return zona
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
 };
 
 // Formateo y descripción

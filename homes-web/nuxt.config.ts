@@ -12,25 +12,12 @@ export default defineNuxtConfig({
     fallback: true,
   },
 
-  site: {
-    url: 'https://homesguatemala.com',
-  },
-
-  // -------------------- App & Head Configuration --------------------
   app: {
-    // baseURL: '/homes/web',
     head: {
-      link: [
-        {
-          rel: "icon",
-          type: "image/png",
-          href: "https://app-pool.vylaris.online/dcmigserver/homes/5369ffc1-5e81-4be1-a01e-617c564b7eed.webp",
-        },
-      ],
+      htmlAttrs: {
+        lang: 'es'
+      },
       meta: [
-        { charset: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-
         // Metadatos de verificación de dominio
         { name: "p:domain_verify", content: "4ff93a868a573e1b24e15558f505f316" },
         { name: "facebook-domain-verification", content: "s7lsdi9b3qj53qjggc8lgumeiythqm" },
@@ -77,6 +64,19 @@ export default defineNuxtConfig({
           content: "https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp",
         },
       ],
+      link: [
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+        // Core Web Vitals optimization
+        {
+          rel: "preconnect",
+          href: "https://app-pool.vylaris.online",
+        },
+        {
+          rel: "dns-prefetch",
+          href: "https://app-pool.vylaris.online",
+        },
+      ],
       script: [
         // Script del Pixel de Facebook
         {
@@ -106,6 +106,7 @@ export default defineNuxtConfig({
 
   // -------------------- Modules & Global Styles --------------------
   modules: [
+    "@nuxt/image-edge",
     "@nuxtjs/seo",
     "@nuxt/content",
     "@pinia/nuxt",
@@ -114,42 +115,13 @@ export default defineNuxtConfig({
 
   // Configuración de los módulos de SEO
   robots: {},
-  // sitemap: {
-  //   hostname: 'https://homesguatemala.com',
-  //   routes: async () => {
-  //     try {
-  //       // Usa la URL correcta de tu API
-  //       const API_URL = 'https://app-pool.vylaris.online/homes/api/Inmueble';
-  //       const response = await fetch(API_URL);
-        
-  //       if (!response.ok) {
-  //         console.error('API Response Status:', response.status);
-  //         throw new Error(`Error en la solicitud: ${response.statusText}`);
-  //       }
-        
-  //       const data = await response.json();
-        
-  //       // Verifica que 'data' contenga la estructura esperada de la API
-  //       // Según tu servicio, el array de items está en 'items.$values'
-  //       const propiedades = data?.items?.$values || [];
-        
-  //       // Mapea las propiedades para obtener un array de slugs
-  //       const slugs = propiedades.map((propiedad: any) => `/inmueble/${propiedad.slugInmueble}`);
-        
-  //       return slugs;
-  //     } catch (error) {
-  //       console.error('Error al generar las rutas del sitemap:', error);
-  //       return [];
-  //     }
-  //   },
-  // },
   sitemap: {
     hostname: 'https://homesguatemala.com',
     routes: async () => {
       try {
         const API_INMUEBLE = 'https://app-pool.vylaris.online/homes/api/Inmueble';
         const API_PROYECTO = 'https://app-pool.vylaris.online/homes/api/Proyecto';
-  
+
         // Fetch de Inmuebles
         const responseInmueble = await fetch(API_INMUEBLE);
         if (!responseInmueble.ok) {
@@ -160,7 +132,7 @@ export default defineNuxtConfig({
         const slugsInmuebles = propiedades.map(
           (propiedad: any) => `/inmueble/${propiedad.slugInmueble}`
         );
-  
+
         // Fetch de Proyectos
         const responseProyecto = await fetch(API_PROYECTO);
         if (!responseProyecto.ok) {
@@ -171,7 +143,7 @@ export default defineNuxtConfig({
         const slugsProyectos = proyectos.map(
           (proyecto: any) => `/proyecto/${proyecto.slugProyecto}`
         );
-  
+
         // Combinar ambos arrays
         return [...slugsInmuebles, ...slugsProyectos];
       } catch (error) {
@@ -180,7 +152,7 @@ export default defineNuxtConfig({
       }
     },
   },
-  
+
   colorMode: {
     classSuffix: "",
     preference: "light",
@@ -224,9 +196,16 @@ export default defineNuxtConfig({
         baseURL: "/fonts",
       },
     ],
-    compressPublicAssets: false,
+    compressPublicAssets: true,
     routeRules: {
       "/luxury-homes/**": { proxy: "https://homesguatemala.com/**" },
     },
+  },
+
+  image: {
+    // Allowed domains for remote images
+    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar'],
+    // Default provider - can switch to a CDN or provider if needed
+    providers: {}
   },
 });

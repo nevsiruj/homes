@@ -14,7 +14,7 @@ namespace EIRL.Application.Services
     {
         protected readonly IGenericRepository<TEntity> _repository;
         protected readonly IMapper _mapper;
-        protected readonly ProjectDbContext _context; //Agregado por Ivan
+        protected readonly ProjectDbContext _context; 
 
         public GenericService(IGenericRepository<TEntity> repository, IMapper mapper)
         {
@@ -22,15 +22,13 @@ namespace EIRL.Application.Services
             _mapper = mapper;            
         }
 
-        //Agreagdo por Ivan
         public GenericService(IGenericRepository<TEntity> repository, IMapper mapper, ProjectDbContext context)
         {
             _repository = repository;
             _mapper = mapper;
             _context = context; 
         }
-        //Agreagdo por Ivan
-
+  
         public virtual async Task<IEnumerable<TDto>> GetAllAsync()
         {
             var entities = await _repository.GetAllAsync();

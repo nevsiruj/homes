@@ -3,7 +3,33 @@
     <h4 class="font-bold text-lg mb-2">
       Propiedades que coinciden con las preferencias
     </h4>
-    <div v-if="isLoading" class="loader">Cargando...</div>
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="animate-pulse space-y-4">
+      <div v-for="i in 3" :key="`skeleton-${i}`" class="property-item mb-4">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <!-- Título skeleton -->
+          <div class="flex-grow">
+            <div class="h-5 bg-gray-300 rounded w-3/4"></div>
+          </div>
+          <!-- Botones skeleton -->
+          <div class="flex flex-wrap items-center space-x-2">
+            <div class="w-4 h-4 bg-gray-300 rounded"></div>
+            <div class="h-7 w-24 bg-green-300 rounded"></div>
+            <div class="h-7 w-24 bg-blue-300 rounded"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Paginación skeleton -->
+      <div class="mt-4 flex items-center justify-between">
+        <div class="h-4 bg-gray-300 rounded w-32"></div>
+        <div class="flex space-x-2">
+          <div class="h-8 w-20 bg-gray-300 rounded"></div>
+          <div class="h-8 w-8 bg-gray-300 rounded"></div>
+          <div class="h-8 w-8 bg-gray-300 rounded"></div>
+          <div class="h-8 w-20 bg-gray-300 rounded"></div>
+        </div>
+      </div>
+    </div>
     <div v-else-if="isLoadingMatches" class="text-center text-gray-500 py-4">
       Actualizando lista...
     </div>
@@ -29,7 +55,6 @@
               {{ propiedad.titulo || propiedad.nombre || "Sin título" }}
             </a>
           </h3>
-
           <div class="flex flex-wrap mx-auto items-center space-x-2">
             <div class="flex items-center">
               <input
@@ -62,7 +87,6 @@
         </div>
       </li>
     </ul>
-
     <div
       v-if="propiedades.length > pageSize"
       class="mt-4 flex items-center justify-between"
@@ -74,7 +98,6 @@
         {{ Math.min(currentPage * pageSize, propiedades.length) }}
         de {{ propiedades.length }}
       </div>
-
       <nav class="inline-flex items-center space-x-1" aria-label="Paginación">
         <button
           @click="goPrev"
@@ -83,7 +106,6 @@
         >
           Anterior
         </button>
-
         <button
           v-for="p in visiblePages"
           :key="p"
@@ -95,7 +117,6 @@
         >
           {{ p }}
         </button>
-
         <button
           @click="goNext"
           :disabled="currentPage === totalPages"
@@ -105,7 +126,6 @@
         </button>
       </nav>
     </div>
-
     <!--Enviados-->
     <div class="mt-6 bg-gray-50 p-4 rounded-lg">
       <div class="flex items-center justify-between mb-2">
@@ -119,8 +139,15 @@
           {{ isLoadingMatches ? "..." : "Refrescar" }}
         </button>
       </div>
-      <div v-if="isLoadingMatches" class="text-sm text-gray-500">
-        Cargando...
+      <!-- Skeleton para enviados -->
+      <div v-if="isLoadingMatches" class="animate-pulse space-y-2">
+        <div v-for="i in 3" :key="`enviado-skeleton-${i}`" class="flex items-center justify-between pb-1">
+          <div class="h-4 bg-gray-300 rounded flex-grow mr-4"></div>
+          <div class="flex items-center gap-4">
+            <div class="h-3 w-24 bg-gray-300 rounded"></div>
+            <div class="h-3 w-16 bg-gray-300 rounded"></div>
+          </div>
+        </div>
       </div>
       <div v-else>
         <div v-if="matchEnviados.length === 0" class="text-sm text-gray-500">
@@ -146,7 +173,6 @@
                 {{ getTituloPropiedad(m) }}
               </span>
             </div>
-
             <div class="flex items-center gap-4 flex-shrink-0">
               <span class="text-xs text-gray-500 whitespace-nowrap">
                 Enviado el
@@ -166,13 +192,11 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, computed, watch, defineProps, defineEmits, nextTick } from "vue";
 import matchService from "~/services/matchService";
 import inmuebleService from "~/services/inmuebleService";
 import Swal from "sweetalert2";
-
 const props = defineProps({
   clienteId: {
     type: [Number, String],
@@ -183,41 +207,32 @@ const props = defineProps({
     default: null,
   },
 });
-
 const emit = defineEmits(["open-inmueble", "refresh-matches"]);
-
 // --- 1. PROPIEDADES Y ESTADO ---
 const clienteId = computed(() => {
   const id = parseInt(props.clienteId);
   return isNaN(id) ? null : id;
 });
-
 // Estado de carga y datos
 const isLoading = ref(true);
 const isLoadingMatches = ref(false); // Para acciones específicas (checkbox)
 const matchesPendientes = ref([]); // Almacena MatchDto[] (incluye el objeto Inmueble anidado)
 const matchEnviados = ref([]); // Almacena matches que han sido marcados como enviados
-
 // La lista de inmuebles que se renderizará
 const propiedades = ref([]);
 const datasetsReady = computed(() => !isLoading.value); // Asumo que esto indica que los datos están listos
-
 // --- 2. PAGINACIÓN (Manteniendo tu lógica existente) ---
 const currentPage = ref(1);
 const pageSize = 10;
 const totalPages = computed(() => {
   const total = Math.ceil(propiedades.value.length / pageSize);
-  console.log(`📄 [COMPUTED] Total páginas calculado: ${total} (${propiedades.value.length} propiedades / ${pageSize} por página)`);
-  console.log(`📄 [COMPUTED] Timestamp: ${new Date().toISOString()}`);
   return total;
 });
-
 const paginatedProperties = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
   const end = start + pageSize;
   return propiedades.value.slice(start, end);
 });
-
 // Implementa tus métodos de paginación (goPrev, goNext, setPage, visiblePages) aquí si no están fuera del script setup.
 const goPrev = () => {
   if (currentPage.value > 1) currentPage.value--;
@@ -232,9 +247,7 @@ const setPage = (p) => {
 const visiblePages = computed(() => {
   return Array.from({ length: totalPages.value }, (_, i) => i + 1);
 });
-
 // --- 3. FUNCIONES DE SERVICIO Y LÓGICA DE MATCH ---
-
 /**
  * Llama al backend para obtener los matches sugeridos para el cliente.
  */
@@ -243,12 +256,9 @@ const fetchMatchesPendientes = async () => {
     console.error("ID de cliente inválido.");
     return;
   }
-
   isLoading.value = true;
   try {
     const data = await matchService.getSugeridos(clienteId.value);
-    console.log("📡 Datos recibidos de getSugeridos:", data);
-    
     // Normalizar posibles formas de respuesta
     let items = [];
     if (Array.isArray(data)) items = data;
@@ -257,34 +267,13 @@ const fetchMatchesPendientes = async () => {
     else if (Array.isArray(data?.matches)) items = data.matches;
     else if (Array.isArray(data?.$values)) items = data.$values;
     else if (Array.isArray(data?.items?.$values)) items = data.items.$values;
-
-    console.log("📋 Items normalizados:", items);
-    console.log(`📋 Total items recibidos: ${items.length}`);
-
     // Los items ya son objetos completos que contienen tanto la información del match como de la propiedad
     // Solo necesitamos filtrar por esPendiente: true
     const pendientesItems = items.filter(item => item.esPendiente === true);
-    console.log(`📋 Items pendientes después de filtrar: ${pendientesItems.length}`);
-    console.log("📋 Items pendientes:", pendientesItems);
-    
-    // Verificar qué items tienen esPendiente: false
-    const nosPendientesItems = items.filter(item => item.esPendiente === false);
-    console.log(`❌ Items NO pendientes (esPendiente: false): ${nosPendientesItems.length}`);
-    console.log("❌ Items no pendientes:", nosPendientesItems);
-    
-    // Verificar items sin la propiedad esPendiente
-    const sinEsPendienteItems = items.filter(item => item.esPendiente == null);
-    console.log(`❓ Items SIN propiedad esPendiente: ${sinEsPendienteItems.length}`);
-    
     // Guardar matches pendientes (objetos completos)
     matchesPendientes.value = pendientesItems.sort((a, b) => (a.matchId || 0) - (b.matchId || 0));
-
     // Para las propiedades renderizables, usar los mismos objetos ya que contienen toda la info
     propiedades.value = pendientesItems.sort((a, b) => (a.matchId || 0) - (b.matchId || 0));
-    
-    console.log(`📋 Total propiedades después de filtrar: ${propiedades.value.length}`);
-    console.log(`📄 Total páginas después de actualizar: ${Math.ceil(propiedades.value.length / pageSize)}`);
-    
     // Solo resetear a página 1 si no hay propiedades o si la página actual ya no es válida
     const newTotalPages = Math.ceil(propiedades.value.length / pageSize);
     if (propiedades.value.length === 0) {
@@ -300,36 +289,26 @@ const fetchMatchesPendientes = async () => {
     isLoading.value = false;
   }
 };
-
 /**
  * Carga los matches enviados del cliente
  */
 const cargarMatches = async () => {
   if (!clienteId.value) return;
-
   isLoadingMatches.value = true;
   try {
     const data = await matchService.getEnviadosByCliente(clienteId.value);
-    console.log("📨 Datos RAW de getEnviadosByCliente:", data);
-    
     let items = [];
     if (Array.isArray(data)) items = data;
     else if (Array.isArray(data?.items)) items = data.items;
     else if (Array.isArray(data?.$values)) items = data.$values;
     else if (Array.isArray(data?.items?.$values)) items = data.items.$values;
-
-    console.log("📨 Items procesados de enviados:", items);
-    
     // Enriquecer cada match con datos completos del inmueble
     const matchesEnriquecidos = await Promise.all(
       items.map(async (match) => {
         try {
           if (match.inmuebleId) {
-            console.log(`🏠 Obteniendo datos del inmueble ID: ${match.inmuebleId}`);
             const inmuebleCompleto = await inmuebleService.getInmuebleById(match.inmuebleId);
-            
             if (inmuebleCompleto) {
-              console.log(`✅ Inmueble encontrado:`, inmuebleCompleto);
               return {
                 ...match,
                 inmueble: inmuebleCompleto,
@@ -340,8 +319,6 @@ const cargarMatches = async () => {
               };
             }
           }
-          
-          console.log(`⚠️ No se pudo obtener inmueble para match:`, match);
           return match;
         } catch (error) {
           console.error(`❌ Error obteniendo inmueble para match ${match.id}:`, error);
@@ -349,9 +326,6 @@ const cargarMatches = async () => {
         }
       })
     );
-    
-    console.log("🎉 Matches enriquecidos:", matchesEnriquecidos);
-    
     matchEnviados.value = matchesEnriquecidos.sort(
       (a, b) => new Date(b.fechaEnvio || 0) - new Date(a.fechaEnvio || 0)
     );
@@ -362,24 +336,17 @@ const cargarMatches = async () => {
     isLoadingMatches.value = false;
   }
 };
-
 /**
  * Devuelve el objeto Match completo si la propiedad está actualmente pendiente
  */
 const getMatchForPropiedad = (propiedadId) => {
-  console.log("🔍 Buscando match para propiedad ID:", propiedadId);
-  console.log("📋 Matches pendientes disponibles:", matchesPendientes.value);
-  
   // Los items son objetos que contienen toda la información del match y la propiedad
   // Buscamos por propiedadId
   const match = matchesPendientes.value.find(
     (item) => item.propiedadId === propiedadId
   );
-  
-  console.log("🎯 Match encontrado:", match);
   return match;
 };
-
 // Conjunto de ids de propiedades pendientes (si existen matches)
 const pendientePropIds = computed(() => {
   const ids = new Set();
@@ -389,7 +356,6 @@ const pendientePropIds = computed(() => {
   });
   return ids;
 });
-
 /**
  * Determina si el checkbox debe estar marcado (es decir, si el Match ha sido enviado/procesado).
  * En la lista "pendientes", NINGUNO está enviado, por lo que el checkbox debe estar DESMARCADO.
@@ -401,75 +367,44 @@ const isMatchEnviado = (propiedadId) => {
   // Si el id está en pendientes, no está enviado
   return !pendientePropIds.value.has(propiedadId);
 };
-
 /**
  * Maneja el cambio del checkbox: Marcar Match como Enviado.
  */
 const handleMatchCheckbox = async (propiedad) => {
-  console.log("🔥 handleMatchCheckbox llamado con propiedad:", propiedad);
-  
   // Obtener el ID correcto de la propiedad
   const propiedadId = propiedad.propiedadId || propiedad.id;
-  console.log("🆔 ID de propiedad a buscar:", propiedadId);
-  
   const match = getMatchForPropiedad(propiedadId);
-  console.log("🔍 Match encontrado:", match);
-  
   if (!match) {
-    console.log("❌ No se encontró match para la propiedad:", propiedadId);
     return;
   }
-
   // El matchId es lo que necesitamos para el PUT
   const matchIdToUse = match.matchId;
-  console.log("📤 Intentando marcar como enviado el match ID:", matchIdToUse);
-  
   if (!matchIdToUse) {
-    console.log("❌ No se encontró matchId en el objeto match");
     return;
   }
-  
   isLoadingMatches.value = true;
   try {
     const result = await matchService.marcarComoEnviado(matchIdToUse);
-    console.log("📋 Resultado del servicio:", result);
-    
     if (result.ok) {
-      console.log("✅ Match marcado como enviado exitosamente");
-      
       // Guardar el conteo anterior para comparación
       const countBefore = propiedades.value.length;
-      console.log(`📊 ANTES: ${countBefore} propiedades`);
-      
       // Refrescar completamente los datos desde el servidor
-      console.log("🔄 Refrescando datos desde el servidor...");
       await fetchMatchesPendientes(); // Recargar pendientes
       await cargarMatches(); // Recargar enviados
-
       // Esperar a que Vue actualice el DOM y los computed
       await nextTick();
-
       const countAfter = propiedades.value.length;
-      console.log(`📊 DESPUÉS: ${countAfter} propiedades`);
-      console.log(`🔄 Diferencia: ${countBefore - countAfter} (debería ser 1)`);
-
       // Si la diferencia es 0, significa que el servidor devuelve todos los matches
       // y solo cambia el flag esPendiente, por lo que debemos restar manualmente
       if (countBefore === countAfter && countAfter > 0) {
-        console.log("⚠️ El servidor no está filtrando correctamente. Aplicando filtro local.");
-        
         // Filtrar localmente removiendo el match que acabamos de marcar como enviado
         const propiedadesFiltradas = propiedades.value.filter(prop => {
           const propId = prop.propiedadId || prop.id;
           return propId !== propiedadId;
         });
-        
         propiedades.value = propiedadesFiltradas;
         matchesPendientes.value = propiedadesFiltradas;
-        
-        console.log(`📊 Después del filtro local: ${propiedades.value.length} propiedades`);
       }
-
       // Verificar si la página actual es válida después de eliminar el item
       const newTotalPages = Math.ceil(propiedades.value.length / pageSize);
       if (currentPage.value > newTotalPages && newTotalPages > 0) {
@@ -477,13 +412,8 @@ const handleMatchCheckbox = async (propiedad) => {
       } else if (propiedades.value.length === 0) {
         currentPage.value = 1;
       }
-
-      console.log(`📊 Propiedades finales: ${propiedades.value.length}, Página actual: ${currentPage.value}, Total páginas: ${newTotalPages}`);
-      
       // Forzar actualización de la reactividad
       await nextTick();
-      console.log(`🔄 Después de nextTick final - Total páginas: ${totalPages.value}`);
-
       // Mostrar SweetAlert de éxito
       await Swal.fire({
         icon: "success",
@@ -496,8 +426,6 @@ const handleMatchCheckbox = async (propiedad) => {
         timerProgressBar: true,
       });
     } else {
-      console.log("❌ El servicio retornó ok: false", result);
-      
       await Swal.fire({
         icon: "error",
         title: "Error",
@@ -507,7 +435,6 @@ const handleMatchCheckbox = async (propiedad) => {
     }
   } catch (error) {
     console.error("💥 Error al marcar como enviado:", error);
-
     // Mostrar SweetAlert de error
     await Swal.fire({
       icon: "error",
@@ -519,9 +446,7 @@ const handleMatchCheckbox = async (propiedad) => {
     isLoadingMatches.value = false;
   }
 };
-
 // --- 4. OTRAS FUNCIONES (Necesarias para tu template) ---
-
 // Función helper para extraer el título de una propiedad/match
 const getTituloPropiedad = (match) => {
   // Intentar múltiples ubicaciones para el título, priorizando los datos enriquecidos
@@ -539,11 +464,7 @@ const getTituloPropiedad = (match) => {
     match.tituloPropiedad ||
     match.nombrePropiedad ||
     null;
-    
-  console.log("📝 getTituloPropiedad - match:", match, "titulo encontrado:", titulo);
-  
   if (titulo) return titulo;
-  
   // Si no hay título, usar código como fallback
   const codigo = 
     match.codigoPropiedad ||
@@ -554,13 +475,10 @@ const getTituloPropiedad = (match) => {
     match.Propiedad?.codigo ||
     match.codigo ||
     "";
-    
   return codigo ? `Propiedad ${codigo}` : "Sin título";
 };
-
 const buildInmuebleUrl = (propiedad) => {
   if (!propiedad) return null;
-  
   // Intentar obtener el slug de múltiples posibles ubicaciones, priorizando datos enriquecidos
   const slug = 
     propiedad.inmueble?.slugInmueble || 
@@ -569,29 +487,22 @@ const buildInmuebleUrl = (propiedad) => {
     propiedad.slug || 
     propiedad.Slug || 
     propiedad.SlugInmueble;
-    
-  console.log("🔗 buildInmuebleUrl - propiedad:", propiedad, "slug encontrado:", slug);
-  
   if (slug) {
     return `https://homesguatemala.com/inmueble/${slug}`;
   }
   return null;
 };
-
 const openWhatsApp = (propiedad) => {
   const cli = props.clientDetails || {};
   const clientName = (cli.nombre || "").toString().trim();
   const shortName = clientName ? clientName.split(" ")[0] : "";
-
   const propiedadTitulo = propiedad.titulo || propiedad.nombre || "Propiedad";
   const propiedadUrl = buildInmuebleUrl(propiedad);
-
   const msgBase = `Hola ${
     shortName || clientName || "cliente"
   }, tenemos la siguiente propiedad disponible para usted: ${propiedadTitulo}`;
   const fullMsg = propiedadUrl ? `${msgBase}\n${propiedadUrl}` : msgBase;
   const mensajeCodificado = encodeURIComponent(fullMsg);
-
   const phoneCandidate =
     cli.telefonoCompleto ||
     cli.telefono ||
@@ -600,14 +511,11 @@ const openWhatsApp = (propiedad) => {
     cli.mobile ||
     null;
   const telefonoLimpio = formatPhoneForWhatsApp(phoneCandidate);
-
   const urlWhatsApp = telefonoLimpio
     ? `https://wa.me/${telefonoLimpio}?text=${mensajeCodificado}`
     : `https://wa.me/?text=${mensajeCodificado}`;
-
   window.open(urlWhatsApp, "_blank", "noopener,noreferrer");
 };
-
 const formatPhoneForWhatsApp = (phone) => {
   if (!phone) return null;
   const cleaned = phone.toString().replace(/\D/g, "");
@@ -626,76 +534,38 @@ const formatPhoneForWhatsApp = (phone) => {
   }
   return cleaned;
 };
-
-const openInmuebleModal = (propiedad) => {
-  console.log("🏠 openInmuebleModal llamado con propiedad:", propiedad);
-  console.log("🔍 Propiedades del objeto recibido:");
-  console.log("  - propiedadId:", propiedad.propiedadId);
-  console.log("  - id:", propiedad.id);
-  console.log("  - titulo:", propiedad.titulo);
-  console.log("  - nombre:", propiedad.nombre);
-  console.log("  - codigoPropiedad:", propiedad.codigoPropiedad);
-  console.log("  - slugInmueble:", propiedad.slugInmueble);
-  console.log("  - slug:", propiedad.slug);
-  console.log("  - inmuebleId:", propiedad.inmuebleId);
-  console.log("  - inmueble:", propiedad.inmueble);
-  
-  // Crear un objeto normalizado para el modal
-  const propiedadParaModal = {
-    // Información básica de la propiedad
-    id: propiedad.propiedadId || propiedad.id,
-    titulo: propiedad.titulo || propiedad.nombre || "Sin título",
-    codigoPropiedad: propiedad.codigoPropiedad,
-    slugInmueble: propiedad.slugInmueble || propiedad.slug,
-    
-    // Si hay datos del inmueble anidado, usarlos
-    ...propiedad.inmueble,
-    
-    // Preservar todos los datos originales como fallback
-    ...propiedad,
-    
-    // Asegurar que el ID esté disponible
-    inmuebleId: propiedad.inmuebleId || propiedad.propiedadId || propiedad.id,
-    
-    // Asegurar que codigoPropiedad no esté vacío (requerido por el modal)
-    codigoPropiedad: propiedad.codigoPropiedad || propiedad.inmueble?.codigoPropiedad || `PROP-${propiedad.propiedadId || propiedad.id}`
-  };
-  
-  console.log("📋 Objeto final construido para modal:");
-  console.log("  - id:", propiedadParaModal.id);
-  console.log("  - titulo:", propiedadParaModal.titulo);
-  console.log("  - codigoPropiedad:", propiedadParaModal.codigoPropiedad);
-  console.log("  - inmuebleId:", propiedadParaModal.inmuebleId);
-  console.log("📤 Emitiendo evento open-inmueble con datos:", propiedadParaModal);
-  
-  emit("open-inmueble", { 
-    value: propiedadParaModal, 
-    source: "matchPendiente" 
-  });
+const openInmuebleModal = async (propiedad) => {
+  // 🔧 OBTENER DATOS COMPLETOS DEL SERVICIO
+  const inmuebleId = propiedad.propiedadId || propiedad.id || propiedad.inmuebleId;
+  try {
+    // Llamar al servicio para obtener los datos normalizados
+    const inmuebleCompleto = await inmuebleService.getInmuebleById(inmuebleId);
+    if (inmuebleCompleto) {
+      // Emitir con los datos completos normalizados
+      emit("open-inmueble", { 
+        value: inmuebleCompleto, 
+        source: "matchPendiente" 
+      });
+    } else {
+      console.error("❌ [matchPendiente] No se pudo obtener el inmueble completo");
+    }
+  } catch (error) {
+    console.error("❌ [matchPendiente] Error al obtener inmueble:", error);
+  }
 };
-
 const checkboxTitle = (propiedadId) => {
   // Si el match existe en la lista de pendientes, el título es "Marcar como enviado"
   return getMatchForPropiedad(propiedadId)
     ? "Marcar como enviado"
     : "Match ya procesado (Enviado/Eliminado)";
 };
-
 // Computed para mostrar enviados con información de propiedad
 const enviadosConPropiedad = computed(() => {
   return matchEnviados.value.map((match) => {
-    console.log("🏠 Match enviado (ya enriquecido):", {
-      matchId: match.id,
-      titulo: match.titulo || match.inmueble?.titulo,
-      inmueble: match.inmueble,
-      slugInmueble: match.slugInmueble || match.inmueble?.slugInmueble
-    });
-    
     // Los datos ya vienen enriquecidos desde cargarMatches
     return match;
   });
 });
-
 // Función para formatear fechas
 const formatDate = (dateString) => {
   if (!dateString) return "-";
@@ -710,11 +580,9 @@ const formatDate = (dateString) => {
     return "-";
   }
 };
-
 // Función para eliminar un match
 const deleteMatch = async (matchId) => {
   if (!matchId) return;
-
   try {
     // Mostrar confirmación con SweetAlert
     const result = await Swal.fire({
@@ -727,21 +595,15 @@ const deleteMatch = async (matchId) => {
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
     });
-
     if (!result.isConfirmed) return;
-
     isLoadingMatches.value = true;
-    
     // Eliminar el match
     await matchService.deleteMatch(matchId);
-
     // Refrescar ambas listas: enviados y pendientes
-    console.log("🔄 Refrescando listas después de eliminar match...");
     await Promise.all([
       cargarMatches(),        // Recargar enviados
       fetchMatchesPendientes() // Recargar pendientes (para que vuelva a aparecer)
     ]);
-
     // Mostrar mensaje de éxito
     await Swal.fire({
       icon: "success",
@@ -753,7 +615,6 @@ const deleteMatch = async (matchId) => {
     });
   } catch (error) {
     console.error("Error al eliminar match:", error);
-
     // Mostrar mensaje de error
     await Swal.fire({
       icon: "error",
@@ -765,9 +626,7 @@ const deleteMatch = async (matchId) => {
     isLoadingMatches.value = false;
   }
 };
-
 // --- 5. CICLO DE VIDA Y WATCHERS ---
-
 // Observar cambios en clienteId para recargar los matches
 watch(
   () => props.clienteId,
@@ -779,13 +638,11 @@ watch(
   },
   { immediate: true }
 );
-
 // Método público para refrescar desde el componente padre
 const refresh = () => {
   fetchMatchesPendientes();
   cargarMatches();
 };
-
 // Exponer el método refresh para que el padre pueda llamarlo
 defineExpose({
   refresh,

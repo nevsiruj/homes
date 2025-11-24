@@ -1,10 +1,11 @@
-import { API_URL } from '../../config.js';
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 const usuarioService = (() => {
   const axios = require('axios');
 
   const instance = axios.create({
-    baseURL: API_URL,
+    baseURL: getApiBaseUrl(),
     withCredentials: true, // Include cookies in requests
   });
 

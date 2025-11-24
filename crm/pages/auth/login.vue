@@ -92,7 +92,16 @@ export default {
         await router.push(redirect);
       } catch (error) {
         console.error("Error en login:", error);
-        if (error.status === 401) {
+        
+        // Detectar errores de red
+        if (error.message && (
+          error.message.includes('fetch') || 
+          error.message.includes('network') ||
+          error.message.includes('conexión') ||
+          error.message.includes('tardó demasiado')
+        )) {
+          errorMessage.value = "Error de conexión. Verifica tu internet e intenta nuevamente.";
+        } else if (error.status === 401) {
           errorMessage.value = "Credenciales incorrectas. Por favor verifica tu email y contraseña.";
         } else if (error.status === 500) {
           errorMessage.value = "Error del servidor. Por favor intenta más tarde.";

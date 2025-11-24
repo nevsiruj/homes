@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isOpen"
-    class="modal-overlay fixed inset-0 bg-black bg-opacity-50 z-[1000] flex items-center justify-center p-4"
+    class="modal-overlay fixed inset-0 bg-black bg-opacity-60 z-[1000] flex items-center justify-center p-4 backdrop-blur-sm"
     aria-labelledby="modal-title"
     role="dialog"
     aria-modal="true"
@@ -9,79 +9,253 @@
     <div class="flex items-center justify-center w-full h-full">
       <!-- Fondo oscuro -->
       <div
-        class="fixed inset-0 bg-gray-500/50 transition-opacity"
+        class="fixed inset-0 bg-gray-900/50 transition-opacity"
         aria-hidden="true"
         @click="closeModal"
       ></div>
 
       <!-- Contenido del modal -->
       <div
-        class="bg-white rounded-lg shadow-xl transform transition-all overflow-hidden"
+        class="relative bg-white rounded-2xl shadow-2xl transform transition-all overflow-hidden"
         style="
           width: 90%;
-          max-width: 1300px;
+          max-width: 1400px;
           height: 90%;
-          max-height: 800px;
+          max-height: 850px;
           overflow-y: auto;
         "
       >
-        <!-- Mostrar Loader mientras se cargan los datos -->
-        <Loader v-if="isLoading" />
+        <!-- Mostrar Skeleton mientras se cargan los datos -->
+        <div v-if="isLoading" class="w-full px-4 pt-5 pb-4 sm:px-6 sm:pb-4 md:px-8">
+          <div class="animate-pulse">
+            <!-- Header Skeleton -->
+            <div class="flex justify-between items-center mb-6">
+              <div class="h-7 bg-gray-300 rounded w-56"></div>
+              <div class="h-8 w-8 bg-gray-300 rounded"></div>
+            </div>
 
-        <div v-else class="w-full px-4 pt-5 pb-4 sm:px-6 sm:pb-4 md:px-8">
-          <div class="sm:flex sm:items-start">
-            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-              <div class="flex justify-between items-center">
-                <h3 class="text-xl leading-6 font-medium text-gray-900">
-                  Detalles del Cliente
-                </h3>
-                <button
-                  @click="closeModal"
-                  type="button"
-                  class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm py-2 px-3 ml-auto inline-flex items-center"
-                >
-                  X
-                </button>
+            <!-- Información básica y Preferencias Skeleton -->
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 mb-6">
+              <!-- Información Personal Skeleton -->
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="h-6 bg-gray-400 rounded w-48 mb-4"></div>
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-2">
+                  <!-- Nombre Completo -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-28 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-32"></div>
+                  </div>
+                  <!-- Teléfono -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-20 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-28"></div>
+                  </div>
+                  <!-- Email -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-16 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-24"></div>
+                  </div>
+                  <!-- Fecha de Registro -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-32 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-24"></div>
+                  </div>
+                  <!-- Origen -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-16 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-20"></div>
+                  </div>
+                </div>
               </div>
 
-              <div class="mt-6">
-                <!-- Información básica -->
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-bold text-lg mb-4">Información Personal</h4>
+              <!-- Preferencias Skeleton -->
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="h-6 bg-gray-400 rounded w-32 mb-4"></div>
+                <div class="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                  <!-- Tipo Inmueble -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-24 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-28"></div>
+                  </div>
+                  <!-- Operación -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-20 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-16"></div>
+                  </div>
+                  <!-- Precio Mínimo -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-24 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-20"></div>
+                  </div>
+                  <!-- Precio Máximo -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-24 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-20"></div>
+                  </div>
+                  <!-- Habitaciones -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-24 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-8"></div>
+                  </div>
+                  <!-- Baños -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-16 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-8"></div>
+                  </div>
+                  <!-- M² Construcción -->
+                  <div>
+                    <div class="h-3 bg-gray-300 rounded w-32 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-12"></div>
+                  </div>
+                  <!-- Ubicación -->
+                  <div class="col-span-2">
+                    <div class="h-3 bg-gray-300 rounded w-20 mb-2"></div>
+                    <div class="h-4 bg-gray-400 rounded w-32"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                    <div
-                      class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-2"
-                    >
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Nombre Completo:</span
+            <!-- Amenidades Skeleton (opcional) -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+              <div class="flex flex-wrap gap-2">
+                <div v-for="i in 4" :key="`amenidad-${i}`" class="h-6 bg-gray-300 rounded w-20"></div>
+              </div>
+            </div>
+
+            <!-- Match Pendiente Skeleton -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+              <div class="h-6 bg-gray-400 rounded w-80 mb-4"></div>
+              <div class="space-y-3">
+                <div v-for="i in 3" :key="`match-${i}`" class="flex justify-between items-center p-3 bg-white rounded">
+                  <div class="h-4 bg-gray-300 rounded flex-grow mr-4"></div>
+                  <div class="flex space-x-2">
+                    <div class="h-3 w-3 bg-gray-300 rounded"></div>
+                    <div class="h-7 w-20 bg-green-300 rounded"></div>
+                    <div class="h-7 w-24 bg-blue-300 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Requerimientos Skeleton -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="h-6 bg-gray-400 rounded w-40"></div>
+              </div>
+              <div class="h-4 bg-gray-300 rounded w-56"></div>
+            </div>
+
+            <!-- Historial Skeleton -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="h-6 bg-gray-400 rounded w-56"></div>
+                <div class="flex gap-2">
+                  <div class="h-7 w-24 bg-gray-300 rounded"></div>
+                  <div class="h-7 w-20 bg-gray-300 rounded"></div>
+                  <div class="h-7 w-24 bg-gray-300 rounded"></div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="h-8 bg-gray-300 rounded"></div>
+                <div v-for="i in 3" :key="`hist-${i}`" class="h-10 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+
+            <!-- Notas Skeleton -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <div class="h-6 bg-gray-400 rounded w-48 mb-4"></div>
+              <div class="space-y-2">
+                <div class="h-3 bg-gray-300 rounded w-full"></div>
+                <div class="h-3 bg-gray-300 rounded w-5/6"></div>
+                <div class="h-3 bg-gray-300 rounded w-4/6"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="flex flex-col h-full">
+          <!-- Header mejorado con gradiente -->
+          <div class="relative bg-gradient-to-r from-blue-900 to-blue-700 text-white p-6 md:p-8 flex-shrink-0">
+            <button
+              @click="closeModal"
+              type="button"
+              class="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 transition-all duration-200 z-10"
+            >
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            <div class="pr-12">
+              <h3 class="text-2xl md:text-3xl font-bold mb-2">
+                Contacto con {{ cliente.nombre }} {{ cliente.apellido }}
+              </h3>
+              <div class="flex flex-wrap items-center gap-4 text-sm text-blue-100">
+                <span class="flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                  </svg>
+                  {{ cliente.email || 'Sin email' }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                  </svg>
+                  {{ cliente.telefono || 'Sin teléfono' }}
+                </span>
+                <span v-if="cliente.fechaRegistro" class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">
+                  Cliente desde {{ formatDate(cliente.fechaRegistro) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenido con scroll mejorado -->
+          <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-gray-50">
+            <div class="space-y-6">
+              <!-- Información básica y Preferencias -->
+              <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <!-- Información Personal -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                  <h4 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                    Información Personal
+                  </h4>
+
+                  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Nombre Completo</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{ cliente.nombre }} {{ cliente.apellido }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Teléfono:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Teléfono</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{ cliente.telefono || "N/A" }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Email:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Email</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold text-sm break-all">
                           {{ cliente.email || "N/A" }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Fecha de Registro:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Fecha de Registro</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{
                             cliente.fechaRegistro
                               ? formatDate(cliente.fechaRegistro)
@@ -89,45 +263,49 @@
                           }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Origen:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Origen</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{ cliente.origen || "N/A" }}
                         </p>
                       </div>
                     </div>
-                  </div>
+                </div>
 
-                  <!-- Preferencias -->
-                  <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-bold text-lg mb-4">Preferencias</h4>
+                <!-- Preferencias -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                  <h4 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                      <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Preferencias
+                  </h4>
 
-                    <div
-                      class="grid grid-cols-2 gap-3 md:grid-cols-2 lg:grid-cols-3"
-                    >
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Tipo Inmueble:</span
+                  <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Tipo Inmueble</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{ cliente.preferenciasSummary?.tipo || "N/A" }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Operación:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Operación</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{ cliente.preferenciasSummary?.operacion || "N/A" }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Precio Mínimo:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Precio Mínimo</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{
                             cliente.preferenciasSummary?.precioMin != null
                               ? `$${Number(
@@ -137,11 +315,11 @@
                           }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Precio Máximo:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Precio Máximo</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{
                             cliente.preferenciasSummary?.precioMax != null
                               ? `$${Number(
@@ -151,83 +329,103 @@
                           }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Habitaciones:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Habitaciones</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{
                             cliente.preferenciasSummary?.habitaciones ?? "N/A"
                           }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >Baños:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Baños</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{ cliente.preferenciasSummary?.banos ?? "N/A" }}
                         </p>
                       </div>
-                      <div>
-                        <span class="text-sm font-medium text-gray-500"
-                          >M² Construcción:</span
+                      <div class="pb-3 border-b">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >M² Construcción</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{
                             cliente.preferenciasSummary?.metrosCuadrados ??
                             "N/A"
                           }}
                         </p>
                       </div>
-                      <div class="col-span-2">
-                        <span class="text-sm font-medium text-gray-500"
-                          >Ubicación:</span
+                      <div class="col-span-2 pb-3 border-b sm:col-span-3">
+                        <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1"
+                          >Ubicación</span
                         >
-                        <p class=" ">
+                        <p class="text-gray-900 font-semibold">
                           {{ cliente.preferenciasSummary?.ubicacion || "N/A" }}
                         </p>
                       </div>
                     </div>
                   </div>
-
-                  <div
-                    v-if="
-                      cliente?.preferenciasSummary?.amenidades &&
-                      cliente.preferenciasSummary.amenidades.length > 0
-                    "
-                    class="flex flex-wrap gap-2 bg-gray-50 p-4 rounded-lg mt-4"
-                  >
-                    <span
-                      v-for="(nombre, index) in cliente.preferenciasSummary
-                        .amenidades"
-                      :key="index"
-                      class="bg-gray-200 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded"
-                    >
-                      {{ nombre }}
-                    </span>
-                  </div>
-
-                  <p v-else class="text-gray-500">Ninguna</p>
                 </div>
 
-                <MatchPendiente 
-                  :clienteId="clienteId" 
-                  :clientDetails="cliente" 
-                  @open-inmueble="handleOpenInmueble"
-                />
+              <!-- Amenidades -->
+              <div class="bg-white rounded-xl shadow-md p-6">
+                <h4 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  Amenidades Preferidas
+                </h4>
 
-                <!-- Lista de requerimientos -->
-                <div class="mt-6 bg-gray-50 p-4 rounded-lg">
-                  <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-bold text-lg">Requerimientos</h4>
-                  </div>
-                  <div
-                    v-if="preferenciasList.length <= 1"
-                    class="text-sm text-gray-500"
+                <div
+                  v-if="
+                    cliente?.preferenciasSummary?.amenidades &&
+                    cliente.preferenciasSummary.amenidades.length > 0
+                  "
+                  class="flex flex-wrap gap-2"
+                >
+                  <span
+                    v-for="(nombre, index) in cliente.preferenciasSummary
+                      .amenidades"
+                    :key="index"
+                    class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
                   >
-                    No hay requerimientos registrados.
-                  </div>
+                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                    {{ nombre }}
+                  </span>
+                </div>
+
+                <p v-else class="text-gray-400 text-sm">No hay amenidades preferidas</p>
+              </div>
+
+              <MatchPendiente 
+                :clienteId="clienteId" 
+                :clientDetails="cliente" 
+                @open-inmueble="handleOpenInmueble"
+              />
+
+              <!-- Lista de requerimientos -->
+              <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-5">
+                  <h4 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                      <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                    </svg>
+                    Requerimientos
+                  </h4>
+                </div>
+                <div
+                  v-if="preferenciasList.length <= 1"
+                  class="text-sm text-gray-400 text-center py-8"
+                >
+                  No hay requerimientos registrados
+                </div>
 
                   <div
                     v-else
@@ -408,28 +606,33 @@
                       </tbody>
                     </table>
                   </div>
-                </div>
+              </div>
 
-                <!--Historial de seguimiento-->
-                <div class="mt-6 bg-gray-50 p-4 rounded-lg">
-                  <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-bold text-lg">Historial de seguimiento</h4>
+              <!--Historial de seguimiento-->
+              <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between mb-5">
+                  <h4 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                    </svg>
+                    Historial de Seguimiento
+                  </h4>
 
-                    <div class="flex items-center justify-end gap-3">
-                      <input
-                        type="text"
-                        id="filtrarInteracciones"
-                        v-model="filtroInteracciones"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg 0 block w-full px-2 py-1.5"
-                        placeholder="Filtrar"
-                      />
+                  <div class="flex items-center gap-3">
+                    <input
+                      type="text"
+                      id="filtrarInteracciones"
+                      v-model="filtroInteracciones"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-3 py-2"
+                      placeholder="Filtrar interacciones..."
+                    />
 
-                      <button
-                        type="button"
-                        @click="openUpdateModal()"
-                        class="text-xs px-2 py-1 rounded border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-60"
-                      >
-                        Agregar
+                    <button
+                      type="button"
+                      @click="openUpdateModal()"
+                      class="text-sm px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      Agregar
                       </button>
 
                       <button
@@ -522,27 +725,31 @@
                   </div>
                 </div>
 
-                <!-- Notas adicionales -->
-                <div class="mt-6 bg-gray-50 p-4 rounded-lg">
-                  <h4 class="font-bold text-lg mb-2">Notas Adicionales</h4>
-                  <p class=" ">
-                    {{ cliente.notas || "Sin notas adicionales." }}
-                  </p>
-                </div>
+              <!-- Notas adicionales -->
+              <div class="bg-white rounded-xl shadow-md p-6">
+                <h4 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                  </svg>
+                  Notas Adicionales
+                </h4>
+                <p class="text-gray-700 leading-relaxed">
+                  {{ cliente.notas || "Sin notas adicionales" }}
+                </p>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Footer - Botón Cerrar -->
-        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button
-            type="button"
-            @click="closeModal"
-            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-          >
-            Cerrar
-          </button>
+          <!-- Footer mejorado -->
+          <div class="bg-white border-t p-6 flex justify-end gap-3 flex-shrink-0">
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 rounded-xl text-sm font-medium transition-all"
+            >
+              Cerrar
+            </button>
+          </div>
         </div>
 
         <!-- Añadido: modal de detalle de preferencia como fallback local -->
@@ -726,8 +933,7 @@ import clienteService from "@/services/clienteService";
 import ModalDetalleRequerimiento from "./modalDetalleRequerimiento.vue";
 import agenteService from "@/services/agenteService";
 import interaccionService from "@/services/interaccionService";
-import Loader from "./Loader.vue";
-import MatchPendiente from "./components/MatchPendiente.vue";
+import MatchPendiente from "./matchPendiente.vue";
 
 // Import or define statusMap
 import { statusMap } from "@/api/constants"; // Adjust the path if necessary
@@ -745,6 +951,10 @@ const props = defineProps({
   isOpen: {
     type: Boolean,
     required: true,
+    default: false,
+  },
+  isAdmin: {
+    type: Boolean,
     default: false,
   },
   cliente: {
@@ -940,11 +1150,75 @@ const preferenciasSummary = computed(() => {
 // Añadir una referencia para controlar abortos de solicitudes
 const abortController = ref(null);
 
-// Ajustar watch de cliente para cargar interacciones
+// Función para cargar el cliente completo con efecto de loading
+async function loadClienteCompleto() {
+  if (!props.cliente?.id) {
+    // Si no hay ID, usar datos de props directamente sin loading
+    if (props.cliente) {
+      cliente.value = {
+        ...props.cliente,
+        preferencias: {
+          ...props.cliente.preferencias,
+          amenidades: props.cliente.preferencias?.amenidades || [],
+        },
+      };
+    }
+    isLoading.value = false;
+    return;
+  }
+
+  try {
+    // Establecer loading ANTES de cualquier operación
+    isLoading.value = true;
+    
+    // Limpiar cliente para forzar el skeleton
+    cliente.value = null;
+    
+    // Delay mínimo para que se vea el skeleton
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Cargar datos completos del cliente
+    const clienteData = await clienteService.getClienteById(props.cliente.id);
+    const clienteCompleto = clienteData?.$values ? clienteData.$values[0] : clienteData;
+    
+    if (clienteCompleto) {
+      cliente.value = {
+        ...clienteCompleto,
+        preferencias: {
+          ...clienteCompleto.preferencias,
+          amenidades: clienteCompleto.preferencias?.amenidades || [],
+        },
+      };
+    }
+  } catch (error) {
+    console.error("Error al cargar cliente:", error);
+    // En caso de error, usar datos de props
+    if (props.cliente) {
+      cliente.value = {
+        ...props.cliente,
+        preferencias: {
+          ...props.cliente.preferencias,
+          amenidades: props.cliente.preferencias?.amenidades || [],
+        },
+      };
+    }
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+// Watch de cliente solo para actualizar cuando NO está en modo loading
 watch(
   () => props.cliente,
-  (newVal) => {
-    if (newVal) {
+  (newVal, oldVal) => {
+    // Si cambió el ID del cliente mientras el modal está abierto
+    if (props.isOpen && newVal?.id !== oldVal?.id) {
+      // Limpiar cliente anterior y recargar
+      cliente.value = null;
+      isLoading.value = true;
+      loadClienteCompleto();
+    } else if (!isLoading.value && newVal) {
+      // Solo actualizar si no estamos en estado de carga
       cliente.value = {
         ...newVal,
         preferencias: {
@@ -952,30 +1226,33 @@ watch(
           amenidades: newVal.preferencias?.amenidades || [],
         },
       };
-    } else {
-      cliente.value = {
-        nombre: "",
-        apellido: "",
-        telefono: "",
-        email: "",
-        preferencias: { amenidades: [] },
-      };
     }
   },
-  { immediate: true, deep: true }
+  { deep: true }
 );
 
 // Reemplazo de watcher anterior de isOpen para secuenciar
 watch(
   () => props.isOpen,
-  (v) => {
-    if (!v) {
+  async (v, oldV) => {
+    if (v && !oldV) {
+      // Al abrir el modal, primero limpiar el cliente anterior
+      cliente.value = null;
+      isLoading.value = true;
+      
+      // Luego cargar los datos del nuevo cliente
+      await loadClienteCompleto();
+    } else if (!v && oldV) {
       // Al cerrar, limpiar cualquier operación pendiente
       // Cancelar solicitudes pendientes
       if (abortController.value) {
         abortController.value.abort();
         abortController.value = null;
       }
+      // Resetear estado de carga
+      isLoading.value = false;
+      // Limpiar cliente para que no se vea al reabrir
+      cliente.value = null;
     }
   }
 );
@@ -990,8 +1267,10 @@ function closeModal() {
 
   // Limpiar temporizadores
 
-  // Emitir evento de cierre
-  emit("close");
+  // Usar nextTick para asegurar que la emisión ocurra después de limpiar el estado
+  nextTick(() => {
+    emit("close");
+  });
 }
 
 const formatDate = (dateString) => {
@@ -1237,6 +1516,7 @@ onUnmounted(() => {
 
 const interacciones = ref([]);
 const isLoadingInteracciones = ref(false);
+const filtroInteracciones = ref('');
 
 function parseDate(d) {
   if (!d) return null;

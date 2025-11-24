@@ -114,11 +114,11 @@
           </div>
         </div>
         <div class="mx-auto text-center md:text-left lg:py-8">
-          <h1
+          <h3
             class="mb-4 text-4xl font-title tracking-tight leading-none text-gray-900 md:text-2xl lg:text-2xl font-alta"
           >
             SOBRE NOSOTROS
-          </h1>
+          </h3>
           <p
             class="mb-4 text-sm font-light text-black lg:text-sm font-roboto w-72"
           >
@@ -135,11 +135,11 @@
           > -->
         </div>
         <div class="mx-auto text-center md:text-left lg:py-8">
-          <h1
+          <h3
             class="mb-4 text-4xl font-title tracking-tight leading-none text-gray-900 md:text-2xl lg:text-2xl"
           >
             CONTÁCTENOS
-          </h1>
+          </h3>
           <p class="mb-4 text-sm font-light text-black lg:text-sm font-roboto">
             Será un gusto atenderle. Comuníquese con nosotros y uno de nuestros
             asesores le apoyará gustosamente.

@@ -1,5 +1,23 @@
 import { API_BASE_URL } from '../config'
 
+const cache = new Map();
+
+const defaultTTL = 1000 * 60 * 3; // 3 minutos
+
+const getFromCache = (key) => {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expires) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.value;
+};
+
+const setCache = (key, value, ttl = defaultTTL) => {
+  cache.set(key, { value, expires: Date.now() + ttl });
+};
+
 export default {
 
 
@@ -26,17 +44,24 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
       precioMaximo: 'PrecioMaximo',
       titulo: 'Titulo',
       codigoPropiedad: 'CodigoPropiedad',
-      orden: 'Orden', // <-- ¡AQUÍ ESTÁ LA CLAVE! Mapea 'orden' a 'Orden'
+      orden: 'Orden', 
       luxury: 'Luxury',
     };
 
     params.append('PageNumber', pageNumber.toString());
     params.append('PageSize', pageSize.toString());
 
-    // Añadir los filtros dinámicamente.
-    for (const key in filters) {
-      if (Object.prototype.hasOwnProperty.call(filters, key)) {
-        const value = filters[key];
+    // Añadir los filtros dinámicamente. Ignorar `pageNumber`/`pageSize` si vienen en `filters`.
+    const cleanedFilters = { ...filters };
+    // Eliminar duplicados de la query que pueden venir en camelCase o PascalCase
+    delete cleanedFilters.pageNumber;
+    delete cleanedFilters.PageNumber;
+    delete cleanedFilters.pageSize;
+    delete cleanedFilters.PageSize;
+
+    for (const key in cleanedFilters) {
+      if (Object.prototype.hasOwnProperty.call(cleanedFilters, key)) {
+        const value = cleanedFilters[key];
         const backendKey = backendParamNames[key.toLowerCase()] || key; // Usa el nombre mapeado
         
         if (Array.isArray(value)) {
@@ -50,6 +75,9 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
     const url = `${API_BASE_URL}/Inmueble?${params.toString()}`;
     console.log("API URL:", url); // Log the API URL being called
 
+    const cacheKey = `getInmuebles:${url}`;
+    const cached = getFromCache(cacheKey);
+    if (cached) return cached;
     const response = await fetch(url);
     if (!response.ok) {
       const errorBody = await response.text();
@@ -67,6 +95,7 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
       hasPreviousPage: rawData.hasPreviousPage,
     };
 
+    setCache(cacheKey, pagedResult);
     return pagedResult;
   } catch (error) {
     console.error("Error in inmuebleService.getInmueblesPaginados:", error); // Log any errors
@@ -77,9 +106,14 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
   
   async getInmueble() {
     try {
+      const cacheKey = `${API_BASE_URL}/Inmueble:list`;
+      const cached = getFromCache(cacheKey);
+      if (cached) return cached;
       const response = await fetch(`${API_BASE_URL}/Inmueble`)
       if (!response.ok) throw new Error('Error fetching inmuebles')
-      return await response.json()
+      const data = await response.json()
+      setCache(cacheKey, data);
+      return data
     } catch (error) {
       //console.error('Error in inmuebleService.getInmueble:', error)
       throw error
@@ -89,10 +123,14 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
 
   async getInmuebleById(id) {
     try {
+      const cacheKey = `${API_BASE_URL}/Inmueble:id:${id}`;
+      const cached = getFromCache(cacheKey);
+      if (cached) return cached;
       const response = await fetch(`${API_BASE_URL}/Inmueble/${id}`)
       if (!response.ok) throw new Error('Error fetching inmueble')
       const data = await response.json()
       //console.log('Inmueble data:', data) 
+      setCache(cacheKey, data);
       return data
     } catch (error) {
       //console.error('Error in inmuebleService.getInmuebleById:', error)
@@ -104,6 +142,9 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
     try {
       const safeSlug = encodeURIComponent(String(slug || '').trim());
   
+      const cacheKey = `${API_BASE_URL}/Inmueble:slug:${safeSlug}`;
+      const cached = getFromCache(cacheKey);
+      if (cached) return cached;
       const response = await fetch(`${API_BASE_URL}/Inmueble/by-slug/${safeSlug}`, {
         headers: { 'Accept': 'application/json' }
       });
@@ -120,6 +161,7 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
         data.slugInmueble = data.SlugInmueble;
       }
   
+      setCache(cacheKey, data);
       return data;
     } catch (error) {
       //console.error('Error en inmuebleService.getInmuebleBySlug:', error);

@@ -1,7 +1,7 @@
 <template>
   <form class="w-80 md:w-full max-w-5xl mx-auto" @submit.prevent="handleSubmit">
     <div
-      class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden"
+      class="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-visible"
     >
       <div class="mb-4 border-b border-gray-200">
         <ul
@@ -80,34 +80,38 @@
           aria-labelledby="profile-tab"
         >
           <div class="grid grid-cols-2 md:flex">
-            <button
-              id="saleRentDropdownButton"
-              data-dropdown-toggle="saleRentDropdownMenu"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto flex-shrink-0"
-              type="button"
-            >
-              {{ filters.tipoTransaccion || "Venta/Renta" }}
-              <svg
-                class="w-2.5 h-2.5 ms-3"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
+            <div class="relative inline-block">
+              <button
+                id="saleRentDropdownButton"
+                @click="toggleDropdown('saleRent')"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto flex-shrink-0"
+                type="button"
               >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m1 1 4 4 4-4"
-                />
-              </svg>
-            </button>
+                {{ filters.tipoTransaccion || "Venta/Renta" }}
+                <svg
+                  class="w-2.5 h-2.5 ms-3"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 10 6"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="m1 1 4 4 4-4"
+                  />
+                </svg>
+              </button>
 
-            <div
-              id="saleRentDropdownMenu"
-              class="z-10 hidden w-42 bg-white divide-y divide-gray-100 shadow-sm trans"
-            >
+              <div
+                v-show="openDropdown === 'saleRent'"
+                @click.stop
+                id="saleRentDropdownMenu"
+                class="absolute z-[9999] w-56 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 rounded-lg mt-1"
+                style="top: 100%; left: 0;"
+              >
               <ul
                 class="p-3 space-y-3 text-xs text-gray-800"
                 aria-labelledby="saleRentDropdownButton"
@@ -150,13 +154,15 @@
                 </li>
               </ul>
             </div>
+            </div>
 
-            <button
-              id="dropdownCheckboxButton1"
-              data-dropdown-toggle="dropdownDefaultCheckbox1"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs w-full p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto"
-              type="button"
-            >
+            <div class="relative inline-block w-full">
+              <button
+                id="dropdownCheckboxButton1"
+                @click="toggleDropdown('propiedades')"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs w-full p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto"
+                type="button"
+              >
               Propiedades<svg
                 class="w-2.5 h-2.5 ms-3"
                 aria-hidden="true"
@@ -174,8 +180,11 @@
               </svg>
             </button>
             <div
+              v-show="openDropdown === 'propiedades'"
+              @click.stop
               id="dropdownDefaultCheckbox1"
-              class="z-10 hidden w-42 bg-white divide-y divide-gray-100 shadow-sm trans"
+              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
+              style="top: 100%; left: 0;"
             >
             <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -293,13 +302,15 @@
                   </li>
                 </ul>
             </div>
+            </div>
 
-            <button
-              id="dropdownCheckboxButton2"
-              data-dropdown-toggle="dropdownDefaultCheckbox2"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs w-full p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto"
-              type="button"
-            >
+            <div class="relative inline-block w-full">
+              <button
+                id="dropdownCheckboxButton2"
+                @click="toggleDropdown('ubicaciones')"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs w-full p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto"
+                type="button"
+              >
               Ubicación<svg
                 class="w-2.5 h-2.5 ms-3"
                 aria-hidden="true"
@@ -317,12 +328,15 @@
               </svg>
             </button>
             <div
+              v-show="openDropdown === 'ubicaciones'"
+              @click.stop
               id="dropdownDefaultCheckbox2"
-              class="z-10 hidden w-48 bg-white divide-y divide-gray-100 shadow-sm trans"
+              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
+              style="top: 100%; left: 0;"
             >
             <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
-                  aria-labelledby="dropdownCheckboxButton1"
+                  aria-labelledby="dropdownCheckboxButton2"
                 >
                   <li>
                     <div class="flex items-center">
@@ -603,13 +617,15 @@
                   </li>
                 </ul>
             </div>
+            </div>
 
-            <button
-              id="dropdownCheckboxButton3"
-              data-dropdown-toggle="dropdownDefaultCheckbox3"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs w-full p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto"
-              type="button"
-            >
+            <div class="relative inline-block w-full">
+              <button
+                id="dropdownCheckboxButton3"
+                @click="toggleDropdown('habitaciones')"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs w-full p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto"
+                type="button"
+              >
               Habitaciones<svg
                 class="w-2.5 h-2.5 ms-3"
                 aria-hidden="true"
@@ -627,12 +643,15 @@
               </svg>
             </button>
             <div
+              v-show="openDropdown === 'habitaciones'"
+              @click.stop
               id="dropdownDefaultCheckbox3"
-              class="z-10 hidden w-32 bg-white divide-y divide-gray-100 shadow-sm trans"
+              class="absolute z-[9999] w-48 md:w-40 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
+              style="top: 100%; left: 0;"
             >
               <ul
                 class="p-3 space-y-3 text-xs text-gray-800"
-                aria-labelledby="dropdownCheckboxButton2"
+                aria-labelledby="dropdownCheckboxButton3"
               >
                 <li v-for="(count, habs) in sortedHabitaciones" :key="habs">
                   <div class="flex items-center">
@@ -652,6 +671,7 @@
                   </div>
                 </li>
               </ul>
+            </div>
             </div>
 
             <input
@@ -767,15 +787,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, onMounted, watch, computed, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { initFlowbite } from "flowbite";
 import inmuebleService from "@/services/inmuebleService";
 
 const router = useRouter();
 const route = useRoute();
 
 const activeTab = ref("busqueda");
+const openDropdown = ref(null);
 
 const filters = ref({
   tipoTransaccion: "",
@@ -888,9 +908,17 @@ if (Array.isArray(amenidadesArray)) {
 
 const loadAllInmueblesForCounts = async () => {
   try {
-    const result = await inmuebleService.getInmueblesPaginados(1, 1000);
-    if (result && result.items) {
-      allInmueblesForCounts.value = result.items;
+    // Mejor approach: solicitar pocas páginas en paralelo y sumarizar conteos
+    const pagesToFetch = 3; // Ajustable según la carga
+    const pageSize = 200; // 200 * 3 = 600 elementos max (mucho menos que 1000)
+    const fetches = [];
+    for (let i = 1; i <= pagesToFetch; i++) {
+      fetches.push(inmuebleService.getInmueblesPaginados(i, pageSize));
+    }
+    const results = await Promise.all(fetches);
+    const combined = results.flatMap(r => (r && r.items) ? r.items : []);
+    if (combined && combined.length > 0) {
+      allInmueblesForCounts.value = combined;
       calculatePropertyCounts();
     }
   } catch (error) {
@@ -1052,8 +1080,47 @@ const handleSearchByKeyword = () => {
   });
 };
 
+// Función para toggle dropdowns manualmente
+const toggleDropdown = (dropdownName) => {
+  if (openDropdown.value === dropdownName) {
+    openDropdown.value = null;
+  } else {
+    openDropdown.value = dropdownName;
+  }
+};
+
+// Cerrar dropdown al hacer click fuera
+const handleClickOutside = (event) => {
+  const dropdowns = ['saleRent', 'propiedades', 'ubicaciones', 'habitaciones'];
+  const clickedInsideDropdown = dropdowns.some(name => {
+    const element = document.getElementById(
+      name === 'saleRent' ? 'saleRentDropdownMenu' : 
+      name === 'propiedades' ? 'dropdownDefaultCheckbox1' :
+      name === 'ubicaciones' ? 'dropdownDefaultCheckbox2' :
+      'dropdownDefaultCheckbox3'
+    );
+    return element && element.contains(event.target);
+  });
+  
+  const clickedButton = event.target.closest('[id*="dropdownCheckbox"], [id*="saleRentDropdown"]');
+  
+  if (!clickedInsideDropdown && !clickedButton) {
+    openDropdown.value = null;
+  }
+};
+
+// Cerrar dropdowns al hacer scroll
+const handleScroll = () => {
+  if (openDropdown.value) {
+    openDropdown.value = null;
+  }
+};
+
 watch(activeTab, (newTab, oldTab) => {
   if (newTab !== oldTab) {
+    // Cerrar cualquier dropdown abierto al cambiar de tab
+    openDropdown.value = null;
+    
     filters.value = {
       tipoTransaccion: "",
       tipoPropiedad: [],
@@ -1077,13 +1144,32 @@ watch(
 );
 
 onMounted(() => {
-  initFlowbite();
   loadAllInmueblesForCounts();
+  // Agregar listener para cerrar dropdowns al hacer click fuera
+  document.addEventListener('click', handleClickOutside);
+  // Agregar listener para cerrar dropdowns al hacer scroll
+  window.addEventListener('scroll', handleScroll, true);
+});
+
+onBeforeUnmount(() => {
+  // Limpiar listeners al desmontar el componente
+  document.removeEventListener('click', handleClickOutside);
+  window.removeEventListener('scroll', handleScroll, true);
 });
 </script>
 
 <style scoped>
 .font-roboto {
   font-family: "Roboto", sans-serif;
+}
+
+/* Los dropdowns ahora se manejan con CSS puro sin Flowbite */
+.relative {
+  position: relative;
+}
+
+/* Asegurar que los dropdowns aparezcan encima de todo */
+[id*="dropdown"] {
+  z-index: 9999;
 }
 </style>

@@ -34,14 +34,15 @@
           </NuxtLink>
           <div class="flex items-center lg:order-2">
             <button
-              data-collapse-toggle="mobile-menu-2"
+              @click="toggleMobileMenu"
               type="button"
               class="inline-flex items-center p-2 ml-1 text-sm text-gray-900 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
               aria-controls="mobile-menu-2"
-              aria-expanded="false"
+              :aria-expanded="isMobileMenuOpen"
             >
               <span class="sr-only">Open main menu</span>
               <svg
+                :class="{'hidden': isMobileMenuOpen, 'block': !isMobileMenuOpen}"
                 class="w-10 h-10"
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -54,7 +55,8 @@
                 ></path>
               </svg>
               <svg
-                class="hidden w-6 h-6"
+                :class="{'hidden': !isMobileMenuOpen, 'block': isMobileMenuOpen}"
+                class="w-6 h-6"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +70,7 @@
             </button>
           </div>
           <div
-            class="hidden justify-between gap-8 items-center w-full lg:flex lg:w-auto lg:order-1"
+            :class="['justify-between gap-8 items-center w-full lg:flex lg:w-auto lg:order-1', isMobileMenuOpen ? 'flex' : 'hidden']"
             id="mobile-menu-2"
           >
             <ul
@@ -81,7 +83,7 @@
               >
                 <div>
                   <NuxtLink
-                    to="../propiedades"
+                    to="/propiedades"
                     class="block py-2 pr-4 pl-3 text-black bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 relative group focus:outline-none"
                     aria-haspopup="true"
                     :aria-expanded="isPropertiesDropdownOpen"
@@ -140,7 +142,7 @@
 
               <li>
                 <NuxtLink
-                  to="../proyectos-inmobiliarios"
+                  to="/proyectos-inmobiliarios"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   PROYECTOS
@@ -156,7 +158,7 @@
               </li>
               <li>
                 <NuxtLink
-                  to="../custom"
+                  to="/custom"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   CUSTOM HOMES
@@ -184,7 +186,7 @@
               </li>
               <li>
                 <NuxtLink
-                  to="../nosotros"
+                  to="/nosotros"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   NOSOTROS
@@ -200,14 +202,14 @@
               </li>
               <li>
                 <NuxtLink
-                  to="../blog"
+                  to="/blog"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   BLOG
                   <span
                     :class="[
                       'absolute bottom-0 left-0 h-0.5 bg-gray-900 transition-all duration-300',
-                      isActive('../blog')
+                      isActive('/blog')
                         ? 'w-full'
                         : 'w-0 group-hover:w-full',
                     ]"
@@ -217,7 +219,7 @@
 
               <li>
                 <NuxtLink
-                  to="../busqueda"
+                  to="/busqueda"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   BUSQUEDA AVANZADA
@@ -251,6 +253,12 @@ const router = useRouter();
 const isBusquedaRoute = computed(() => {
   return route.path === "/busqueda";
 });
+
+const isMobileMenuOpen = ref(false);
+
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
 
 const isPropertiesDropdownOpen = ref(false);
 let closeDropdownTimer = null; // Variable para almacenar el ID del temporizador

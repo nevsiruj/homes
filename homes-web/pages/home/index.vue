@@ -1,7 +1,5 @@
 <template>
-  <div v-if="showLoader" class="loader-overlay">
-    <Loader />
-  </div>
+  <!-- Removed forced loader to speed up perceived load time -->
   <Header />
   <Seccion1 />
   <RedesFlotantes />
@@ -11,9 +9,10 @@
 <script>
 import Header from "../../components/header.vue";
 import Seccion1 from "./seccion1.vue";
-import Seccion2 from "./seccion2.vue";
-import Seccion3 from "./seccion3.vue";
-import Seccion4 from "./seccion4.vue";
+import { defineAsyncComponent } from 'vue';
+const Seccion2 = defineAsyncComponent(() => import('./seccion2.vue'));
+const Seccion3 = defineAsyncComponent(() => import('./seccion3.vue'));
+const Seccion4 = defineAsyncComponent(() => import('./seccion4.vue'));
 import Footer from "../../components/footer.vue";
 import RedesFlotantes from "../../components/redesFlotantes.vue";
 import Loader from "../../components/Loader.vue";
@@ -31,18 +30,8 @@ export default {
   },
 
   setup() {
-    const showLoader = ref(true);
-    const MIN_DURATION_MS = 2000;
-
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    onMounted(async () => {
-      // Mantiene el loader por al menos 2 segundos
-      await delay(MIN_DURATION_MS);
-      showLoader.value = false;
-    });
-
-    return { showLoader };
+    // No loader by default — removed forced 2s wait to improve perceived load performance
+    return {};
   },
   
 };

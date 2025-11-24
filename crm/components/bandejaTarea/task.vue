@@ -4,6 +4,17 @@
       <h1 class="text-2xl font-bold text-gray-800">
         Bienvenido, {{ nombreAgente }}
       </h1>
+      <div class="flex items-center gap-2">
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input 
+            type="checkbox" 
+            v-model="isCompactMode" 
+            class="sr-only peer"
+          >
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-600"></div>
+          <span class="ms-3 text-sm font-medium text-gray-700">Modo Compacto</span>
+        </label>
+      </div>
     </div>
 
     <div
@@ -76,351 +87,367 @@
           class="min-h-[100%] space-y-2 mt-2"
         >
           <template #item="{ element }">
-            <TaskCard :task="element" @open-contact="openContactModal" />
+            <TaskCard 
+              :task="element" 
+              :agentes-map="agentesMap" 
+              :compact-mode="isCompactMode"
+              @open-contact="openContactModal" 
+            />
           </template>
         </draggable>
       </div>
     </div>
-  </div>
 
-  <!-- Modal de Contacto - Movido fuera del contenedor principal -->
+    <!-- Modal de Contacto - Dentro del contenedor principal pero con posición fixed -->
   <div
+    v-if="shouldShowModal"
     id="contactModal"
     tabindex="-1"
-    aria-hidden="true"
-    class="fixed inset-0 bg-[#0000002b] bg-opacity-50 items-center justify-center p-4 z-50"
-    :class="selectedTask ? 'flex' : 'hidden'"
+    aria-hidden="false"
+    class="fixed inset-0 modal-overlay bg-black bg-opacity-60 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
   >
     <div
-      class="relative w-full max-w-6xl bg-white rounded-lg shadow max-h-[90vh] overflow-hidden"
+      class="relative w-full max-w-6xl bg-white rounded-2xl shadow-2xl max-h-[95vh] overflow-hidden transform transition-all"
     >
-      <!-- Header -->
-      <div
-        class="flex items-center justify-between p-4 md:p-5 border-b sticky top-0 bg-white z-10"
-      >
-        <h3 class="text-xl font-semibold">
-          Contacto con {{ selectedTask?.Nombre || selectedTask?.nombre }}
-        </h3>
-        <button
-          @click="closeContactModal"
-          type="button"
-          class="text-gray-700 border border-gray-300 py-1 px-2 hover:text-gray-900 rounded-md"
-        >
-          X
-        </button>
-      </div>
-
-      <!-- Contenido principal con scroll -->
-      <div class="p-4 space-y-4 max-h-[calc(90vh-120px)] overflow-y-auto">
-        <!-- Loader mientras se cargan los datos -->
-        <div v-if="isLoadingDetails" class="relative min-h-[200px]">
-          <div class="absolute inset-0">
-            <Loader class="!absolute !w-full !h-full" />
+      <div class="flex flex-col h-full max-h-[95vh]">
+        <!-- Header mejorado con gradiente -->
+        <div class="relative bg-gradient-to-r from-blue-900 to-blue-700 text-white p-6 md:p-8 flex-shrink-0">
+          <button
+            @click="closeContactModal"
+            type="button"
+            class="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-2 transition-all duration-200 z-10"
+            aria-label="Cerrar modal"
+          >
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <div class="pr-12">
+            <h3 id="modal-title" class="text-2xl md:text-3xl font-bold mb-2">
+              Contacto con {{ selectedTask?.Nombre || selectedTask?.nombre }}
+            </h3>
+            <div class="flex flex-wrap items-center gap-4 text-sm text-blue-100">
+              <span class="flex items-center gap-1" v-if="clientDetails?.email">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                </svg>
+                {{ clientDetails.email }}
+              </span>
+              <span class="flex items-center gap-1" v-if="clientDetails?.telefono">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
+                </svg>
+                {{ clientDetails.telefono }}
+              </span>
+              <span v-if="clientDetails?.fechaRegistro" class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">
+                Cliente desde {{ formatDate(clientDetails.fechaRegistro) }}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div v-else-if="clientDetails" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <!-- Información Personal -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-              <h4 class="font-bold text-lg mb-4">Información Personal</h4>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Nombre Completo:</span
-                  >
-                  <p class="">
-                    {{ clientDetails.nombre }} {{ clientDetails.apellido }}
-                  </p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Teléfono:</span
-                  >
-                  <p class="">{{ clientDetails.telefono || "N/A" }}</p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Email:</span
-                  >
-                  <p class="">{{ clientDetails.email || "N/A" }}</p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Fecha de Registro:</span
-                  >
-                  <p class="">
-                    {{ formatDate(clientDetails.fechaRegistro) || "N/A" }}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Preferencias -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-              <h4 class="font-bold text-lg mb-4">Preferencias</h4>
-              <div
-                v-if="preferencias"
-                class="grid grid-cols-2 md:grid-cols-3 gap-4"
-              >
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Tipo Inmueble:</span
-                  >
-                  <p class="">{{ preferencias.tipo || "N/A" }}</p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Operación:</span
-                  >
-                  <p class="">{{ preferencias.operacion || "N/A" }}</p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Precio Mínimo:</span
-                  >
-                  <p class="">
-                    {{
-                      preferencias.precioMin != null
-                        ? `$${Number(
-                            preferencias.precioMin
-                          ).toLocaleString()}`
-                        : "N/A"
-                    }}
-                  </p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Precio Máximo:</span
-                  >
-                  <p class="">
-                    {{
-                      preferencias.precioMax != null
-                        ? `$${Number(
-                            preferencias.precioMax
-                          ).toLocaleString()}`
-                        : "N/A"
-                    }}
-                  </p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Habitaciones:</span
-                  >
-                  <p class="">{{ preferencias.habitaciones ?? "N/A" }}</p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Baños:</span
-                  >
-                  <p class="">{{ preferencias.banos ?? "N/A" }}</p>
-                </div>
-                <div>
-                  <span class="text-sm font-medium text-gray-500"
-                    >Ubicaciones:</span
-                  >
-                  <p class="">{{ preferencias.ubicacion ?? "N/A" }}</p>
-                </div>
-              </div>
-              <p v-else class="text-gray-500">
-                No hay preferencias cargadas.
-              </p>
+        <!-- Contenido principal con scroll mejorado -->
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-gray-50">
+          <!-- Loader mientras se cargan los datos -->
+          <div v-if="isLoadingDetails" class="relative min-h-[200px]">
+            <div class="absolute inset-0">
+              <Loader class="!absolute !w-full !h-full" />
             </div>
           </div>
 
-          <MatchPendiente 
-            v-if="selectedTask?.clienteId" 
-            :clienteId="selectedTask.clienteId" 
-            :clientDetails="clientDetails"
-            @open-inmueble="handleOpenInmueble"
-          />
+          <div v-else class="space-y-6">
+            <div v-if="clientDetails" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Información Personal -->
+              <div class="bg-white rounded-xl shadow-md p-6">
+                <h4 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                  </svg>
+                  Información Personal
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Nombre Completo</span>
+                    <p class="text-gray-900 font-semibold">
+                      {{ clientDetails.nombre }} {{ clientDetails.apellido }}
+                    </p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Teléfono</span>
+                    <p class="text-gray-900 font-semibold">{{ clientDetails.telefono || "N/A" }}</p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Email</span>
+                    <p class="text-gray-900 font-semibold text-sm break-all">{{ clientDetails.email || "N/A" }}</p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Fecha de Registro</span>
+                    <p class="text-gray-900 font-semibold">
+                      {{ formatDate(clientDetails.fechaRegistro) || "N/A" }}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <div class="flex items-center justify-between mb-4">
-              <h4 class="font-bold text-lg">
-                Historial de seguimiento
-                <!-- ({{
-      selectedTask?.Interacciones?.length || 0
-    }}) -->
-              </h4>
+              <!-- Preferencias -->
+              <div class="bg-white rounded-xl shadow-md p-6">
+                <h4 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                  </svg>
+                  Preferencias
+                </h4>
+                <div
+                  v-if="preferencias"
+                  class="grid grid-cols-2 md:grid-cols-3 gap-4"
+                >
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Tipo Inmueble</span>
+                    <p class="text-gray-900 font-semibold">{{ preferencias.tipo || "N/A" }}</p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Operación</span>
+                    <p class="text-gray-900 font-semibold">{{ preferencias.operacion || "N/A" }}</p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Precio Mínimo</span>
+                    <p class="text-gray-900 font-semibold">
+                      {{
+                        preferencias.precioMin != null
+                          ? `$${Number(
+                              preferencias.precioMin
+                            ).toLocaleString()}`
+                          : "N/A"
+                      }}
+                    </p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Precio Máximo</span>
+                    <p class="text-gray-900 font-semibold">
+                      {{
+                        preferencias.precioMax != null
+                          ? `$${Number(
+                              preferencias.precioMax
+                            ).toLocaleString()}`
+                          : "N/A"
+                      }}
+                    </p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Habitaciones</span>
+                    <p class="text-gray-900 font-semibold">{{ preferencias.habitaciones ?? "N/A" }}</p>
+                  </div>
+                  <div class="pb-3 border-b">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Baños</span>
+                    <p class="text-gray-900 font-semibold">{{ preferencias.banos ?? "N/A" }}</p>
+                  </div>
+                  <div class="pb-3 border-b col-span-2 md:col-span-3">
+                    <span class="text-xs font-medium text-gray-500 uppercase tracking-wide block mb-1">Ubicaciones</span>
+                    <p class="text-gray-900 font-semibold">{{ preferencias.ubicacion ?? "N/A" }}</p>
+                  </div>
+                </div>
+                <p v-else class="text-gray-400 text-sm">
+                  No hay preferencias cargadas.
+                </p>
+              </div>
+            </div>
 
-              <button
-                @click="loadClientDetails"
-                class="text-xs px-2 py-1 rounded border border-gray-300 bg-white hover:bg-gray-100"
+            <MatchPendiente 
+              v-if="selectedTask?.clienteId" 
+              :clienteId="selectedTask.clienteId" 
+              :clientDetails="clientDetails"
+              @open-inmueble="handleOpenInmueble"
+            />
+
+            <div class="bg-white rounded-xl shadow-md p-6">
+              <div class="flex items-center justify-between mb-5">
+                <h4 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                  </svg>
+                  Historial de seguimiento
+                </h4>
+
+                <button
+                  @click="loadClientDetails"
+                  class="text-xs px-2 py-1 rounded border border-gray-300 bg-white hover:bg-gray-100"
+                >
+                  Refrescar
+                </button>
+              </div>
+
+              <div
+                v-if="!selectedTask?.Interacciones?.length"
+                class="text-sm text-gray-400 text-center py-8"
               >
-                Refrescar
-              </button>
-            </div>
+                No hay interacciones registradas.
+              </div>
 
-            <div
-              v-if="!selectedTask?.Interacciones?.length"
-              class="text-sm text-gray-500"
-            >
-              No hay interacciones registradas.
-            </div>
-
-            <div v-else class="relative overflow-x-auto">
-              <table class="w-full text-sm text-left text-gray-500">
-                <thead class="bg-gray-100">
-                  <tr>
-                    <th class="px-4 py-2">Fecha</th>
-                    <th class="px-4 py-2">Tipo</th>
-                    <th class="px-4 py-2">Descripción</th>
-                    <th class="px-4 py-2">Estado</th>
-                    <th class="px-4 py-2">Próximo Contacto</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                  <tr
-                    v-for="(
-                      interaccion, index
-                    ) in selectedTask.Interacciones.slice().reverse()"
-                    :key="index"
-                    class="odd:bg-white even:bg-gray-50 border-b border-gray-200"
-                  >
-                    <td class="px-4 py-2">
-                      {{
-                        formatDateTime(interaccion.Fecha || interaccion.fecha)
-                      }}
-                    </td>
-                    <td class="px-4 py-2">
-                      {{
-                        interaccion.Tipo || interaccion.tipo || "Interacción"
-                      }}
-                    </td>
-                    <td class="px-4 py-3 text-sm text-gray-900 max-w-xs">
-                      <div class="line-clamp-2">
+              <div v-else class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                  <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <tr>
+                      <th class="px-4 py-2">Fecha</th>
+                      <th class="px-4 py-2">Tipo</th>
+                      <th class="px-4 py-2">Descripción</th>
+                      <th class="px-4 py-2">Estado</th>
+                      <th class="px-4 py-2">Próximo Contacto</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    <tr
+                      v-for="(
+                        interaccion, index
+                      ) in selectedTask.Interacciones.slice().reverse()"
+                      :key="index"
+                      class="odd:bg-white even:bg-gray-50 border-b border-gray-200"
+                    >
+                      <td class="px-4 py-2">
                         {{
-                          interaccion.Descripcion ||
-                          interaccion.descripcion ||
-                          "Sin descripción"
+                          formatDateTime(interaccion.Fecha || interaccion.fecha)
                         }}
-                      </div>
-                    </td>
-                    <td class="px-4 py-3 text-sm text-gray-900">
-                      {{
-                        formatStatusForDisplay(
-                          interaccion.StatusInteraccion ||
-                            interaccion.statusInteraccion
-                        )
-                      }}
-                    </td>
-                    <td class="px-4 py-2">
-                      <span
-                        v-if="
-                          interaccion.FechaVencimiento ||
-                          interaccion.fechaVencimiento
-                        "
-                      >
+                      </td>
+                      <td class="px-4 py-2">
                         {{
-                          formatDateTime(
-                            interaccion.FechaVencimiento ||
-                              interaccion.fechaVencimiento
+                          interaccion.Tipo || interaccion.tipo || "Interacción"
+                        }}
+                      </td>
+                      <td class="px-4 py-3 text-sm text-gray-900 max-w-xs">
+                        <div class="line-clamp-2">
+                          {{
+                            interaccion.Descripcion ||
+                            interaccion.descripcion ||
+                            "Sin descripción"
+                          }}
+                        </div>
+                      </td>
+                      <td class="px-4 py-3 text-sm text-gray-900">
+                        {{
+                          formatStatusForDisplay(
+                            interaccion.StatusInteraccion ||
+                              interaccion.statusInteraccion
                           )
                         }}
-                      </span>
-                      <span v-else class="text-gray-400">-</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      </td>
+                      <td class="px-4 py-2">
+                        <span
+                          v-if="
+                            interaccion.FechaVencimiento ||
+                            interaccion.fechaVencimiento
+                          "
+                        >
+                          {{
+                            formatDateTime(
+                              interaccion.FechaVencimiento ||
+                                interaccion.fechaVencimiento
+                            )
+                          }}
+                        </span>
+                        <span v-else class="text-gray-400">-</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
 
+            <!-- Formulario de Interacción -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+              <h4 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                </svg>
+                Registrar Interacción
+              </h4>
 
-
-          <!-- Formulario de Interacción -->
-          <div class="bg-gray-50 p-4 rounded-lg">
-            <h4 class="font-bold text-lg mb-4">Registrar Interacción</h4>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label class="block mb-2 text-sm font-medium text-gray-900"
-                  >Tipo de Contacto</label
-                >
-                <select
-                  v-model="contactData.tipo"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5"
-                >
-                  <option value="llamada">Llamada</option>
-                  <option value="mensaje">Mensaje</option>
-                  <option value="email">Email</option>
-                  <option value="visita">Visita</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block mb-2 text-sm font-medium text-gray-900"
-                  >Estado</label
-                >
-                <select
-                  v-model="currentRecordatorio.estadoInteraccionRaw"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5"
-                >
-                  <option
-                    v-for="opt in statusOptions"
-                    :key="opt.key"
-                    :value="opt.key"
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block mb-2 text-sm font-medium text-gray-900"
+                    >Tipo de Contacto</label
                   >
-                    {{ opt.title }}
-                  </option>
-                </select>
-              </div>
+                  <select
+                    v-model="contactData.tipo"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  >
+                    <option value="llamada">Llamada</option>
+                    <option value="mensaje">Mensaje</option>
+                    <option value="email">Email</option>
+                    <option value="visita">Visita</option>
+                  </select>
+                </div>
 
-              <div class="md:col-span-2">
-                <label class="block mb-2 text-sm font-medium text-gray-900"
-                  >Notas</label
-                >
-                <textarea
-                  v-model="contactData.nota"
-                  rows="3"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5"
-                  placeholder="Agregue notas de la interacción..."
-                ></textarea>
-              </div>
+                <div>
+                  <label class="block mb-2 text-sm font-medium text-gray-900"
+                    >Estado</label
+                  >
+                  <select
+                    v-model="currentRecordatorio.estadoInteraccionRaw"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  >
+                    <option
+                      v-for="opt in statusOptions"
+                      :key="opt.key"
+                      :value="opt.key"
+                    >
+                      {{ opt.title }}
+                    </option>
+                  </select>
+                </div>
 
-              <div>
-                <label class="block mb-2 text-sm font-medium text-gray-900"
-                  >Fecha próximo contacto</label
-                >
-                <input
-                  v-model="contactData.fechaVencimiento"
-                  type="datetime-local"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5"
-                />
+                <div class="md:col-span-2">
+                  <label class="block mb-2 text-sm font-medium text-gray-900"
+                    >Notas</label
+                  >
+                  <textarea
+                    v-model="contactData.nota"
+                    rows="3"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                    placeholder="Agregue notas de la interacción..."
+                  ></textarea>
+                </div>
+
+                <div>
+                  <label class="block mb-2 text-sm font-medium text-gray-900"
+                    >Fecha próximo contacto</label
+                  >
+                  <input
+                    v-model="contactData.fechaVencimiento"
+                    type="datetime-local"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Footer -->
-      <div
-        class="flex items-center justify-end p-4 border-t sticky bottom-0 bg-white z-10"
-      >
-        <button
-          @click="closeContactModal"
-          type="button"
-          class="text-gray-500 bg-white hover:bg-gray-100 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 mr-2"
-        >
-          Cancelar
-        </button>
-        <button
-          @click="saveContact"
-          type="button"
-          class="text-white bg-gray-600 hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5"
-        >
-          Guardar
-        </button>
+        <!-- Footer mejorado -->
+        <div class="bg-white border-t p-6 flex justify-end gap-3 flex-shrink-0">
+          <button
+            @click="closeContactModal"
+            type="button"
+            class="px-6 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-4 focus:ring-gray-300 rounded-xl text-sm font-medium transition-all"
+          >
+            Cancelar
+          </button>
+          <button
+            @click="saveContact"
+            type="button"
+            class="px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 rounded-xl text-sm font-medium transition-all"
+          >
+            Guardar
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- <AgregarClienteModal
-    :isOpen="showAddModal"
-    @close="showAddModal = false"
-    @client-added="handleClientAdded"
-  /> -->
   <AgregarClienteModal
     :isOpen="showAddModal"
     @close="showAddModal = false"
@@ -459,10 +486,8 @@
         </div>
       </div>
     </div> -->
-    <task-component 
-      @open-inmueble="handleOpenInmueble"     
-    />
   </div>
+</div>
 </template>
 
 <script>
@@ -471,7 +496,6 @@ import TaskCard from "../bandejaTarea/taskcard.vue";
 import AgregarClienteModal from "../agregarClienteModal.vue";
 import DetalleInmuebleModal from "../modalDetalleInmueble.vue";
 import MatchPendiente from "../matchPendiente.vue";
-import { Modal } from "flowbite";
 import Swal from "sweetalert2";
 import inmuebleService from "@/services/inmuebleService";
 
@@ -501,8 +525,8 @@ export default {
       searchTerm: "", // Término de búsqueda
       searchFilter: "all", // Filtro de búsqueda: all, person, agent
       showAddModal: false,
-      contactModal: null,
       selectedTask: null,
+      isLoading: false, // Loader principal para carga de tareas
       isLoadingDetails: false, // Nuevo: para el loader de detalles
       clientDetails: null, // Nuevo: para datos generales del cliente
       preferencias: null, // Nuevo: para Preferencias del cliente
@@ -565,6 +589,7 @@ export default {
       ],
       tasks: [],
       agentesArray: [], // <- nuevo arreglo para todos los agentes
+      agentesMap: new Map(), // <- Map para acceso rápido a agentes por ID
       selectedAgent: "all", // <- nuevo dato para el agente seleccionado
       dateFilter: {
         startDate: "",
@@ -573,6 +598,7 @@ export default {
       isSessionExpired: false,
       sessionCheckTimer: null,
       redirectCountdown: 10,
+      isCompactMode: false, // Modo compacto para el dashboard
       autoRedirectTimer: null,
     };
     
@@ -580,6 +606,15 @@ export default {
   
 
   async mounted() {
+    // Asegurarse de que el modal esté cerrado al iniciar
+    this.selectedTask = null;
+    
+    // Cargar preferencia de modo compacto desde localStorage
+    const savedCompactMode = localStorage.getItem('dashboardCompactMode');
+    if (savedCompactMode !== null) {
+      this.isCompactMode = savedCompactMode === 'true';
+    }
+    
     try {
       const userData = await agenteService.getCurrentUser();
       const agente = userData?.$values ? userData.$values[0] : userData;
@@ -632,18 +667,8 @@ export default {
       return;
     }
 
-    // Inicialización del modal
-    const modalElement = document.getElementById("contactModal");
-    if (modalElement) {
-      this.contactModal = new Modal(modalElement, {
-        backdrop: 'static',
-        keyboard: false,
-        closable: true
-      });
-      console.log("✅ Modal inicializado correctamente");
-    } else {
-      console.error("❌ No se encontró el elemento contactModal");
-    }
+    // No necesitamos inicializar el modal de Flowbite
+    // El modal se controla con Vue usando :class="selectedTask ? 'flex' : 'hidden'"
 
     this.checkNotifications();
 
@@ -660,18 +685,11 @@ export default {
 
   methods: {
     async handleOpenInmueble(payload) {
-      console.log("🔄 [TASK] Padre recibió open-inmueble:", payload);
-      console.log("🔍 [TASK] Tipo de payload.value:", typeof payload.value);
-      console.log("🔍 [TASK] Contenido de payload.value:", payload.value);
-      console.log("🔍 [TASK] showInmuebleModal ANTES:", this.showInmuebleModal);
-      
       // Obtener el ID del inmueble
       const inmuebleId = payload.value?.inmuebleId || 
                         payload.value?.id || 
                         payload.value?.propiedadId ||
                         payload.value;
-      
-      console.log("🆔 [TASK] ID del inmueble a cargar:", inmuebleId);
       
       if (!inmuebleId) {
         console.error("❌ [TASK] No se pudo obtener el ID del inmueble");
@@ -708,14 +726,11 @@ export default {
         };
         
         this.showInmuebleModal = true;
-        console.log("🎯 [TASK] Modal abierto, cargando datos completos...");
         
         // Cargar datos completos del inmueble desde el backend
         const inmuebleCompleto = await inmuebleService.getInmuebleById(inmuebleId);
         
         if (inmuebleCompleto) {
-          console.log("✅ [TASK] Datos completos del inmueble cargados:", inmuebleCompleto);
-          
           // Normalizar amenidades
           let amenidades = [];
           if (inmuebleCompleto.amenidades) {
@@ -734,12 +749,6 @@ export default {
             } else if (inmuebleCompleto.imagenesReferencia.$values) {
               imagenesReferencia = inmuebleCompleto.imagenesReferencia.$values;
             }
-          }
-          
-          console.log("🖼️ [TASK] Imágenes de referencia encontradas:", imagenesReferencia);
-          console.log("🖼️ [TASK] Cantidad de imágenes:", imagenesReferencia.length);
-          if (imagenesReferencia.length > 0) {
-            console.log("🖼️ [TASK] Primera imagen:", imagenesReferencia[0]);
           }
           
           // Actualizar con datos completos
@@ -762,10 +771,6 @@ export default {
             amenidades: amenidades,
             imagenesReferencia: imagenesReferencia,
           };
-          
-          console.log("🎯 [TASK] Datos del modal actualizados con información completa");
-        } else {
-          console.log("⚠️ [TASK] No se pudieron cargar los datos completos, usando datos básicos");
         }
         
       } catch (error) {
@@ -778,18 +783,10 @@ export default {
           timer: 2000,
         });
       }
-      
-      console.log("🔍 [TASK] showInmuebleModal DESPUÉS:", this.showInmuebleModal);
     },
     closeInmuebleModal() {
-      console.log("🔄 [TASK] Cerrando modal de inmueble");
-      console.log("🔍 [TASK] showInmuebleModal ANTES:", this.showInmuebleModal);
-      
       this.showInmuebleModal = false;
       this.selectedInmuebleData = null;
-      
-      console.log("🔍 [TASK] showInmuebleModal DESPUÉS:", this.showInmuebleModal);
-      console.log("🔍 [TASK] selectedInmuebleData DESPUÉS:", this.selectedInmuebleData);
     },
 
     // Métodos de paginación
@@ -858,14 +855,10 @@ export default {
       }
     },
     async openContactModal(task) {
-      console.log("🔄 [1] INICIANDO openContactModal para cliente:", task.id);
-      console.log("🔄 [1] Task recibido completo:", task);
-      console.log("🔄 [1] Estado de la tarea:", task.status);
-      console.log("🔄 [1] Columna desde la que proviene:", task.status);
-
-      // Verificar si ya hay un modal abierto
-      if (this.selectedTask) {
-        console.log("⚠️ [1] Ya hay una tarea seleccionada, cerrando modal anterior");
+      // Validar que el task tenga un ID válido
+      if (!task || !task.id) {
+        console.error("❌ No se puede abrir el modal sin un task válido con ID");
+        return;
       }
 
       // SOLUCIÓN RADICAL: Resetear completamente el estado
@@ -875,12 +868,11 @@ export default {
       this.selectedTask = { ...task };
       this.selectedTask.clienteId = task.clienteId || task.id;
 
-      console.log("🔄 [2] SelectedTask configurado:", this.selectedTask.id);
-      console.log("🔄 [2] ClienteId asignado:", this.selectedTask.clienteId);
-
       // Configurar datos básicos del modal
-      this.selectedTask.Interacciones = Array.isArray(task.Interacciones)
-        ? task.Interacciones
+      // Normalizar interacciones (pueden venir como Interacciones o interacciones)
+      const interaccionesRaw = task.Interacciones || task.interacciones || [];
+      this.selectedTask.Interacciones = Array.isArray(interaccionesRaw)
+        ? interaccionesRaw
         : [];
 
       const statusKey = Object.keys(statusMap).find(
@@ -908,24 +900,11 @@ export default {
         };
       }
 
-      console.log("🔄 [3] Abriendo modal...");
-      console.log("🔄 [3] Estado del contactModal:", this.contactModal);
-      console.log("🔄 [3] Elemento DOM del modal:", document.getElementById("contactModal"));
-
-      // ABRIR EL MODAL
-      if (this.contactModal) {
-        this.contactModal.show();
-        console.log("✅ [3] Modal.show() ejecutado");
-      } else {
-        console.error("❌ [3] contactModal no está disponible");
-      }
-
-      console.log("🔄 [4] Modal abierto, cargando detalles...");
+      // El modal se muestra automáticamente cuando selectedTask tiene valor
+      // debido a la directiva :class="selectedTask ? 'flex' : 'hidden'"
 
       // CARGAR DETALLES
       await this.loadClientDetails();
-
-      console.log("🔄 [5] openContactModal COMPLETADO");
     },
 
     // Función simple para cargar detalles del cliente (sin matches)
@@ -938,7 +917,6 @@ export default {
       this.isLoadingDetails = true;
       try {
         const clienteId = this.selectedTask.clienteId;
-        console.log("🔄 Cargando detalles básicos del cliente:", clienteId);
 
         // Cargar cliente y preferencias
         const clientFullResponse = await clienteService.getClienteById(clienteId);
@@ -948,12 +926,12 @@ export default {
           ? clientFullResponse.$values[0]
           : clientFullResponse;
 
-        console.log("👤 Cliente cargado:", this.clientDetails?.nombre);
-
         // Extraer preferencias
         const preferenciasArray =
           this.clientDetails?.preferencias?.$values ||
           this.clientDetails?.Preferencias?.$values ||
+          this.clientDetails?.preferencias ||
+          this.clientDetails?.Preferencias ||
           [];
 
         if (preferenciasArray && preferenciasArray.length > 0) {
@@ -973,13 +951,21 @@ export default {
             metrosCuadrados: this.preferencias.metrosCuadrados,
             amenidades: this.preferencias.amenidades || [],
           };
-          console.log("🎯 Preferencias cargadas:", this.preferencias);
         } else {
           this.preferencias = null;
-          console.log("❌ No hay preferencias");
         }
 
-        console.log("✅ Datos del cliente cargados correctamente");
+        // Extraer y actualizar interacciones si están disponibles
+        const interaccionesArray =
+          this.clientDetails?.interacciones?.$values ||
+          this.clientDetails?.Interacciones?.$values ||
+          this.clientDetails?.interacciones ||
+          this.clientDetails?.Interacciones ||
+          [];
+
+        if (interaccionesArray && interaccionesArray.length > 0) {
+          this.selectedTask.Interacciones = interaccionesArray;
+        }
       } catch (error) {
         console.error("❌ Error cargando datos del cliente:", error);
         Swal.fire({
@@ -994,23 +980,6 @@ export default {
 
     // NUEVO MÉTODO: Reset completo del estado del modal
     async resetModalState() {
-      console.log("🔄 Reseteando estado del modal...");
-      
-      // Verificar si el modal existe
-      if (!this.contactModal) {
-        console.log("⚠️ contactModal no está inicializado");
-        const modalElement = document.getElementById("contactModal");
-        if (modalElement) {
-          this.contactModal = new Modal(modalElement);
-          console.log("✅ Modal reinicializado");
-        } else {
-          console.error("❌ No se encontró elemento contactModal en el DOM");
-        }
-      }
-
-      // Cerrar modal si está abierto
-      this.contactModal?.hide?.();
-
       // Limpiar todos los datos reactivos
       this.selectedTask = null;
       this.originalStatus = null;
@@ -1023,8 +992,6 @@ export default {
 
       // Pequeño delay para asegurar que Vue procese los cambios
       await new Promise((resolve) => setTimeout(resolve, 50));
-
-      console.log("🔄 Estado del modal reseteado");
     },
 
     // MÉTODO AUXILIAR: Comparar propiedad con preferencias
@@ -1081,8 +1048,6 @@ export default {
       this.currentRecordatorio.estadoInteraccionRaw = null;
       this.contactData = { tipo: "llamada", nota: "", fechaVencimiento: "" };
       this.isLoadingDetails = false;
-
-      this.contactModal?.hide?.();
     },
     async saveContact() {
       if (!this.selectedTask) return;
@@ -1220,21 +1185,25 @@ export default {
 
     // ===================== AQUÍ SE FILTRA POR ROL =====================
     async cargarTodosLosClientes() {
+      this.isLoading = true;
       try {
-        const response = await clienteService.getAllClientes();
-        const clientes = response?.$values || [];
+        // Solicitar 100 clientes para tener más datos en el dashboard
+        const response = await clienteService.getAllClientes(1, 100);
+        
+        // La API ahora devuelve { data: [...], page, pageSize, totalCount, totalPages }
+        const clientes = response?.data || response?.$values || response || [];
 
-        // Cargar agentes para mapear nombres
-        let agentesMap = new Map();
+        // Cargar agentes para mapear nombres (usar this.agentesMap para compartir con TaskCard)
+        this.agentesMap = new Map();
         try {
           const agentesResp = await agenteService.getUsers();
           const agentesRaw = agentesResp?.$values || agentesResp || [];
           agentesRaw.forEach((ag) => {
             const id = ag.Id || ag.id || ag.userId || ag.usuarioId;
-            agentesMap.set(id, ag);
+            this.agentesMap.set(id, ag);
           });
         } catch (e) {
-          agentesMap = new Map();
+          this.agentesMap = new Map();
         }
 
         // Filtrar: admin => todos; no admin => solo clientes del agente
@@ -1256,7 +1225,7 @@ export default {
         filtrados.forEach((rawCliente) => {
           const agenteIdVal =
             rawCliente.AgenteId || rawCliente.agenteId || null;
-          const agenteObj = agentesMap.get(agenteIdVal) || {};
+          const agenteObj = this.agentesMap.get(agenteIdVal) || {};
           const agenteNombre = agenteObj.Nombre || agenteObj.nombre || "";
           const agenteApellido = agenteObj.Apellido || agenteObj.apellido || "";
           const task = {
@@ -1288,14 +1257,14 @@ export default {
 
         // Cargar todos los agentes (solo si es admin)
         if (this.isAdmin) {
-          this.agentesArray = Array.from(agentesMap.values()).map((ag) => ({
+          this.agentesArray = Array.from(this.agentesMap.values()).map((ag) => ({
             id: ag.Id || ag.id || ag.userId || ag.usuarioId,
             nombre: ag.Nombre || ag.nombre || "",
             apellido: ag.Apellido || ag.apellido || "",
           }));
         } else {
           // Si no es admin, cargar solo el propio agente
-          const propioAgente = agentesMap.get(this.agenteId) || {};
+          const propioAgente = this.agentesMap.get(this.agenteId) || {};
           this.agentesArray = [
             {
               id:
@@ -1309,13 +1278,15 @@ export default {
           ];
         }
       } catch (error) {
-        //console.error("❌ Error al cargar clientes:", error?.message || error);
+        console.error("❌ Error al cargar clientes:", error?.message || error);
         Swal.fire({
           icon: "error",
           title: "Error",
           text: "No se pudieron cargar los clientes desde la API.",
           confirmButtonText: "Aceptar",
         });
+      } finally {
+        this.isLoading = false;
       }
     },
     // ==================================================================
@@ -1500,6 +1471,22 @@ export default {
 
       return list;
     },
+    shouldShowModal() {
+      // Validación estricta: el modal solo se muestra si selectedTask existe, 
+      // tiene un id válido Y tiene un nombre
+      const shouldShow = !!(
+        this.selectedTask && 
+        this.selectedTask.id && 
+        (this.selectedTask.nombre || this.selectedTask.Nombre)
+      );
+      
+      // Debug: si el modal se intenta mostrar sin datos válidos, reportarlo
+      if (this.selectedTask && !shouldShow) {
+        console.error("❌ Intento de abrir modal con datos inválidos:", this.selectedTask);
+      }
+      
+      return shouldShow;
+    },
     statusOptions() {
       return this.columns
         .map((col) => {
@@ -1522,11 +1509,17 @@ export default {
         }
       }
     },
+    isCompactMode(newValue) {
+      // Guardar preferencia en localStorage
+      localStorage.setItem('dashboardCompactMode', String(newValue));
+    }
   },
 };
 //Uno atras
 </script>
 
 <style scoped>
-
+.modal-overlay {
+  backdrop-filter: blur(2px);
+}
 </style>

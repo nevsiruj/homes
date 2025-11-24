@@ -6,9 +6,9 @@
     </div>
 
     <!-- Buscador y botón Agregar -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-      <div>
-        <form @submit.prevent="handleSearch" class="flex items-center max-w-lg">
+    <div class="grid grid-cols-1 gap-4 mb-8 lg:grid-cols-3 xl:grid-cols-4">
+      <div class="lg:col-span-2 xl:col-span-3">
+        <form @submit.prevent="handleSearch" class="flex items-center">
           <label for="voice-search" class="sr-only">Buscar</label>
           <div class="relative w-full">
             <input
@@ -16,12 +16,12 @@
               type="text"
               id="voice-search"
               placeholder="Buscar por nombre o ID..."
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full ps-3 p-2          "
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full ps-3 p-2"
             />
           </div>
           <button
             type="submit"
-            class="inline-flex items-center py-2 px-3 ms-2 text-sm font-medium text-white bg-gray-700 rounded-lg border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300    "
+            class="inline-flex items-center py-2 px-3 ms-2 text-sm font-medium text-white bg-gray-700 rounded-lg border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300"
           >
             <svg
               class="w-4 h-4 me-2"
@@ -43,11 +43,20 @@
         </form>
       </div>
 
-      <div class="flex justify-end">
+      <div class="flex justify-end items-end gap-2">
+        <select
+          v-model.number="itemsPerPage"
+          @change="currentPage = 1"
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 p-2"
+        >
+          <option :value="20">20 por página</option>
+          <option :value="50">50 por página</option>
+          <option :value="100">100 por página</option>
+        </select>
         <button
           type="button"
           @click="showAgregarModal = true"
-          class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2    "
+          class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
         >
           Agregar Agente
         </button>
@@ -69,8 +78,34 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Skeleton de carga -->
+          <tr v-if="isLoading" v-for="i in 3" :key="`skeleton-${i}`">
+            <td colspan="5" class="px-6 py-4">
+              <div class="animate-pulse flex space-x-4">
+                <div class="flex-1 space-y-3 py-1">
+                  <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Mensaje cuando no hay agentes -->
+          <tr v-else-if="filteredAgentes.length === 0">
+            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+              <div class="flex flex-col items-center justify-center">
+                <svg class="w-12 h-12 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <p class="text-lg font-medium">No se encontraron agentes</p>
+                <p class="text-sm">{{ searchTerm ? 'Intenta con otros términos de búsqueda' : 'Agrega el primer agente para comenzar' }}</p>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Lista de agentes -->
           <tr
-            v-for="agente in filteredAgentes"
+            v-else
+            v-for="agente in paginatedAgentes"
             :key="agente.id"
             class="odd:bg-white odd: even:bg-gray-50 even:  border-b-gray-500 "
           >
@@ -180,6 +215,49 @@
       </table>
     </div>
 
+    <!-- Controles de Paginación -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
+      <div class="text-sm text-gray-700">
+        Mostrando {{ ((currentPage - 1) * itemsPerPage) + 1 }} a 
+        {{ Math.min(currentPage * itemsPerPage, totalAgentes) }} de 
+        {{ totalAgentes }} agentes
+      </div>
+      
+      <div class="flex gap-2">
+        <button
+          @click="currentPage = 1"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          ‹‹ Primera
+        </button>
+        <button
+          @click="currentPage--"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          ‹ Anterior
+        </button>
+        <span class="px-3 py-1 text-sm">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <button
+          @click="currentPage++"
+          :disabled="currentPage >= totalPages"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          Siguiente ›
+        </button>
+        <button
+          @click="currentPage = totalPages"
+          :disabled="currentPage >= totalPages"
+          class="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+        >
+          Última ››
+        </button>
+      </div>
+    </div>
+
     <!-- Modal: Agregar Agente -->
     <AgregarAgente 
       :isOpen="showAgregarModal" 
@@ -195,7 +273,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
 import AgregarAgente from '../../components/agregarAgente.vue';
 import DetalleAgente from '../../components/detalleAgente.vue';
@@ -248,6 +326,12 @@ const searchTerm = ref('');
 const showAgregarModal = ref(false);
 const isDetailOpen = ref(false);
 const selectedAgente = ref(null);
+const isLoading = ref(false);
+
+// Paginación
+const currentPage = ref(1);
+const itemsPerPage = ref(20);
+const totalAgentes = ref(0);
 
 // === Filtrar agentes ===
 const filteredAgentes = computed(() => {
@@ -266,6 +350,22 @@ const filteredAgentes = computed(() => {
   });
 });
 
+// Computed para obtener la lista paginada
+const paginatedAgentes = computed(() => {
+  const filtered = filteredAgentes.value;
+  totalAgentes.value = filtered.length;
+  
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  
+  return filtered.slice(start, end);
+});
+
+// Computed para calcular el total de páginas
+const totalPages = computed(() => {
+  return Math.ceil(totalAgentes.value / itemsPerPage.value);
+});
+
 const handleSearch = () => {
   
   //console.log("Buscando:", searchTerm.value);
@@ -274,18 +374,28 @@ const handleSearch = () => {
 // === Cargar agentes desde API ===
 async function loadAgentes() {
   try {
+    isLoading.value = true;
+    
     const data = await agenteService.getUsers(); // Llamada real al backend
-    //console.log("📥 Agentes cargados:", data);
 
     // Mapea los datos del backend (asumiendo formato PascalCase)
-    agentes.value = data.$values || [];
+    const agentesList = data.$values || data || [];
+    
+    agentes.value = agentesList;
   } catch (error) {
-    // Log técnico en consola, mensaje amigable al usuario
-    // await showErrorFriendly(
-    //   "No fue posible cargar la lista de agentes. Revisa tu conexión e inténtalo nuevamente.",
-    //   error
-    // );
+    console.error("❌ Error al cargar agentes:", error);
+    
+    // Mostrar alerta amigable al usuario
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error al cargar agentes',
+      text: 'No fue posible cargar la lista de agentes. Por favor, intenta nuevamente.',
+      confirmButtonText: 'Entendido'
+    });
+    
     agentes.value = []; // Deja la tabla vacía si falla
+  } finally {
+    isLoading.value = false;
   }
 }
 
@@ -348,5 +458,10 @@ const closeDetailModal = (shouldReload = false) => {
 // === Cargar agentes al montar ===
 onMounted(async () => {
   await loadAgentes();
+});
+
+// Resetear a la primera página cuando cambia la búsqueda
+watch(searchTerm, () => {
+  currentPage.value = 1;
 });
 </script>
