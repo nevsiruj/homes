@@ -81,11 +81,11 @@
             aria-labelledby="profile-tab"
           >
             <div class="grid grid-cols-2 md:flex">
-              <div style="position: relative;">
+              <div class="relative inline-block w-full">
                 <button
                   id="saleRentDropdownButton"
                   @click.stop="toggleDropdown('saleRent')"
-                  class="border border-gray-300 text-gray-900 text-xs p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto flex-shrink-0"
+                  class="border border-gray-300 text-gray-900 text-xs p-2.5 focus:ring-black focus:border-black inline-flex items-center font-roboto w-full md:flex-shrink-0 md:w-full"
                   type="button"
                 >
                   {{ filters.tipoTransaccion || "Venta/Renta"
@@ -131,10 +131,7 @@
                         for="radio-Venta/Renta"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Venta/Renta ({{
-                          propertyCounts.tipoTransaccion.venta +
-                            propertyCounts.tipoTransaccion.renta || 0
-                        }})
+                        Venta/Renta ({{ displayVentaRentaTotal }})
                       </label>
                     </div>
                   </li>
@@ -152,7 +149,7 @@
                         for="radio-Venta"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Venta ({{ propertyCounts.tipoTransaccion.venta || 0 }})
+                        Venta ({{ displayCount(propertyCounts.tipoTransaccion.venta) }})
                       </label>
                     </div>
                   </li>
@@ -170,7 +167,7 @@
                         for="radio-renta"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Renta ({{ propertyCounts.tipoTransaccion.renta || 0 }})
+                        Renta ({{ displayCount(propertyCounts.tipoTransaccion.renta) }})
                       </label>
                     </div>
                   </li>
@@ -225,7 +222,7 @@
                         for="checkbox-casas"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Casas ({{ propertyCounts.tipoPropiedad.Casa || 0 }})
+                        Casas ({{ displayCount(propertyCounts.tipoPropiedad.Casa) }})
                       </label>
                     </div>
                   </li>
@@ -243,7 +240,7 @@
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
                         Edificio ({{
-                          propertyCounts.tipoPropiedad.Edificio || 0
+                          displayCount(propertyCounts.tipoPropiedad.Edificio)
                         }})
                       </label>
                     </div>
@@ -262,7 +259,7 @@
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
                         Apartamentos ({{
-                          propertyCounts.tipoPropiedad.Apartamento || 0
+                          displayCount(propertyCounts.tipoPropiedad.Apartamento)
                         }})
                       </label>
                     </div>
@@ -281,7 +278,7 @@
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
                         Terreno ({{
-                          propertyCounts.tipoPropiedad.Terreno || 0
+                          displayCount(propertyCounts.tipoPropiedad.Terreno)
                         }})
                       </label>
                     </div>
@@ -299,7 +296,7 @@
                         for="checkbox-local"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Local ({{ propertyCounts.tipoPropiedad.Local || 0 }})
+                        Local ({{ displayCount(propertyCounts.tipoPropiedad.Local) }})
                       </label>
                     </div>
                   </li>
@@ -317,7 +314,7 @@
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
                         Oficina ({{
-                          propertyCounts.tipoPropiedad.Oficina || 0
+                          displayCount(propertyCounts.tipoPropiedad.Oficina)
                         }})
                       </label>
                     </div>
@@ -369,14 +366,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-sanjosepinula"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        San José Pinula ({{
-                          propertyCounts.ubicaciones["San José Pinula"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-sanjosepinula"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          San José Pinula ({{
+                            displayCount(propertyCounts.ubicaciones["San José Pinula"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -388,14 +385,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-caesarriba"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        CAES Arriba KM 14 ({{
-                          propertyCounts.ubicaciones["CAES Arriba KM 14"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-caesarriba"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          CAES Arriba KM 14 ({{
+                            displayCount(propertyCounts.ubicaciones["CAES Arriba KM 14"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -407,14 +404,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-caesabajo"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        CAES Abajo KM 14 ({{
-                          propertyCounts.ubicaciones["CAES Abajo KM 14"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-caesabajo"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          CAES Abajo KM 14 ({{
+                            displayCount(propertyCounts.ubicaciones["CAES Abajo KM 14"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -426,12 +423,12 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Antigua"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Antigua ({{ propertyCounts.ubicaciones.Antigua || 0 }})
-                      </label>
+                        <label
+                          for="checkbox-Antigua"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Antigua ({{ displayCount(propertyCounts.ubicaciones.Antigua) }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -443,12 +440,12 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-muxbal"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Muxbal ({{ propertyCounts.ubicaciones.Muxbal || 0 }})
-                      </label>
+                        <label
+                          for="checkbox-muxbal"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Muxbal ({{ displayCount(propertyCounts.ubicaciones.Muxbal) }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -460,12 +457,12 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Playa"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Playa ({{ propertyCounts.ubicaciones.Playa || 0 }})
-                      </label>
+                        <label
+                          for="checkbox-Playa"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Playa ({{ displayCount(propertyCounts.ubicaciones.Playa) }})
+                        </label>
                     </div>
                   </li>
 
@@ -478,15 +475,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Santa Catarina Pinula"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Santa Catarina Pinula ({{
-                          propertyCounts.ubicaciones["Santa Catarina Pinula"] ||
-                          0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-Santa Catarina Pinula"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Santa Catarina Pinula ({{
+                            displayCount(propertyCounts.ubicaciones["Santa Catarina Pinula"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -498,14 +494,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-San Cristóbal"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        San Cristóbal ({{
-                          propertyCounts.ubicaciones["San Cristóbal"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-San Cristóbal"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          San Cristóbal ({{
+                            displayCount(propertyCounts.ubicaciones["San Cristóbal"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -517,12 +513,12 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Zona 4"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Zona 4 ({{ propertyCounts.ubicaciones["Zona 4"] || 0 }})
-                      </label>
+                        <label
+                          for="checkbox-Zona 4"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Zona 4 ({{ displayCount(propertyCounts.ubicaciones["Zona 4"]) }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -534,12 +530,12 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Zona 9"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Zona 9 ({{ propertyCounts.ubicaciones["Zona 9"] || 0 }})
-                      </label>
+                        <label
+                          for="checkbox-Zona 9"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Zona 9 ({{ displayCount(propertyCounts.ubicaciones["Zona 9"]) }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -551,14 +547,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Zona 10"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Zona 10 ({{
-                          propertyCounts.ubicaciones["Zona 10"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-Zona 10"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Zona 10 ({{
+                            displayCount(propertyCounts.ubicaciones["Zona 10"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -570,14 +566,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Zona 13"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Zona 13 ({{
-                          propertyCounts.ubicaciones["Zona 13"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-Zona 13"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Zona 13 ({{
+                            displayCount(propertyCounts.ubicaciones["Zona 13"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -589,14 +585,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Zona 14"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Zona 14 ({{
-                          propertyCounts.ubicaciones["Zona 14"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-Zona 14"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Zona 14 ({{
+                            displayCount(propertyCounts.ubicaciones["Zona 14"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -608,14 +604,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Zona 15"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Zona 15 ({{
-                          propertyCounts.ubicaciones["Zona 15"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-Zona 15"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Zona 15 ({{
+                            displayCount(propertyCounts.ubicaciones["Zona 15"])
+                          }})
+                        </label>
                     </div>
                   </li>
                   <li>
@@ -627,14 +623,14 @@
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
-                      <label
-                        for="checkbox-Zona 16"
-                        class="ms-2 text-xs text-gray-900 font-roboto"
-                      >
-                        Zona 16 ({{
-                          propertyCounts.ubicaciones["Zona 16"] || 0
-                        }})
-                      </label>
+                        <label
+                          for="checkbox-Zona 16"
+                          class="ms-2 text-xs text-gray-900 font-roboto"
+                        >
+                          Zona 16 ({{
+                            displayCount(propertyCounts.ubicaciones["Zona 16"])
+                          }})
+                        </label>
                     </div>
                   </li>
                 </ul>
@@ -688,7 +684,7 @@
                         for="checkbox-1habitacion"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        1 ({{ propertyCounts.habitaciones["1"] || 0 }})
+                        1 ({{ displayCount(propertyCounts.habitaciones["1"]) }})
                       </label>
                     </div>
                   </li>
@@ -705,7 +701,7 @@
                         for="checkbox-2habitaciones"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        2 ({{ propertyCounts.habitaciones["2"] || 0 }})
+                        2 ({{ displayCount(propertyCounts.habitaciones["2"]) }})
                       </label>
                     </div>
                   </li>
@@ -722,7 +718,7 @@
                         for="checkbox-3habitaciones"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        3 ({{ propertyCounts.habitaciones["3"] || 0 }})
+                        3 ({{ displayCount(propertyCounts.habitaciones["3"]) }})
                       </label>
                     </div>
                   </li>
@@ -739,7 +735,7 @@
                         for="checkbox-4habitaciones"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        4 ({{ propertyCounts.habitaciones["4"] || 0 }})
+                        4 ({{ displayCount(propertyCounts.habitaciones["4"]) }})
                       </label>
                     </div>
                   </li>
@@ -865,6 +861,7 @@ const propertyCounts = ref({
 });
 
 const allInmueblesForCounts = ref([]);
+const countsLoading = ref(false);
 
 const availableCaracteristicas = ref([
   "Airbnb",
@@ -950,20 +947,45 @@ const calculatePropertyCounts = () => {
   propertyCounts.value = counts;
 };
 
-const loadAllInmueblesForCounts = async () => {
+const displayCount = (value) => {
+  return value || 0;
+};
+
+const displayVentaRentaTotal = computed(() => {
+  const venta = propertyCounts.value.tipoTransaccion.venta || 0;
+  const renta = propertyCounts.value.tipoTransaccion.renta || 0;
+  return venta + renta;
+});
+
+const loadAllInmueblesForCounts = () => {
   try {
-    // Limitar la petición y usar múltiples páginas en paralelo para reducir payloads
-    const pagesToFetch = 3; // Ajustable
-    const pageSize = 200; // 3 * 200 = 600 max (en vez de 1000)
-    const fetches = [];
+    const pagesToFetch = 3;
+    const pageSize = 200; // 3 * 200 = 600
+    allInmueblesForCounts.value = [];
+
+    // Cargar cada página y actualizar conteos inmediatamente
     for (let i = 1; i <= pagesToFetch; i++) {
-      fetches.push(inmuebleService.getInmueblesPaginados(i, pageSize));
-    }
-    const results = await Promise.all(fetches);
-    const combined = results.flatMap(r => (r && r.items) ? r.items : []);
-    if (combined && combined.length > 0) {
-      allInmueblesForCounts.value = combined;
-      calculatePropertyCounts();
+      inmuebleService.getInmueblesPaginados(i, pageSize)
+        .then((r) => {
+          const items = (r && r.items) ? r.items : [];
+          if (items && items.length) {
+            const normalized = items.map(item => ({
+              ...item,
+              operaciones: item.operaciones || item.Operaciones,
+              tipos: item.tipos || item.Tipos,
+              ubicaciones: item.ubicaciones || item.Ubicaciones,
+              habitaciones: item.habitaciones || item.Habitaciones,
+              amenidades: item.amenidades || item.Amenidades || item.amenidades?.$values || item.Amenidades?.$values || [],
+            }));
+            // Agregar elementos inmediatamente cuando llegan
+            allInmueblesForCounts.value = [...allInmueblesForCounts.value, ...normalized];
+            // Recalcular conteos inmediatamente
+            calculatePropertyCounts();
+          }
+        })
+        .catch((err) => {
+          // Ignorar errores de páginas individuales
+        });
     }
   } catch (error) {
     //console.error("Error al cargar todos los inmuebles para conteos:", error);
@@ -1216,6 +1238,7 @@ const handleScroll = () => {
 };
 
 onMounted(() => {
+  // Cargar conteos inmediatamente sin await
   loadAllInmueblesForCounts();
   // Agregar listeners
   document.addEventListener('click', handleClickOutside);
