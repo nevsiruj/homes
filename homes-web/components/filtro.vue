@@ -952,9 +952,17 @@ const calculatePropertyCounts = () => {
 
 const loadAllInmueblesForCounts = async () => {
   try {
-    const result = await inmuebleService.getInmueblesPaginados(1, 1000);
-    if (result && result.items) {
-      allInmueblesForCounts.value = result.items;
+    // Limitar la petición y usar múltiples páginas en paralelo para reducir payloads
+    const pagesToFetch = 3; // Ajustable
+    const pageSize = 200; // 3 * 200 = 600 max (en vez de 1000)
+    const fetches = [];
+    for (let i = 1; i <= pagesToFetch; i++) {
+      fetches.push(inmuebleService.getInmueblesPaginados(i, pageSize));
+    }
+    const results = await Promise.all(fetches);
+    const combined = results.flatMap(r => (r && r.items) ? r.items : []);
+    if (combined && combined.length > 0) {
+      allInmueblesForCounts.value = combined;
       calculatePropertyCounts();
     }
   } catch (error) {

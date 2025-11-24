@@ -51,10 +51,17 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
     params.append('PageNumber', pageNumber.toString());
     params.append('PageSize', pageSize.toString());
 
-    // Añadir los filtros dinámicamente.
-    for (const key in filters) {
-      if (Object.prototype.hasOwnProperty.call(filters, key)) {
-        const value = filters[key];
+    // Añadir los filtros dinámicamente. Ignorar `pageNumber`/`pageSize` si vienen en `filters`.
+    const cleanedFilters = { ...filters };
+    // Eliminar duplicados de la query que pueden venir en camelCase o PascalCase
+    delete cleanedFilters.pageNumber;
+    delete cleanedFilters.PageNumber;
+    delete cleanedFilters.pageSize;
+    delete cleanedFilters.PageSize;
+
+    for (const key in cleanedFilters) {
+      if (Object.prototype.hasOwnProperty.call(cleanedFilters, key)) {
+        const value = cleanedFilters[key];
         const backendKey = backendParamNames[key.toLowerCase()] || key; // Usa el nombre mapeado
         
         if (Array.isArray(value)) {

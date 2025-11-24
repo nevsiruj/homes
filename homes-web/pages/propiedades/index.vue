@@ -315,8 +315,6 @@ const fetchInmuebles = async () => {
   currentPage.value = page;
 
   const filters = {
-    pageNumber: page,
-    pageSize: size,
     Operaciones: route.query.Operaciones || "",
     Tipos: route.query.Tipos
       ? Array.isArray(route.query.Tipos)
