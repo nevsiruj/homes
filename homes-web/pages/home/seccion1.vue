@@ -1,4 +1,5 @@
 <template>
+  <h1 class="sr-only">Homes Guatemala - Bienes Raíces, Venta y Renta de Propiedades</h1>
   <section class="text-gray-600 body-font mt-28">
     <div
       class="container mx-auto flex px-5 lg:py-12 md:flex-row flex-col items-center py-6"
@@ -13,11 +14,11 @@
       <div
         class="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center"
       >
-        <h1
+        <h2
           class="title-font title-alta sm:text-4xl text-3xl mb-4 font-medium text-gray-900"
         >
           PROYECTOS
-        </h1>
+        </h2>
         <p class="mb-4 leading-relaxed long-text-roboto">
           Descubre nuestros
           <strong>proyectos inmobiliarios más exclusivos</strong> en Ciudad de
@@ -52,11 +53,11 @@
       <div
         class="lg:flex-grow md:w-1/2 lg:pr-24 md:pr-16 flex flex-col md:items-start md:text-left mb-16 md:mb-0 items-center text-center order-2 md:order-1"
       >
-        <h1
+        <h2
           class="title-font title-alta sm:text-4xl text-3xl mb-4 mt-4 font-medium text-gray-900"
         >
           VENTA
-        </h1>
+        </h2>
         <p class="mb-4 leading-relaxed long-text-roboto">
           En esta sección encontrarás una cuidadosa selección de propiedades en
           venta en Guatemala, pensadas para quienes están listos para dar el
@@ -88,11 +89,11 @@
       <div
         class="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center"
       >
-        <h1
+        <h2
           class="title-font title-alta sm:text-4xl text-3xl mb-4 font-medium text-gray-900"
         >
           RENTA
-        </h1>
+        </h2>
         <p class="mb-4 leading-relaxed long-text-roboto">
           Nuestras propiedades en renta han sido seleccionadas para ofrecer una
           experiencia de vida sofisticada, funcional y adaptada a distintos
@@ -124,11 +125,11 @@
       </p>
     </div>
     <div class="mt-12 mb-12 px-5">
-      <h1
+      <h2
         class="title-alta-2 text-xl text-center font-bold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl mt-8 mb-8"
       >
         Propiedades Destacadas
-      </h1>
+      </h2>
       
       <div v-if="featuredPropertiesLoading" class="text-center py-8">
         <p>Cargando propiedades destacadas...</p>
