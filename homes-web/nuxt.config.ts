@@ -199,7 +199,6 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     routeRules: {
       "/luxury-homes/**": { proxy: "https://homesguatemala.com/**" },
-      "/**": { headers: { "X-Powered-By": "" } },
     },
   },
 
