@@ -582,6 +582,7 @@ const propertyUrl = computed(() => {
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
+  canonical: propertyUrl,
   ogTitle: pageTitle,
   ogDescription: pageDescription,
   ogImage: pageImage,

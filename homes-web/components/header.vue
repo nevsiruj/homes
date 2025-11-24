@@ -83,7 +83,7 @@
               >
                 <div>
                   <NuxtLink
-                    to="../propiedades"
+                    to="/propiedades"
                     class="block py-2 pr-4 pl-3 text-black bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 relative group focus:outline-none"
                     aria-haspopup="true"
                     :aria-expanded="isPropertiesDropdownOpen"
@@ -142,7 +142,7 @@
 
               <li>
                 <NuxtLink
-                  to="../proyectos-inmobiliarios"
+                  to="/proyectos-inmobiliarios"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   PROYECTOS
@@ -158,7 +158,7 @@
               </li>
               <li>
                 <NuxtLink
-                  to="../custom"
+                  to="/custom"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   CUSTOM HOMES
@@ -186,7 +186,7 @@
               </li>
               <li>
                 <NuxtLink
-                  to="../nosotros"
+                  to="/nosotros"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   NOSOTROS
@@ -202,14 +202,14 @@
               </li>
               <li>
                 <NuxtLink
-                  to="../blog"
+                  to="/blog"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   BLOG
                   <span
                     :class="[
                       'absolute bottom-0 left-0 h-0.5 bg-gray-900 transition-all duration-300',
-                      isActive('../blog')
+                      isActive('/blog')
                         ? 'w-full'
                         : 'w-0 group-hover:w-full',
                     ]"
@@ -219,7 +219,7 @@
 
               <li>
                 <NuxtLink
-                  to="../busqueda"
+                  to="/busqueda"
                   class="block py-2 pr-4 pl-3 text-black border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 relative group"
                 >
                   BUSQUEDA AVANZADA

@@ -7,7 +7,7 @@
         id="proyectos-section"
           class="text-3xl md:text-4xl lg:text-5xl title-alta mb-4 text-gray-900"
         >
-          PROYECTOS
+          Proyectos Inmobiliarios Exclusivos en Guatemala
         </h1>
         <hr class="w-48 h-1 mx-auto mb-2 bg-gray-100 border-0 rounded-sm" />
       </div>
@@ -321,6 +321,38 @@
           </div>
         </div>
       </div>
+
+      <!-- Bloque SEO al final de la página -->
+      <div class="mt-16 pt-8 border-t border-gray-100">
+        <div class="max-w-4xl mx-auto text-gray-600 long-text-roboto">
+          <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
+            Inversión en Proyectos Inmobiliarios en Guatemala
+          </h2>
+          <div class="grid md:grid-cols-2 gap-8 text-sm leading-relaxed">
+            <div>
+              <p class="mb-4">
+                El mercado de bienes raíces en Guatemala ofrece oportunidades únicas para quienes buscan plusvalía y seguridad. Nuestros <strong>proyectos inmobiliarios exclusivos</strong> están situados en las zonas de mayor desarrollo urbano, como 
+                <NuxtLink to="/propiedades/zona/zona-10" class="text-blue-600 hover:underline">Zona 10</NuxtLink>, 
+                <NuxtLink to="/propiedades/zona/zona-14" class="text-blue-600 hover:underline">Zona 14</NuxtLink>, 
+                <NuxtLink to="/propiedades/zona/zona-15" class="text-blue-600 hover:underline">Zona 15</NuxtLink> y 
+                <NuxtLink to="/propiedades/zona/carretera-a-el-salvador" class="text-blue-600 hover:underline">Carretera a El Salvador</NuxtLink>.
+              </p>
+              <p>
+                Invertir en preventa o construcción permite acceder a precios preferenciales, garantizando un retorno de inversión atractivo al momento de la entrega. Ya sea para vivienda propia o para renta, cada desarrollo cuenta con amenidades de primer nivel.
+              </p>
+            </div>
+            <div>
+              <p class="mb-4">
+                Contamos con una selección diversa que incluye desde apartamentos modernos ideales para ejecutivos y parejas jóvenes, hasta amplias residencias familiares. La seguridad, el diseño arquitectónico y la ubicación estratégica son pilares fundamentales en cada uno de nuestros proyectos.
+              </p>
+              <p>
+                Explore nuestro catálogo actualizado y descubra por qué somos líderes en la comercialización de propiedades nuevas en Guatemala. Asesoramos su inversión de principio a fin para asegurar que encuentre la propiedad que mejor se adapte a su estilo de vida y objetivos financieros.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
   <RedesFlotantes />

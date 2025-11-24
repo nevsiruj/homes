@@ -14,6 +14,9 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: {
+        lang: 'es'
+      },
       meta: [
         // Metadatos de verificación de dominio
         { name: "p:domain_verify", content: "4ff93a868a573e1b24e15558f505f316" },
@@ -63,6 +66,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
         // Core Web Vitals optimization
         {
           rel: "preconnect",
@@ -195,6 +199,7 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     routeRules: {
       "/luxury-homes/**": { proxy: "https://homesguatemala.com/**" },
+      "/**": { headers: { "X-Powered-By": "" } },
     },
   },
 
