@@ -71,9 +71,11 @@
           <div class="w-full h-auto md:h-[600px] relative">
             <img
               v-if="!showVideo"
-              :src="mainImage"
+              :src="getOptimizedImageUrl(mainImage)"
+              :data-original-src="mainImage"
               class="w-full h-full object-cover"
               alt="Imagen principal del proyecto"
+              @error="handleImageError($event)"
             />
   
             <div
@@ -131,15 +133,13 @@
               @click="setMainContent(proyectoDetalle.imagenPrincipal, 'image')"
             >
               <div class="slide-container">
-                <NuxtImg
-                  :src="proyectoDetalle.imagenPrincipal"
+                <img
+                  :src="getOptimizedImageUrl(proyectoDetalle.imagenPrincipal)"
+                  :data-original-src="proyectoDetalle.imagenPrincipal"
                   alt="Miniatura de la imagen principal"
                   class="slide-image"
                   loading="lazy"
-                  format="webp"
-                  quality="80"
-                  :width="144"
-                  :height="144"
+                  @error="handleImageError($event)"
                 />
               </div>
             </swiper-slide>
@@ -152,15 +152,13 @@
               @click="setMainContent(image.url, 'image')"
             >
               <div class="slide-container">
-                <NuxtImg
-                  :src="image.url"
+                <img
+                  :src="getOptimizedImageUrl(image.url)"
+                  :data-original-src="image.url"
                   :alt="`Imagen de referencia ${index + 1} del proyecto`"
                   class="slide-image"
                   loading="lazy"
-                  format="webp"
-                  quality="80"
-                  :width="144"
-                  :height="144"
+                  @error="handleImageError($event)"
                 />
               </div>
             </swiper-slide>
@@ -172,16 +170,13 @@
               @click="setMainContent(proyectoDetalle.video, 'video')"
             >
               <div class="slide-container video-container">
-                <NuxtImg
+                <img
                   v-if="videoThumbnail"
                   :src="videoThumbnail"
                   alt="Miniatura del video del proyecto"
                   class="slide-image"
                   loading="lazy"
-                  format="webp"
-                  quality="80"
-                  :width="144"
-                  :height="144"
+                  @error="handleImageError($event)"
                 />
                 <div v-else class="video-placeholder">
                   <svg
@@ -366,6 +361,25 @@ const getVideoThumbnail = (url) => {
   );
   if (vimeoMatch?.[1]) return `https://vumbnail.com/${vimeoMatch[1]}.jpg`;
   return null;
+};
+
+const getOptimizedImageUrl = (url) => {
+  if (!url) return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y5ZmFmYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM2Yjc0ODIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbcOhZ2VuPC90ZXh0Pjwvc3ZnPg==';
+  
+  // Si ya es una URL completa, la devolvemos tal como está
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // Si es una URL relativa, construimos la URL completa
+  const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
+  return `${DOMINIO_IMAGENES}/${url}`;
+};
+
+const handleImageError = (event) => {
+  // Fallback image cuando la imagen no carga (SVG placeholder)
+  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y5ZmFmYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM2Yjc0ODIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Jw6FnZW48L3RleHQ+PC9zdmc+';
+  console.warn('Error loading image:', event.target.getAttribute('data-original-src') || 'unknown');
 };
 
 const setMainContent = (content, type) => {
