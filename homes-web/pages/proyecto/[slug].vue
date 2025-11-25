@@ -300,7 +300,7 @@
   
   <script setup>
 import { ref, computed, onMounted, nextTick, watch } from "vue";
-import { useRoute, useAsyncData, createError, useHead } from "#imports";
+import { useRoute, useAsyncData, createError, useHead, useSeoMeta } from "#imports";
 import proyectoService from "../../services/proyectoService";
 import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
@@ -532,7 +532,15 @@ const pageImage = computed(() => {
 });
 
 const propertyUrl = computed(() => {
-  return `https://homesguatemala.com${route.fullPath}`;
+  const baseUrl = 'https://homesguatemala.com';
+  const fullPath = route.fullPath || route.path || '';
+  
+  // Asegurar que la URL del proyecto sea específica
+  if (!fullPath || fullPath === '/') {
+    return `${baseUrl}/proyecto/${slug}`;
+  }
+  
+  return `${baseUrl}${fullPath}`;
 });
 
 const formattedPrice = computed(() => {
@@ -547,69 +555,41 @@ const formattedPrice = computed(() => {
 });
 
 // ===== SEO y Meta Tags =====
+// Debug: verificar valores en desarrollo
+if (process.dev) {
+  console.log('SEO Debug:', {
+    title: pageTitle.value,
+    description: pageDescription.value,
+    image: pageImage.value,
+    url: propertyUrl.value,
+    slug: slug
+  });
+}
+
+// Meta tags específicas para SEO y redes sociales
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogImage: pageImage,
+  ogUrl: propertyUrl,
+  ogType: 'article',
+  ogSiteName: 'Homes Guatemala',
+  ogLocale: 'es_GT',
+  twitterCard: 'summary_large_image',
+  twitterTitle: pageTitle,
+  twitterDescription: pageDescription,
+  twitterImage: pageImage,
+  twitterUrl: propertyUrl,
+  robots: 'index, follow',
+  author: 'Homes Guatemala',
+  articlePublisher: 'https://homesguatemala.com',
+  articleAuthor: 'Homes Guatemala'
+});
+
 useHead({
   title: pageTitle,
-  meta: [
-    {
-      name: 'description',
-      content: pageDescription
-    },
-    // Open Graph meta tags
-    {
-      property: 'og:title',
-      content: pageTitle
-    },
-    {
-      property: 'og:description', 
-      content: pageDescription
-    },
-    {
-      property: 'og:image',
-      content: pageImage
-    },
-    {
-      property: 'og:url',
-      content: propertyUrl
-    },
-    {
-      property: 'og:type',
-      content: 'website'
-    },
-    {
-      property: 'og:site_name',
-      content: 'Homes Guatemala'
-    },
-    // Twitter Card meta tags
-    {
-      name: 'twitter:card',
-      content: 'summary_large_image'
-    },
-    {
-      name: 'twitter:title',
-      content: pageTitle
-    },
-    {
-      name: 'twitter:description',
-      content: pageDescription
-    },
-    {
-      name: 'twitter:image',
-      content: pageImage
-    },
-    // Additional meta tags
-    {
-      name: 'robots',
-      content: 'index, follow'
-    },
-    {
-      name: 'author',
-      content: 'Homes Guatemala'
-    },
-    {
-      property: 'article:publisher',
-      content: 'https://homesguatemala.com'
-    }
-  ],
   link: [
     {
       rel: 'canonical',
