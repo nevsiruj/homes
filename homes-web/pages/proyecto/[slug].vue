@@ -1,4 +1,5 @@
 <template>
+
     <Header />
     
     <!-- Breadcrumbs -->
@@ -125,57 +126,79 @@
           >
             <swiper-slide
               v-if="proyectoDetalle.imagenPrincipal"
-              class="!h-24 !w-24 lg:!h-36 lg:!w-36 cursor-pointer rounded-md"
-              :class="{ 'border-2 border-gray-500': !showVideo && mainImage === proyectoDetalle.imagenPrincipal }"
+              class="swiper-slide-custom"
+              :class="{ 'border-selected': !showVideo && mainImage === proyectoDetalle.imagenPrincipal }"
               @click="setMainContent(proyectoDetalle.imagenPrincipal, 'image')"
             >
-              <img
-                :src="proyectoDetalle.imagenPrincipal"
-                alt="Miniatura de la imagen principal"
-                class="w-full h-full object-cover"
-              />
+              <div class="slide-container">
+                <NuxtImg
+                  :src="proyectoDetalle.imagenPrincipal"
+                  alt="Miniatura de la imagen principal"
+                  class="slide-image"
+                  loading="lazy"
+                  format="webp"
+                  quality="80"
+                  :width="144"
+                  :height="144"
+                />
+              </div>
             </swiper-slide>
   
             <swiper-slide
               v-for="(image, index) in (proyectoDetalle?.imagenesReferenciaProyecto || [])"
-              :key="`img-${index}`"
-              class="!h-24 !w-24 lg:!h-36 lg:!w-36 cursor-pointer rounded-md"
-              :class="{ 'border-2 border-gray-500': !showVideo && mainImage === image.url }"
+              :key="`ref-img-${index}`"
+              class="swiper-slide-custom"
+              :class="{ 'border-selected': !showVideo && mainImage === image.url }"
               @click="setMainContent(image.url, 'image')"
             >
-              <img
-                :src="image.url"
-                alt="Miniatura del proyecto"
-                class="w-full h-full object-cover"
-              />
+              <div class="slide-container">
+                <NuxtImg
+                  :src="image.url"
+                  :alt="`Imagen de referencia ${index + 1} del proyecto`"
+                  class="slide-image"
+                  loading="lazy"
+                  format="webp"
+                  quality="80"
+                  :width="144"
+                  :height="144"
+                />
+              </div>
             </swiper-slide>
   
             <swiper-slide
               v-if="proyectoDetalle.video && proyectoDetalle.video !== 'string'"
-              class="!h-24 !w-24 lg:!h-36 lg:!w-36 cursor-pointer rounded-md flex items-center justify-center bg-gray-200 relative"
-              :class="{ 'border-2 border-gray-500': showVideo }"
+              class="swiper-slide-custom swiper-slide-video"
+              :class="{ 'border-selected': showVideo }"
               @click="setMainContent(proyectoDetalle.video, 'video')"
             >
-              <img
-                v-if="videoThumbnail"
-                :src="videoThumbnail"
-                alt="Miniatura del video"
-                class="w-full h-full object-cover"
-              />
-              <svg
-                v-else
-                class="w-12 h-12 text-gray-600 absolute"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832L12.75 10.2A1 1 0 0012.75 9.8L9.555 7.168z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
-              <span class="absolute bottom-1 text-xs text-gray-700">Video</span>
+              <div class="slide-container video-container">
+                <NuxtImg
+                  v-if="videoThumbnail"
+                  :src="videoThumbnail"
+                  alt="Miniatura del video del proyecto"
+                  class="slide-image"
+                  loading="lazy"
+                  format="webp"
+                  quality="80"
+                  :width="144"
+                  :height="144"
+                />
+                <div v-else class="video-placeholder">
+                  <svg
+                    class="video-icon"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832L12.75 10.2A1 1 0 0012.75 9.8L9.555 7.168z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                <span class="video-label">Video</span>
+              </div>
             </swiper-slide>
           </swiper>
         </div>
@@ -697,6 +720,95 @@ onMounted(async () => {
   margin: 0 !important;
 }
 
+
+/* Estilos personalizados para Swiper slides */
+.swiper-slide-custom {
+  height: 96px !important;
+  width: 96px !important;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 1024px) {
+  .swiper-slide-custom {
+    height: 144px !important;
+    width: 144px !important;
+  }
+}
+
+.swiper-slide-custom:hover {
+  transform: scale(1.05);
+}
+
+.border-selected {
+  border: 2px solid #6b7280;
+  box-shadow: 0 0 0 1px rgba(107, 114, 128, 0.2);
+}
+
+.slide-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.375rem;
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.swiper-slide-video {
+  background-color: #f3f4f6;
+}
+
+.video-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e5e7eb;
+}
+
+.video-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #e5e7eb;
+}
+
+.video-icon {
+  width: 48px;
+  height: 48px;
+  color: #6b7280;
+}
+
+.video-label {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #374151;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+/* Asegurar que el swiper tenga el alto correcto */
+.swiper {
+  width: 100%;
+}
+
+.swiper-wrapper {
+  align-items: flex-start;
+}
   
   @import "swiper/css";
   @import "swiper/css/free-mode";
