@@ -130,7 +130,7 @@
                       for="radio-Venta"
                       class="ms-2 text-xs text-gray-900 font-roboto"
                     >
-                      Ventas ({{ propertyCounts.tipoTransaccion.venta || 0 }})
+                      Ventas ({{ displayCount(propertyCounts.tipoTransaccion.venta) }})
                     </label>
                   </div>
                 </li>
@@ -148,7 +148,7 @@
                       for="radio-Renta"
                       class="ms-2 text-xs text-gray-900 font-roboto"
                     >
-                      Renta ({{ propertyCounts.tipoTransaccion.renta || 0 }})
+                      Renta ({{ displayCount(propertyCounts.tipoTransaccion.renta) }})
                     </label>
                   </div>
                 </li>
@@ -203,7 +203,7 @@
                         for="checkbox-casas"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Casas ({{ propertyCounts.tipoPropiedad.Casa || 0 }})
+                        Casas ({{ displayCount(propertyCounts.tipoPropiedad.Casa) }})
                       </label>
                     </div>
                   </li>
@@ -220,9 +220,7 @@
                         for="checkbox-edificio"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Edificio ({{
-                          propertyCounts.tipoPropiedad.Edificio || 0
-                        }})
+                        Edificio ({{ displayCount(propertyCounts.tipoPropiedad.Edificio) }})
                       </label>
                     </div>
                   </li>
@@ -239,9 +237,7 @@
                         for="checkbox-apartamentos"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Apartamentos ({{
-                          propertyCounts.tipoPropiedad.Apartamento || 0
-                        }})
+                        Apartamentos ({{ displayCount(propertyCounts.tipoPropiedad.Apartamento) }})
                       </label>
                     </div>
                   </li>
@@ -258,9 +254,7 @@
                         for="checkbox-terreno"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Terreno ({{
-                          propertyCounts.tipoPropiedad.Terreno || 0
-                        }})
+                        Terreno ({{ displayCount(propertyCounts.tipoPropiedad.Terreno) }})
                       </label>
                     </div>
                   </li>
@@ -277,7 +271,7 @@
                         for="checkbox-local"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Local ({{ propertyCounts.tipoPropiedad.Local || 0 }})
+                        Local ({{ displayCount(propertyCounts.tipoPropiedad.Local) }})
                       </label>
                     </div>
                   </li>
@@ -294,9 +288,7 @@
                         for="checkbox-oficina"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Oficina ({{
-                          propertyCounts.tipoPropiedad.Oficina || 0
-                        }})
+                        Oficina ({{ displayCount(propertyCounts.tipoPropiedad.Oficina) }})
                       </label>
                     </div>
                   </li>
@@ -351,9 +343,7 @@
                         for="checkbox-sanjosepinula"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        San José Pinula ({{
-                          propertyCounts.ubicaciones["San José Pinula"] || 0
-                        }})
+                        San José Pinula ({{ displayCount(propertyCounts.ubicaciones["San José Pinula"]) }})
                       </label>
                     </div>
                   </li>
@@ -370,9 +360,7 @@
                         for="checkbox-caesarriba"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        CAES Arriba KM 14 ({{
-                          propertyCounts.ubicaciones["CAES Arriba KM 14"] || 0
-                        }})
+                        CAES Arriba KM 14 ({{ displayCount(propertyCounts.ubicaciones["CAES Arriba KM 14"]) }})
                       </label>
                     </div>
                   </li>
@@ -389,9 +377,7 @@
                         for="checkbox-caesabajo"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        CAES Abajo KM 14 ({{
-                          propertyCounts.ubicaciones["CAES Abajo KM 14"] || 0
-                        }})
+                        CAES Abajo KM 14 ({{ displayCount(propertyCounts.ubicaciones["CAES Abajo KM 14"]) }})
                       </label>
                     </div>
                   </li>
@@ -408,7 +394,7 @@
                         for="checkbox-Antigua"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Antigua ({{ propertyCounts.ubicaciones.Antigua || 0 }})
+                        Antigua ({{ displayCount(propertyCounts.ubicaciones.Antigua) }})
                       </label>
                     </div>
                   </li>
@@ -425,7 +411,7 @@
                         for="checkbox-muxbal"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Muxbal ({{ propertyCounts.ubicaciones.Muxbal || 0 }})
+                        Muxbal ({{ displayCount(propertyCounts.ubicaciones.Muxbal) }})
                       </label>
                     </div>
                   </li>
@@ -442,7 +428,7 @@
                         for="checkbox-Playa"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Playa ({{ propertyCounts.ubicaciones.Playa || 0 }})
+                        Playa ({{ displayCount(propertyCounts.ubicaciones.Playa) }})
                       </label>
                     </div>
                   </li>
@@ -460,10 +446,7 @@
                         for="checkbox-Santa Catarina Pinula"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Santa Catarina Pinula ({{
-                          propertyCounts.ubicaciones["Santa Catarina Pinula"] ||
-                          0
-                        }})
+                        Santa Catarina Pinula ({{ displayCount(propertyCounts.ubicaciones["Santa Catarina Pinula"]) }})
                       </label>
                     </div>
                   </li>
@@ -480,9 +463,7 @@
                         for="checkbox-San Cristóbal"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        San Cristóbal ({{
-                          propertyCounts.ubicaciones["San Cristóbal"] || 0
-                        }})
+                        San Cristóbal ({{ displayCount(propertyCounts.ubicaciones["San Cristóbal"]) }})
                       </label>
                     </div>
                   </li>
@@ -499,7 +480,7 @@
                         for="checkbox-Zona 4"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Zona 4 ({{ propertyCounts.ubicaciones["Zona 4"] || 0 }})
+                        Zona 4 ({{ displayCount(propertyCounts.ubicaciones["Zona 4"]) }})
                       </label>
                     </div>
                   </li>
@@ -516,7 +497,7 @@
                         for="checkbox-Zona 9"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Zona 9 ({{ propertyCounts.ubicaciones["Zona 9"] || 0 }})
+                        Zona 9 ({{ displayCount(propertyCounts.ubicaciones["Zona 9"]) }})
                       </label>
                     </div>
                   </li>
@@ -533,9 +514,7 @@
                         for="checkbox-Zona 10"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Zona 10 ({{
-                          propertyCounts.ubicaciones["Zona 10"] || 0
-                        }})
+                        Zona 10 ({{ displayCount(propertyCounts.ubicaciones["Zona 10"]) }})
                       </label>
                     </div>
                   </li>
@@ -552,9 +531,7 @@
                         for="checkbox-Zona 13"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Zona 13 ({{
-                          propertyCounts.ubicaciones["Zona 13"] || 0
-                        }})
+                        Zona 13 ({{ displayCount(propertyCounts.ubicaciones["Zona 13"]) }})
                       </label>
                     </div>
                   </li>
@@ -571,9 +548,7 @@
                         for="checkbox-Zona 14"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Zona 14 ({{
-                          propertyCounts.ubicaciones["Zona 14"] || 0
-                        }})
+                        Zona 14 ({{ displayCount(propertyCounts.ubicaciones["Zona 14"]) }})
                       </label>
                     </div>
                   </li>
@@ -590,9 +565,7 @@
                         for="checkbox-Zona 15"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Zona 15 ({{
-                          propertyCounts.ubicaciones["Zona 15"] || 0
-                        }})
+                        Zona 15 ({{ displayCount(propertyCounts.ubicaciones["Zona 15"]) }})
                       </label>
                     </div>
                   </li>
@@ -609,9 +582,7 @@
                         for="checkbox-Zona 16"
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
-                        Zona 16 ({{
-                          propertyCounts.ubicaciones["Zona 16"] || 0
-                        }})
+                        Zona 16 ({{ displayCount(propertyCounts.ubicaciones["Zona 16"]) }})
                       </label>
                     </div>
                   </li>
@@ -817,6 +788,8 @@ const propertyCounts = ref({
   caracteristicasPropiedad: {},
 });
 
+const countsLoading = ref(true);
+
 const allInmueblesForCounts = ref([]);
 
 const availableCaracteristicas = ref([
@@ -908,6 +881,7 @@ if (Array.isArray(amenidadesArray)) {
 
 const loadAllInmueblesForCounts = async () => {
   try {
+    countsLoading.value = true;
     // Mejor approach: solicitar pocas páginas en paralelo y sumarizar conteos
     const pagesToFetch = 3; // Ajustable según la carga
     const pageSize = 200; // 200 * 3 = 600 elementos max (mucho menos que 1000)
@@ -921,9 +895,18 @@ const loadAllInmueblesForCounts = async () => {
       allInmueblesForCounts.value = combined;
       calculatePropertyCounts();
     }
+    countsLoading.value = false;
   } catch (error) {
     //console.error("Error al cargar todos los inmuebles para conteos:", error);
+    countsLoading.value = false;
   }
+};
+
+const displayCount = (count) => {
+  if (countsLoading.value && (count === null || count === undefined)) {
+    return "—";
+  }
+  return count || 0;
 };
 
 const sortedHabitaciones = computed(() => {
