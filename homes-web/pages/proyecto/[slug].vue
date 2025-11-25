@@ -300,7 +300,7 @@
   
   <script setup>
 import { ref, computed, onMounted, nextTick, watch } from "vue";
-import { useRoute, useAsyncData, createError } from "#imports";
+import { useRoute, useAsyncData, createError, useHead } from "#imports";
 import proyectoService from "../../services/proyectoService";
 import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
@@ -452,32 +452,170 @@ proyectoDetalle.value = fetchedProyecto.value;
 notFound.value = !!error.value || !proyectoDetalle.value;
 
 // ===== Propiedades computadas para SEO y la vista =====
-const pageTitle = computed(
-  () => proyectoDetalle.value?.titulo || "Proyecto en Guatemala"
-);
-const pageDescription = computed(() => {
-  if (!proyectoDetalle.value?.contenido) {
-    return "Descubre más sobre este increíble proyecto en Homes Guatemala.";
+const pageTitle = computed(() => {
+  if (!proyectoDetalle.value?.titulo) return "Proyecto en Guatemala | Homes Guatemala";
+  
+  const titulo = proyectoDetalle.value.titulo;
+  const precio = formattedPrice.value;
+  const ubicacion = proyectoDetalle.value.zona || proyectoDetalle.value.ubicacion || '';
+  
+  let fullTitle = titulo;
+  if (precio) {
+    fullTitle += ` - ${precio}`;
   }
-  const cleanText = proyectoDetalle.value.contenido
-    .replace(/<[^>]*>?/gm, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return cleanText.length > 155 ? cleanText.substring(0, 155) + "..." : cleanText;
+  if (ubicacion) {
+    fullTitle += ` | ${ubicacion}`;
+  }
+  fullTitle += " | Homes Guatemala";
+  
+  return fullTitle;
 });
+
+const pageDescription = computed(() => {
+  if (!proyectoDetalle.value) {
+    return "Descubre increíbles proyectos inmobiliarios en Guatemala. Encuentra tu hogar ideal con Homes Guatemala.";
+  }
+  
+  const titulo = proyectoDetalle.value.titulo || 'Proyecto';
+  const precio = formattedPrice.value || '';
+  const ubicacion = proyectoDetalle.value.zona || proyectoDetalle.value.ubicacion || 'Guatemala';
+  const codigo = proyectoDetalle.value.codigoProyecto || '';
+  
+  let description = `${titulo} en ${ubicacion}`;
+  
+  if (precio) {
+    description += ` por ${precio}`;
+  }
+  
+  if (codigo) {
+    description += ` (Código: ${codigo})`;
+  }
+  
+  // Agregar contenido si existe
+  if (proyectoDetalle.value.contenido) {
+    const cleanText = proyectoDetalle.value.contenido
+      .replace(/<[^>]*>?/gm, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    
+    const remainingLength = 155 - description.length - 3; // 3 for " - "
+    if (remainingLength > 20 && cleanText.length > 0) {
+      const excerpt = cleanText.length > remainingLength 
+        ? cleanText.substring(0, remainingLength - 3) + "..." 
+        : cleanText;
+      description += ` - ${excerpt}`;
+    }
+  } else {
+    description += " - Descubre más sobre este increíble proyecto inmobiliario.";
+  }
+  
+  // Asegurar que no exceda 155 caracteres
+  return description.length > 155 ? description.substring(0, 155) + "..." : description;
+});
+
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
   const img = proyectoDetalle.value?.imagenPrincipal;
+  
   if (!img) {
+    // Imagen por defecto de Homes Guatemala
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
-  return img.startsWith("http") || img.startsWith("https")
-    ? img
-    : `${DOMINIO_IMAGENES}/${img}`;
+  
+  // Si ya es una URL completa, la devolvemos tal como está
+  if (img.startsWith("http://") || img.startsWith("https://")) {
+    return img;
+  }
+  
+  // Si es una URL relativa, construimos la URL completa
+  return `${DOMINIO_IMAGENES}/${img}`;
 });
 
 const propertyUrl = computed(() => {
   return `https://homesguatemala.com${route.fullPath}`;
+});
+
+const formattedPrice = computed(() => {
+  if (!proyectoDetalle.value?.precio) return "";
+  const number = parseInt(proyectoDetalle.value.precio, 10);
+  return new Intl.NumberFormat("es-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number);
+});
+
+// ===== SEO y Meta Tags =====
+useHead({
+  title: pageTitle,
+  meta: [
+    {
+      name: 'description',
+      content: pageDescription
+    },
+    // Open Graph meta tags
+    {
+      property: 'og:title',
+      content: pageTitle
+    },
+    {
+      property: 'og:description', 
+      content: pageDescription
+    },
+    {
+      property: 'og:image',
+      content: pageImage
+    },
+    {
+      property: 'og:url',
+      content: propertyUrl
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      property: 'og:site_name',
+      content: 'Homes Guatemala'
+    },
+    // Twitter Card meta tags
+    {
+      name: 'twitter:card',
+      content: 'summary_large_image'
+    },
+    {
+      name: 'twitter:title',
+      content: pageTitle
+    },
+    {
+      name: 'twitter:description',
+      content: pageDescription
+    },
+    {
+      name: 'twitter:image',
+      content: pageImage
+    },
+    // Additional meta tags
+    {
+      name: 'robots',
+      content: 'index, follow'
+    },
+    {
+      name: 'author',
+      content: 'Homes Guatemala'
+    },
+    {
+      property: 'article:publisher',
+      content: 'https://homesguatemala.com'
+    }
+  ],
+  link: [
+    {
+      rel: 'canonical',
+      href: propertyUrl
+    }
+  ]
 });
 
 const allMedia = computed(() => {
@@ -515,17 +653,6 @@ const whatsappLink = computed(() => {
   const phoneNumber = "50256330961";
   const message = `Me interesa esta propiedad ${propertyUrl.value}`;
   return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
-});
-
-const formattedPrice = computed(() => {
-  if (!proyectoDetalle.value?.precio) return "";
-  const number = parseInt(proyectoDetalle.value.precio, 10);
-  return new Intl.NumberFormat("es-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(number);
 });
 
 // Schema.org structured data for SEO
