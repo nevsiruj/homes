@@ -570,9 +570,14 @@ const pageImage = computed(() => {
   if (!img) {
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
-  return img.startsWith("http") || img.startsWith("https")
-    ? img
-    : `${DOMINIO_IMAGENES}/${img}`;
+  // Si ya es una URL completa, la devolvemos tal como está
+  if (img.startsWith("http://") || img.startsWith("https://")) {
+    return img;
+  }
+  // Si es una URL relativa, construimos la URL completa
+  // Asegurar que no haya doble slash
+  const cleanImg = img.startsWith('/') ? img.substring(1) : img;
+  return `${DOMINIO_IMAGENES}/${cleanImg}`;
 });
 
 const propertyUrl = computed(() => {
@@ -586,12 +591,23 @@ useSeoMeta({
   ogTitle: pageTitle,
   ogDescription: pageDescription,
   ogImage: pageImage,
+  ogImageWidth: '1200',
+  ogImageHeight: '630',
+  ogImageType: 'image/webp',
+  ogImageAlt: pageTitle,
   ogUrl: propertyUrl,
-  ogType: "website",
+  ogType: "article",
+  ogSiteName: 'Homes Guatemala',
+  ogLocale: 'es_GT',
   twitterCard: "summary_large_image",
   twitterTitle: pageTitle,
   twitterDescription: pageDescription,
   twitterImage: pageImage,
+  twitterImageAlt: pageTitle,
+  robots: 'index, follow',
+  author: 'Homes Guatemala',
+  articlePublisher: 'https://homesguatemala.com',
+  articleAuthor: 'Homes Guatemala'
 });
 
 // Schema.org structured data for SEO
@@ -715,9 +731,12 @@ const formattedDescription = computed(() => {
 
 const whatsappLink = computed(() => {
   const phoneNumber = "50256330961";
-  const message = `Me interesa esta propiedad, ${propertyUrl.value}`;
-  const encodedMessage = encodeURIComponent(message);
-  return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodedMessage}`;
+  const titulo = inmuebleDetalle.value?.titulo || 'Propiedad';
+  const url = propertyUrl.value;
+  
+  const message = `Estoy interesado en esta propiedad: ${titulo}\n\n${url}`;
+  
+  return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
 });
 
 // ** FUNCIÓN para asegurar que el precio se lea como entero (ej: "1,600,000" -> 1600000) **

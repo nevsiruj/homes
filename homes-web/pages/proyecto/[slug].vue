@@ -528,7 +528,9 @@ const pageImage = computed(() => {
   }
   
   // Si es una URL relativa, construimos la URL completa
-  return `${DOMINIO_IMAGENES}/${img}`;
+  // Asegurar que no haya doble slash
+  const cleanImg = img.startsWith('/') ? img.substring(1) : img;
+  return `${DOMINIO_IMAGENES}/${cleanImg}`;
 });
 
 const propertyUrl = computed(() => {
@@ -573,6 +575,10 @@ useSeoMeta({
   ogTitle: pageTitle,
   ogDescription: pageDescription,
   ogImage: pageImage,
+  ogImageWidth: '1200',
+  ogImageHeight: '630',
+  ogImageType: 'image/webp',
+  ogImageAlt: pageTitle,
   ogUrl: propertyUrl,
   ogType: 'article',
   ogSiteName: 'Homes Guatemala',
@@ -581,6 +587,7 @@ useSeoMeta({
   twitterTitle: pageTitle,
   twitterDescription: pageDescription,
   twitterImage: pageImage,
+  twitterImageAlt: pageTitle,
   twitterUrl: propertyUrl,
   robots: 'index, follow',
   author: 'Homes Guatemala',
@@ -631,30 +638,10 @@ const formattedDescription = computed(() => {
 
 const whatsappLink = computed(() => {
   const phoneNumber = "50256330961";
-  
-  // Construir mensaje detallado con información del proyecto
   const titulo = proyectoDetalle.value?.titulo || 'Proyecto';
-  const precio = formattedPrice.value || '';
-  const ubicacion = proyectoDetalle.value?.zona || proyectoDetalle.value?.ubicacion || '';
-  const codigo = proyectoDetalle.value?.codigoProyecto || '';
   const url = propertyUrl.value;
   
-  let message = `¡Hola! Me interesa este proyecto: *${titulo}*`;
-  
-  // if (precio) {
-  //   message += `\n💰 Precio: ${precio}`;
-  // }
-  
-  // if (ubicacion) {
-  //   message += `\n📍 Ubicación: ${ubicacion}`;
-  // }
-  
-  // if (codigo) {
-  //   message += `\n🏷️ Código: ${codigo}`;
-  // }
-  
-  message += `\n\n🔗 Ver detalles: ${url}`;
-  message += `\n\nMe gustaría obtener más información sobre este proyecto.`;
+  const message = `Estoy interesado en esta propiedad: ${titulo}\n\n${url}`;
   
   return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
 });
