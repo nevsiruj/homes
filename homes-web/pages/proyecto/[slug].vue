@@ -483,13 +483,13 @@ const pageDescription = computed(() => {
   
   let description = `${titulo} en ${ubicacion}`;
   
-  if (precio) {
-    description += ` por ${precio}`;
-  }
+  // if (precio) {
+  //   description += ` por ${precio}`;
+  // }
   
-  if (codigo) {
-    description += ` (Código: ${codigo})`;
-  }
+  // if (codigo) {
+  //   description += ` (Código: ${codigo})`;
+  // }
   
   // Agregar contenido si existe
   if (proyectoDetalle.value.contenido) {
@@ -631,7 +631,31 @@ const formattedDescription = computed(() => {
 
 const whatsappLink = computed(() => {
   const phoneNumber = "50256330961";
-  const message = `Me interesa esta propiedad ${propertyUrl.value}`;
+  
+  // Construir mensaje detallado con información del proyecto
+  const titulo = proyectoDetalle.value?.titulo || 'Proyecto';
+  const precio = formattedPrice.value || '';
+  const ubicacion = proyectoDetalle.value?.zona || proyectoDetalle.value?.ubicacion || '';
+  const codigo = proyectoDetalle.value?.codigoProyecto || '';
+  const url = propertyUrl.value;
+  
+  let message = `¡Hola! Me interesa este proyecto: *${titulo}*`;
+  
+  // if (precio) {
+  //   message += `\n💰 Precio: ${precio}`;
+  // }
+  
+  // if (ubicacion) {
+  //   message += `\n📍 Ubicación: ${ubicacion}`;
+  // }
+  
+  // if (codigo) {
+  //   message += `\n🏷️ Código: ${codigo}`;
+  // }
+  
+  message += `\n\n🔗 Ver detalles: ${url}`;
+  message += `\n\nMe gustaría obtener más información sobre este proyecto.`;
+  
   return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
 });
 
