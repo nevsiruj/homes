@@ -518,19 +518,28 @@ const pageImage = computed(() => {
   const img = proyectoDetalle.value?.imagenPrincipal;
   
   if (!img) {
-    // Imagen por defecto de Homes Guatemala
-    return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
+    // Imagen por defecto de Homes Guatemala (cambiar a JPG para WhatsApp)
+    return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.jpg`;
   }
   
   // Si ya es una URL completa, la devolvemos tal como está
   if (img.startsWith("http://") || img.startsWith("https://")) {
-    return img;
+    // Si es WebP, intentar convertir a JPG para WhatsApp
+    return img.replace(/\.webp$/i, '.jpg');
   }
   
   // Si es una URL relativa, construimos la URL completa
-  // Asegurar que no haya doble slash
-  const cleanImg = img.startsWith('/') ? img.substring(1) : img;
-  return `${DOMINIO_IMAGENES}/${cleanImg}`;
+  // Asegurar que no haya doble slash ni espacios
+  let cleanImg = img.trim();
+  cleanImg = cleanImg.startsWith('/') ? cleanImg.substring(1) : cleanImg;
+  
+  // Cambiar extensión WebP a JPG para compatibilidad con WhatsApp
+  cleanImg = cleanImg.replace(/\.webp$/i, '.jpg');
+  
+  // Codificar la URL para manejar caracteres especiales
+  const encodedImg = encodeURI(cleanImg);
+  
+  return `${DOMINIO_IMAGENES}/${encodedImg}`;
 });
 
 const propertyUrl = computed(() => {
@@ -575,9 +584,10 @@ useSeoMeta({
   ogTitle: pageTitle,
   ogDescription: pageDescription,
   ogImage: pageImage,
+  ogImageSecureUrl: pageImage,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  ogImageType: 'image/webp',
+  ogImageType: 'image/jpeg',
   ogImageAlt: pageTitle,
   ogUrl: propertyUrl,
   ogType: 'article',
@@ -602,6 +612,11 @@ useHead({
       rel: 'canonical',
       href: propertyUrl
     }
+  ],
+  meta: [
+    // Meta tags adicionales para WhatsApp
+    { property: 'og:image:secure_url', content: pageImage },
+    { name: 'thumbnail', content: pageImage }
   ]
 });
 
