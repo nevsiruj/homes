@@ -518,16 +518,14 @@ const pageImage = computed(() => {
   const img = proyectoDetalle.value?.imagenPrincipal;
   
   if (!img) {
-    // Imagen por defecto de Homes Guatemala (mantener .webp)
+    // Imagen por defecto de Homes Guatemala (mantener extensión original)
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
-  
   // Si ya es una URL completa, la devolvemos tal como está
   if (img.startsWith("http://") || img.startsWith("https://")) {
     return img;
   }
-  
-  // Si es una URL relativa, construimos la URL completa
+  // Si es una URL relativa, construimos la URL completa sin modificar la extensión
   let cleanImg = img.trim();
   cleanImg = cleanImg.startsWith('/') ? cleanImg.substring(1) : cleanImg;
   const encodedImg = encodeURI(cleanImg);
@@ -579,7 +577,7 @@ useSeoMeta({
   ogImageSecureUrl: pageImage,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  ogImageType: 'image/webp',
+  // El tipo de imagen se puede dejar vacío o dinámico si se requiere, pero Open Graph lo detecta automáticamente
   ogImageAlt: pageTitle,
   ogUrl: propertyUrl,
   ogType: 'article',
