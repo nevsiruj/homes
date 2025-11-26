@@ -65,8 +65,8 @@ export default defineNuxtConfig({
         },
       ],
       link: [
-        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-        { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+        { rel: "icon", type: "image/x-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
+        { rel: "apple-touch-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
         // Core Web Vitals optimization
         {
           rel: "preconnect",

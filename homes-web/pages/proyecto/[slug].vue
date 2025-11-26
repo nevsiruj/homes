@@ -1,4 +1,5 @@
 <template>
+
     <Header />
     
     <!-- Breadcrumbs -->
@@ -70,9 +71,11 @@
           <div class="w-full h-auto md:h-[600px] relative">
             <img
               v-if="!showVideo"
-              :src="mainImage"
+              :src="getOptimizedImageUrl(mainImage)"
+              :data-original-src="mainImage"
               class="w-full h-full object-cover"
               alt="Imagen principal del proyecto"
+              @error="handleImageError($event)"
             />
   
             <div
@@ -125,57 +128,72 @@
           >
             <swiper-slide
               v-if="proyectoDetalle.imagenPrincipal"
-              class="!h-24 !w-24 lg:!h-36 lg:!w-36 cursor-pointer rounded-md"
-              :class="{ 'border-2 border-gray-500': !showVideo && mainImage === proyectoDetalle.imagenPrincipal }"
+              class="swiper-slide-custom"
+              :class="{ 'border-selected': !showVideo && mainImage === proyectoDetalle.imagenPrincipal }"
               @click="setMainContent(proyectoDetalle.imagenPrincipal, 'image')"
             >
-              <img
-                :src="proyectoDetalle.imagenPrincipal"
-                alt="Miniatura de la imagen principal"
-                class="w-full h-full object-cover"
-              />
+              <div class="slide-container">
+                <img
+                  :src="getOptimizedImageUrl(proyectoDetalle.imagenPrincipal)"
+                  :data-original-src="proyectoDetalle.imagenPrincipal"
+                  alt="Miniatura de la imagen principal"
+                  class="slide-image"
+                  loading="lazy"
+                  @error="handleImageError($event)"
+                />
+              </div>
             </swiper-slide>
   
             <swiper-slide
               v-for="(image, index) in (proyectoDetalle?.imagenesReferenciaProyecto || [])"
-              :key="`img-${index}`"
-              class="!h-24 !w-24 lg:!h-36 lg:!w-36 cursor-pointer rounded-md"
-              :class="{ 'border-2 border-gray-500': !showVideo && mainImage === image.url }"
+              :key="`ref-img-${index}`"
+              class="swiper-slide-custom"
+              :class="{ 'border-selected': !showVideo && mainImage === image.url }"
               @click="setMainContent(image.url, 'image')"
             >
-              <img
-                :src="image.url"
-                alt="Miniatura del proyecto"
-                class="w-full h-full object-cover"
-              />
+              <div class="slide-container">
+                <img
+                  :src="getOptimizedImageUrl(image.url)"
+                  :data-original-src="image.url"
+                  :alt="`Imagen de referencia ${index + 1} del proyecto`"
+                  class="slide-image"
+                  loading="lazy"
+                  @error="handleImageError($event)"
+                />
+              </div>
             </swiper-slide>
   
             <swiper-slide
               v-if="proyectoDetalle.video && proyectoDetalle.video !== 'string'"
-              class="!h-24 !w-24 lg:!h-36 lg:!w-36 cursor-pointer rounded-md flex items-center justify-center bg-gray-200 relative"
-              :class="{ 'border-2 border-gray-500': showVideo }"
+              class="swiper-slide-custom swiper-slide-video"
+              :class="{ 'border-selected': showVideo }"
               @click="setMainContent(proyectoDetalle.video, 'video')"
             >
-              <img
-                v-if="videoThumbnail"
-                :src="videoThumbnail"
-                alt="Miniatura del video"
-                class="w-full h-full object-cover"
-              />
-              <svg
-                v-else
-                class="w-12 h-12 text-gray-600 absolute"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832L12.75 10.2A1 1 0 0012.75 9.8L9.555 7.168z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
-              <span class="absolute bottom-1 text-xs text-gray-700">Video</span>
+              <div class="slide-container video-container">
+                <img
+                  v-if="videoThumbnail"
+                  :src="videoThumbnail"
+                  alt="Miniatura del video del proyecto"
+                  class="slide-image"
+                  loading="lazy"
+                  @error="handleImageError($event)"
+                />
+                <div v-else class="video-placeholder">
+                  <svg
+                    class="video-icon"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832L12.75 10.2A1 1 0 0012.75 9.8L9.555 7.168z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                <span class="video-label">Video</span>
+              </div>
             </swiper-slide>
           </swiper>
         </div>
@@ -282,7 +300,7 @@
   
   <script setup>
 import { ref, computed, onMounted, nextTick, watch } from "vue";
-import { useRoute, useAsyncData, createError } from "#imports";
+import { useRoute, useAsyncData, createError, useHead, useSeoMeta } from "#imports";
 import proyectoService from "../../services/proyectoService";
 import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
@@ -343,6 +361,25 @@ const getVideoThumbnail = (url) => {
   );
   if (vimeoMatch?.[1]) return `https://vumbnail.com/${vimeoMatch[1]}.jpg`;
   return null;
+};
+
+const getOptimizedImageUrl = (url) => {
+  if (!url) return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y5ZmFmYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM2Yjc0ODIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5JbcOhZ2VuPC90ZXh0Pjwvc3ZnPg==';
+  
+  // Si ya es una URL completa, la devolvemos tal como está
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // Si es una URL relativa, construimos la URL completa
+  const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
+  return `${DOMINIO_IMAGENES}/${url}`;
+};
+
+const handleImageError = (event) => {
+  // Fallback image cuando la imagen no carga (SVG placeholder)
+  event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2Y5ZmFmYiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiM2Yjc0ODIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5Jw6FnZW48L3RleHQ+PC9zdmc+';
+  console.warn('Error loading image:', event.target.getAttribute('data-original-src') || 'unknown');
 };
 
 const setMainContent = (content, type) => {
@@ -415,32 +452,150 @@ proyectoDetalle.value = fetchedProyecto.value;
 notFound.value = !!error.value || !proyectoDetalle.value;
 
 // ===== Propiedades computadas para SEO y la vista =====
-const pageTitle = computed(
-  () => proyectoDetalle.value?.titulo || "Proyecto en Guatemala"
-);
-const pageDescription = computed(() => {
-  if (!proyectoDetalle.value?.contenido) {
-    return "Descubre más sobre este increíble proyecto en Homes Guatemala.";
+const pageTitle = computed(() => {
+  if (!proyectoDetalle.value?.titulo) return "Proyecto en Guatemala | Homes Guatemala";
+  
+  const titulo = proyectoDetalle.value.titulo;
+  const precio = formattedPrice.value;
+  const ubicacion = proyectoDetalle.value.zona || proyectoDetalle.value.ubicacion || '';
+  
+  let fullTitle = titulo;
+  if (precio) {
+    fullTitle += ` - ${precio}`;
   }
-  const cleanText = proyectoDetalle.value.contenido
-    .replace(/<[^>]*>?/gm, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return cleanText.length > 155 ? cleanText.substring(0, 155) + "..." : cleanText;
+  if (ubicacion) {
+    fullTitle += ` | ${ubicacion}`;
+  }
+  fullTitle += " | Homes Guatemala";
+  
+  return fullTitle;
 });
+
+const pageDescription = computed(() => {
+  if (!proyectoDetalle.value) {
+    return "Descubre increíbles proyectos inmobiliarios en Guatemala. Encuentra tu hogar ideal con Homes Guatemala.";
+  }
+  
+  const titulo = proyectoDetalle.value.titulo || 'Proyecto';
+  const precio = formattedPrice.value || '';
+  const ubicacion = proyectoDetalle.value.zona || proyectoDetalle.value.ubicacion || 'Guatemala';
+  const codigo = proyectoDetalle.value.codigoProyecto || '';
+  
+  let description = `${titulo} en ${ubicacion}`;
+  
+  if (precio) {
+    description += ` por ${precio}`;
+  }
+  
+  if (codigo) {
+    description += ` (Código: ${codigo})`;
+  }
+  
+  // Agregar contenido si existe
+  if (proyectoDetalle.value.contenido) {
+    const cleanText = proyectoDetalle.value.contenido
+      .replace(/<[^>]*>?/gm, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    
+    const remainingLength = 155 - description.length - 3; // 3 for " - "
+    if (remainingLength > 20 && cleanText.length > 0) {
+      const excerpt = cleanText.length > remainingLength 
+        ? cleanText.substring(0, remainingLength - 3) + "..." 
+        : cleanText;
+      description += ` - ${excerpt}`;
+    }
+  } else {
+    description += " - Descubre más sobre este increíble proyecto inmobiliario.";
+  }
+  
+  // Asegurar que no exceda 155 caracteres
+  return description.length > 155 ? description.substring(0, 155) + "..." : description;
+});
+
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
   const img = proyectoDetalle.value?.imagenPrincipal;
+  
   if (!img) {
+    // Imagen por defecto de Homes Guatemala
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
-  return img.startsWith("http") || img.startsWith("https")
-    ? img
-    : `${DOMINIO_IMAGENES}/${img}`;
+  
+  // Si ya es una URL completa, la devolvemos tal como está
+  if (img.startsWith("http://") || img.startsWith("https://")) {
+    return img;
+  }
+  
+  // Si es una URL relativa, construimos la URL completa
+  return `${DOMINIO_IMAGENES}/${img}`;
 });
 
 const propertyUrl = computed(() => {
-  return `https://homesguatemala.com${route.fullPath}`;
+  const baseUrl = 'https://homesguatemala.com';
+  const fullPath = route.fullPath || route.path || '';
+  
+  // Asegurar que la URL del proyecto sea específica
+  if (!fullPath || fullPath === '/') {
+    return `${baseUrl}/proyecto/${slug}`;
+  }
+  
+  return `${baseUrl}${fullPath}`;
+});
+
+const formattedPrice = computed(() => {
+  if (!proyectoDetalle.value?.precio) return "";
+  const number = parseInt(proyectoDetalle.value.precio, 10);
+  return new Intl.NumberFormat("es-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number);
+});
+
+// ===== SEO y Meta Tags =====
+// Debug: verificar valores en desarrollo
+if (process.dev) {
+  console.log('SEO Debug:', {
+    title: pageTitle.value,
+    description: pageDescription.value,
+    image: pageImage.value,
+    url: propertyUrl.value,
+    slug: slug
+  });
+}
+
+// Meta tags específicas para SEO y redes sociales
+useSeoMeta({
+  title: pageTitle,
+  description: pageDescription,
+  ogTitle: pageTitle,
+  ogDescription: pageDescription,
+  ogImage: pageImage,
+  ogUrl: propertyUrl,
+  ogType: 'article',
+  ogSiteName: 'Homes Guatemala',
+  ogLocale: 'es_GT',
+  twitterCard: 'summary_large_image',
+  twitterTitle: pageTitle,
+  twitterDescription: pageDescription,
+  twitterImage: pageImage,
+  twitterUrl: propertyUrl,
+  robots: 'index, follow',
+  author: 'Homes Guatemala',
+  articlePublisher: 'https://homesguatemala.com',
+  articleAuthor: 'Homes Guatemala'
+});
+
+useHead({
+  title: pageTitle,
+  link: [
+    {
+      rel: 'canonical',
+      href: propertyUrl
+    }
+  ]
 });
 
 const allMedia = computed(() => {
@@ -478,17 +633,6 @@ const whatsappLink = computed(() => {
   const phoneNumber = "50256330961";
   const message = `Me interesa esta propiedad ${propertyUrl.value}`;
   return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
-});
-
-const formattedPrice = computed(() => {
-  if (!proyectoDetalle.value?.precio) return "";
-  const number = parseInt(proyectoDetalle.value.precio, 10);
-  return new Intl.NumberFormat("es-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(number);
 });
 
 // Schema.org structured data for SEO
@@ -697,6 +841,95 @@ onMounted(async () => {
   margin: 0 !important;
 }
 
+
+/* Estilos personalizados para Swiper slides */
+.swiper-slide-custom {
+  height: 96px !important;
+  width: 96px !important;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 1024px) {
+  .swiper-slide-custom {
+    height: 144px !important;
+    width: 144px !important;
+  }
+}
+
+.swiper-slide-custom:hover {
+  transform: scale(1.05);
+}
+
+.border-selected {
+  border: 2px solid #6b7280;
+  box-shadow: 0 0 0 1px rgba(107, 114, 128, 0.2);
+}
+
+.slide-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.375rem;
+}
+
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.swiper-slide-video {
+  background-color: #f3f4f6;
+}
+
+.video-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e5e7eb;
+}
+
+.video-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #e5e7eb;
+}
+
+.video-icon {
+  width: 48px;
+  height: 48px;
+  color: #6b7280;
+}
+
+.video-label {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #374151;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 2px 6px;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+/* Asegurar que el swiper tenga el alto correcto */
+.swiper {
+  width: 100%;
+}
+
+.swiper-wrapper {
+  align-items: flex-start;
+}
   
   @import "swiper/css";
   @import "swiper/css/free-mode";
