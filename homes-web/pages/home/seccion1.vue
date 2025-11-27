@@ -496,7 +496,7 @@ const loadFeaturedProperties = async () => {
     const featuredSlugs = [
       'casa-completamente-remodelada-en-venta-con-vistas-de-la-ciudad-zona-10-csv5506',
       'casa-de-un-nivel-en-venta-santa-catarina-pinula-cs5230',
-      'casa-con-jardin-en-venta-en-siena-san-isidro-zona-16-csv5769',
+      // 'casa-con-jardin-en-venta-en-siena-san-isidro-zona-16-csv5769',
       'casa-con-amplio-jardin-en-venta-hacienda-nueva-country-club-csv5342',
       'casa-en-venta-de-un-nivel-km-25-5-carretera-a-el-salvador-csv5591',
       'apartamento-en-venta-zona-10-asv5758',
