@@ -5,3 +5,6 @@ http://old-web.homesguatemala.com/luxury-homes https://homesguatemala.com/luxury
 # Redirección general de todo el dominio antiguo
 https://old-web.homesguatemala.com/* https://homesguatemala.com/:splat 301
 http://old-web.homesguatemala.com/* https://homesguatemala.com/:splat 301
+
+# Redirecciones para SPA (Single Page Application)
+/* /index.html 200
