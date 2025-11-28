@@ -198,13 +198,12 @@ export default defineNuxtConfig({
     ],
     compressPublicAssets: true,
     routeRules: {
-      "/luxury-homes/**": { proxy: "https://homesguatemala.com/**" },
-
-      "https://old-web.homesguatemala.com/luxury-homes": { 
-        redirect: "https://homesguatemala.com/luxury-homes 301" 
+      // PROXY para luxury-homes - muestra contenido del dominio antiguo
+      '/luxury-homes/**': { 
+        proxy: 'https://old-web.homesguatemala.com/luxury-homes/**'
       },
-      "https://old-web.homesguatemala.com/**": { 
-        redirect: "https://homesguatemala.com/** 301" 
+      '/luxury-homes': { 
+        proxy: 'https://old-web.homesguatemala.com/luxury-homes'
       },
     },
   },

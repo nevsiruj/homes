@@ -1,10 +1,9 @@
-# Redirección específica de luxury-homes
+# Proxy para luxury-homes - muestra contenido del dominio antiguo
+/luxury-homes/* https://old-web.homesguatemala.com/luxury-homes/:splat 200
+/luxury-homes https://old-web.homesguatemala.com/luxury-homes 200
+
+# Redirecciones del dominio antiguo al nuevo (opcional)
 https://old-web.homesguatemala.com/luxury-homes https://homesguatemala.com/luxury-homes 301
-http://old-web.homesguatemala.com/luxury-homes https://homesguatemala.com/luxury-homes 301
 
-# Redirección general de todo el dominio antiguo
-https://old-web.homesguatemala.com/* https://homesguatemala.com/:splat 301
-http://old-web.homesguatemala.com/* https://homesguatemala.com/:splat 301
-
-# Redirecciones para SPA (Single Page Application)
+# Redirecciones SPA para otras rutas
 /* /index.html 200
