@@ -9,6 +9,7 @@
             class="h-18 max-w-lg mx-auto"
             src="https://app-pool.vylaris.online/dcmigserver/homes/684980eb-ab75-41e5-8c2a-045abba3b954.webp"
             alt="image description"
+            onerror="this.onerror=null; this.src='/images/placeholder.png';"
           />
           <div class="flex mt-2 items-center justify-center">
             <svg
@@ -252,6 +253,7 @@
               src="https://vylaris.ar/_nuxt/logohorizontalcolor.795976b7.png"
               alt="Hecho por Vylaris"
               srcset=""
+              onerror="this.onerror=null; this.src='/images/placeholder.png';"
             />
           </a>
         </span>
