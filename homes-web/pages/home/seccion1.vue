@@ -250,6 +250,8 @@ const placeholderImage = '/images/placeholder.png';
 
 // Handle image loading errors by replacing with placeholder
 const handleImageError = (event) => {
+  // Prevent infinite loop if placeholder also fails
+  event.target.onerror = null;
   if (event.target.src !== placeholderImage) {
     event.target.src = placeholderImage;
   }
