@@ -33,7 +33,7 @@ export default defineNuxtConfig({
   // Variables de entorno disponibles en runtime
   runtimeConfig: {
     public: {
-      apiBaseUrl: process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://localhost:7234'
+      apiBaseUrl: process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://app-pool.vylaris.online/homes/api'
     }
   },
   
@@ -52,7 +52,7 @@ export default defineNuxtConfig({
       
       script: [
         {
-          children: `window.$config = { apiBaseUrl: '${process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://localhost:7234'}' };`
+          children: `window.$config = { apiBaseUrl: '${process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://app-pool.vylaris.online/homes/api'}' };`
         }
       ]
     }    

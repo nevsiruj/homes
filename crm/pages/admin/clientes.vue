@@ -701,8 +701,10 @@ const openModal = () => {
 };
 
 const openDetails = async (client) => {
+  // 1. Abrir el modal inmediatamente con datos básicos para que el skeleton aparezca
+  selectedCliente.value = { id: client.id }; // Pasar solo el ID inicialmente
+  isDetailsOpen.value = true;
   try {
-    isDetailsOpen.value = true;
     const response = await clienteService.getClienteById(client.id);
 
     const clienteData = response.$values ? response.$values[0] : response;
@@ -720,6 +722,10 @@ const openDetails = async (client) => {
         ...firstPref.preferenciaAmenidades.$values.map(
           (a) => a.nombre || a.Nombre
         )
+      );
+    } else if (Array.isArray(firstPref?.preferenciaAmenidades)) { // <-- Cambio clave
+      summaryAmenidades.push(
+        ...firstPref.preferenciaAmenidades.map((a) => a.nombre || a.Nombre)
       );
     } else if (Array.isArray(firstPref?.amenidades)) {
       summaryAmenidades.push(...firstPref.amenidades);

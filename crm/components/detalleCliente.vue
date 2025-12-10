@@ -26,7 +26,7 @@
         "
       >
         <!-- Mostrar Skeleton mientras se cargan los datos -->
-        <div v-if="isLoading" class="w-full px-4 pt-5 pb-4 sm:px-6 sm:pb-4 md:px-8">
+        <div v-if="!props.cliente?.nombre" class="w-full px-4 pt-5 pb-4 sm:px-6 sm:pb-4 md:px-8">
           <div class="animate-pulse">
             <!-- Header Skeleton -->
             <div class="flex justify-between items-center mb-6">
@@ -189,7 +189,7 @@
             
             <div class="pr-12">
               <h3 class="text-2xl md:text-3xl font-bold mb-2">
-                Contacto con {{ cliente.nombre }} {{ cliente.apellido }}
+                Contacto con {{ props.cliente.nombre }} {{ props.cliente.apellido }}
               </h3>
               <div class="flex flex-wrap items-center gap-4 text-sm text-blue-100">
                 <span class="flex items-center gap-1">
@@ -197,16 +197,16 @@
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
                   </svg>
-                  {{ cliente.email || 'Sin email' }}
+                  {{ props.cliente.email || 'Sin email' }}
                 </span>
                 <span class="flex items-center gap-1">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
                   </svg>
-                  {{ cliente.telefono || 'Sin teléfono' }}
+                  {{ props.cliente.telefono || 'Sin teléfono' }}
                 </span>
-                <span v-if="cliente.fechaRegistro" class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">
-                  Cliente desde {{ formatDate(cliente.fechaRegistro) }}
+                <span v-if="props.cliente.fechaRegistro" class="px-3 py-1 bg-white/20 rounded-full text-xs font-medium">
+                  Cliente desde {{ formatDate(props.cliente.fechaRegistro) }}
                 </span>
               </div>
             </div>
@@ -232,7 +232,7 @@
                           >Nombre Completo</span
                         >
                         <p class="text-gray-900 font-semibold">
-                          {{ cliente.nombre }} {{ cliente.apellido }}
+                          {{ props.cliente.nombre }} {{ props.cliente.apellido }}
                         </p>
                       </div>
                       <div class="pb-3 border-b">
@@ -240,7 +240,7 @@
                           >Teléfono</span
                         >
                         <p class="text-gray-900 font-semibold">
-                          {{ cliente.telefono || "N/A" }}
+                          {{ props.cliente.telefono || "N/A" }}
                         </p>
                       </div>
                       <div class="pb-3 border-b">
@@ -248,7 +248,7 @@
                           >Email</span
                         >
                         <p class="text-gray-900 font-semibold text-sm break-all">
-                          {{ cliente.email || "N/A" }}
+                          {{ props.cliente.email || "N/A" }}
                         </p>
                       </div>
                       <div class="pb-3 border-b">
@@ -257,8 +257,8 @@
                         >
                         <p class="text-gray-900 font-semibold">
                           {{
-                            cliente.fechaRegistro
-                              ? formatDate(cliente.fechaRegistro)
+                            props.cliente.fechaRegistro
+                              ? formatDate(props.cliente.fechaRegistro)
                               : "N/A"
                           }}
                         </p>
@@ -268,7 +268,7 @@
                           >Origen</span
                         >
                         <p class="text-gray-900 font-semibold">
-                          {{ cliente.origen || "N/A" }}
+                          {{ props.cliente.origen || "N/A" }}
                         </p>
                       </div>
                     </div>
@@ -290,7 +290,7 @@
                           >Tipo Inmueble</span
                         >
                         <p class="text-gray-900 font-semibold">
-                          {{ cliente.preferenciasSummary?.tipo || "N/A" }}
+                          {{ props.cliente.preferenciasSummary?.tipo || "N/A" }}
                         </p>
                       </div>
                       <div class="pb-3 border-b">
@@ -298,7 +298,7 @@
                           >Operación</span
                         >
                         <p class="text-gray-900 font-semibold">
-                          {{ cliente.preferenciasSummary?.operacion || "N/A" }}
+                          {{ props.cliente.preferenciasSummary?.operacion || "N/A" }}
                         </p>
                       </div>
                       <div class="pb-3 border-b">
@@ -307,9 +307,9 @@
                         >
                         <p class="text-gray-900 font-semibold">
                           {{
-                            cliente.preferenciasSummary?.precioMin != null
+                            props.cliente.preferenciasSummary?.precioMin != null
                               ? `$${Number(
-                                  cliente.preferenciasSummary.precioMin
+                                  props.cliente.preferenciasSummary.precioMin
                                 ).toLocaleString()}`
                               : "N/A"
                           }}
@@ -321,9 +321,9 @@
                         >
                         <p class="text-gray-900 font-semibold">
                           {{
-                            cliente.preferenciasSummary?.precioMax != null
+                            props.cliente.preferenciasSummary?.precioMax != null
                               ? `$${Number(
-                                  cliente.preferenciasSummary.precioMax
+                                  props.cliente.preferenciasSummary.precioMax
                                 ).toLocaleString()}`
                               : "N/A"
                           }}
@@ -335,7 +335,7 @@
                         >
                         <p class="text-gray-900 font-semibold">
                           {{
-                            cliente.preferenciasSummary?.habitaciones ?? "N/A"
+                            props.cliente.preferenciasSummary?.habitaciones ?? "N/A"
                           }}
                         </p>
                       </div>
@@ -344,7 +344,7 @@
                           >Baños</span
                         >
                         <p class="text-gray-900 font-semibold">
-                          {{ cliente.preferenciasSummary?.banos ?? "N/A" }}
+                          {{ props.cliente.preferenciasSummary?.banos ?? "N/A" }}
                         </p>
                       </div>
                       <div class="pb-3 border-b">
@@ -353,7 +353,7 @@
                         >
                         <p class="text-gray-900 font-semibold">
                           {{
-                            cliente.preferenciasSummary?.metrosCuadrados ??
+                            props.cliente.preferenciasSummary?.metrosCuadrados ??
                             "N/A"
                           }}
                         </p>
@@ -363,7 +363,7 @@
                           >Ubicación</span
                         >
                         <p class="text-gray-900 font-semibold">
-                          {{ cliente.preferenciasSummary?.ubicacion || "N/A" }}
+                          {{ props.cliente.preferenciasSummary?.ubicacion || "N/A" }}
                         </p>
                       </div>
                     </div>
@@ -382,13 +382,13 @@
 
                 <div
                   v-if="
-                    cliente?.preferenciasSummary?.amenidades &&
-                    cliente.preferenciasSummary.amenidades.length > 0
+                    props.cliente?.preferenciasSummary?.amenidades &&
+                    props.cliente.preferenciasSummary.amenidades.length > 0
                   "
                   class="flex flex-wrap gap-2"
                 >
                   <span
-                    v-for="(nombre, index) in cliente.preferenciasSummary
+                    v-for="(nombre, index) in props.cliente.preferenciasSummary
                       .amenidades"
                     :key="index"
                     class="inline-flex items-center px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
@@ -404,8 +404,8 @@
               </div>
 
               <MatchPendiente 
-                :clienteId="clienteId" 
-                :clientDetails="cliente" 
+                :clienteId="props.cliente.id" 
+                :clientDetails="props.cliente" 
                 @open-inmueble="handleOpenInmueble"
               />
 
@@ -420,8 +420,8 @@
                     Requerimientos
                   </h4>
                 </div>
-                <div
-                  v-if="preferenciasList.length <= 1"
+              <div
+                v-if="!preferenciasList.length"
                   class="text-sm text-gray-400 text-center py-8"
                 >
                   No hay requerimientos registrados
@@ -452,7 +452,7 @@
                       </thead>
                       <tbody>
                         <tr
-                          v-for="(pref, index) in preferenciasList.slice(1)"
+                          v-for="(pref, index) in preferenciasList"
                           :key="pref.id"
                           class="odd:bg-white odd: even:bg-gray-50 even: border-b border-gray-200"
                         >
@@ -606,7 +606,7 @@
                       </tbody>
                     </table>
                   </div>
-              </div>
+              </div> 
 
               <!--Historial de seguimiento-->
               <div class="bg-white rounded-xl shadow-md p-6">
@@ -734,7 +734,7 @@
                   Notas Adicionales
                 </h4>
                 <p class="text-gray-700 leading-relaxed">
-                  {{ cliente.notas || "Sin notas adicionales" }}
+                  {{ props.cliente.notas || "Sin notas adicionales" }}
                 </p>
               </div>
             </div>
@@ -984,7 +984,7 @@ const props = defineProps({
   },
 });
 
-const clienteId = computed(() => cliente.value?.id || props.cliente?.id || null); 
+const clienteId = computed(() => props.cliente?.id || null); 
 
 const amenidadesDisponibles = ref([
   { id: 1, nombre: "Airbnb" },
@@ -1030,8 +1030,8 @@ function normalizeText(s) {
 }
 
 // === Datos reactivos ===
-const cliente = ref(null);
-const isLoading = ref(false);
+const cliente = ref(null); // Ya no se usa para renderizar, solo para lógica interna si es necesario
+const isLoading = ref(false); // Ya no controla el renderizado principal
 
 // Añadidos: estado local para mostrar modal de preferencia (fallback si el padre no lo abre)
 const showPreferenciaModal = ref(false);
@@ -1044,25 +1044,19 @@ function handleClosePreferenciaModal() {
 
 // === Computed: preferenciasList ===
 // Mover la definición de preferenciasList al inicio, antes de cualquier watcher o lógica que lo use.
-const preferenciasList = computed(() => {
-  // permitimos actualizar localmente (cliente.value) y si no existe usamos props.cliente
-  const raw =
-    cliente.value?.preferencias ?? props.cliente?.preferencias ?? null;
+const rawPreferenciasArray = computed(() => {
+  const raw = props.cliente?.preferencias ?? null;
   if (!raw) return [];
+  const prefsArr = Array.isArray(raw.$values) ? raw.$values : (Array.isArray(raw) ? raw : []);
+  return prefsArr;
+});
 
-  // Obtener array de preferencias (compat con $values)
-  let prefsArr = [];
-  if (Array.isArray(raw.$values)) prefsArr = raw.$values;
-  else if (Array.isArray(raw)) prefsArr = raw;
-  else if (
-    raw &&
-    typeof raw === "object" &&
-    (raw.id || raw.tipo || raw.operacion)
-  )
-    prefsArr = [raw];
-  else prefsArr = [];
+const preferenciasList = computed(() => {
+  const prefsArr = rawPreferenciasArray.value;
+  if (prefsArr.length <= 1) return []; // Si hay 0 o 1, la lista estará vacía
 
-  return prefsArr.map((p) => {
+  // Devolver todas las preferencias excepto la primera (la más antigua)
+  return prefsArr.slice(1).map((p) => {
     // extraer amenidades robustamente
     const rawAms =
       p?.preferenciaAmenidades?.$values ??
@@ -1104,14 +1098,8 @@ const preferenciasList = computed(() => {
   });
 });
 
-// Computed para calcular dinámicamente preferenciasSummary basado en las preferencias del cliente
 const preferenciasSummary = computed(() => {
-  const rawPrefs =
-    cliente.value?.preferencias?.$values || cliente.value?.preferencias || [];
-  const firstPref =
-    Array.isArray(rawPrefs) && rawPrefs.length > 0 ? rawPrefs[0] : null;
-
-  if (!firstPref) {
+  if (rawPreferenciasArray.value.length === 0) {
     return {
       tipo: "N/A",
       operacion: "N/A",
@@ -1125,23 +1113,26 @@ const preferenciasSummary = computed(() => {
     };
   }
 
+  // Tomar la primera preferencia de la lista (la que está en el índice 0) para el resumen
+  const summaryPref = rawPreferenciasArray.value[0];
+
   const summaryAmenidades = Array.isArray(
-    firstPref.preferenciaAmenidades?.$values
+    summaryPref.preferenciaAmenidades?.$values
   )
-    ? firstPref.preferenciaAmenidades.$values.map((a) => a.nombre || a.Nombre)
-    : Array.isArray(firstPref.amenidades)
-    ? firstPref.amenidades
+    ? summaryPref.preferenciaAmenidades.$values.map((a) => a.nombre || a.Nombre)
+    : Array.isArray(summaryPref.amenidades)
+    ? summaryPref.amenidades
     : [];
 
   return {
-    tipo: firstPref.tipo || "N/A",
-    operacion: firstPref.operacion || "N/A",
-    ubicacion: firstPref.ubicacion || "N/A",
-    precioMin: firstPref.precioMin ?? null,
-    precioMax: firstPref.precioMax ?? null,
-    habitaciones: firstPref.habitaciones ?? null,
-    banos: firstPref.banos ?? null,
-    metrosCuadrados: firstPref.metrosCuadrados ?? null,
+    tipo: summaryPref.tipo || "N/A",
+    operacion: summaryPref.operacion || "N/A",
+    ubicacion: summaryPref.ubicacion || "N/A",
+    precioMin: summaryPref.precioMin ?? null,
+    precioMax: summaryPref.precioMax ?? null,
+    habitaciones: summaryPref.habitaciones ?? null,
+    banos: summaryPref.banos ?? null,
+    metrosCuadrados: summaryPref.metrosCuadrados ?? null,
     amenidades: summaryAmenidades.length ? summaryAmenidades : [],
   };
 });
@@ -1150,113 +1141,6 @@ const preferenciasSummary = computed(() => {
 // Añadir una referencia para controlar abortos de solicitudes
 const abortController = ref(null);
 
-// Función para cargar el cliente completo con efecto de loading
-async function loadClienteCompleto() {
-  if (!props.cliente?.id) {
-    // Si no hay ID, usar datos de props directamente sin loading
-    if (props.cliente) {
-      cliente.value = {
-        ...props.cliente,
-        preferencias: {
-          ...props.cliente.preferencias,
-          amenidades: props.cliente.preferencias?.amenidades || [],
-        },
-      };
-    }
-    isLoading.value = false;
-    return;
-  }
-
-  try {
-    // Establecer loading ANTES de cualquier operación
-    isLoading.value = true;
-    
-    // Limpiar cliente para forzar el skeleton
-    cliente.value = null;
-    
-    // Delay mínimo para que se vea el skeleton
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Cargar datos completos del cliente
-    const clienteData = await clienteService.getClienteById(props.cliente.id);
-    const clienteCompleto = clienteData?.$values ? clienteData.$values[0] : clienteData;
-    
-    if (clienteCompleto) {
-      cliente.value = {
-        ...clienteCompleto,
-        preferencias: {
-          ...clienteCompleto.preferencias,
-          amenidades: clienteCompleto.preferencias?.amenidades || [],
-        },
-      };
-    }
-  } catch (error) {
-    console.error("Error al cargar cliente:", error);
-    // En caso de error, usar datos de props
-    if (props.cliente) {
-      cliente.value = {
-        ...props.cliente,
-        preferencias: {
-          ...props.cliente.preferencias,
-          amenidades: props.cliente.preferencias?.amenidades || [],
-        },
-      };
-    }
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-// Watch de cliente solo para actualizar cuando NO está en modo loading
-watch(
-  () => props.cliente,
-  (newVal, oldVal) => {
-    // Si cambió el ID del cliente mientras el modal está abierto
-    if (props.isOpen && newVal?.id !== oldVal?.id) {
-      // Limpiar cliente anterior y recargar
-      cliente.value = null;
-      isLoading.value = true;
-      loadClienteCompleto();
-    } else if (!isLoading.value && newVal) {
-      // Solo actualizar si no estamos en estado de carga
-      cliente.value = {
-        ...newVal,
-        preferencias: {
-          ...newVal.preferencias,
-          amenidades: newVal.preferencias?.amenidades || [],
-        },
-      };
-    }
-  },
-  { deep: true }
-);
-
-// Reemplazo de watcher anterior de isOpen para secuenciar
-watch(
-  () => props.isOpen,
-  async (v, oldV) => {
-    if (v && !oldV) {
-      // Al abrir el modal, primero limpiar el cliente anterior
-      cliente.value = null;
-      isLoading.value = true;
-      
-      // Luego cargar los datos del nuevo cliente
-      await loadClienteCompleto();
-    } else if (!v && oldV) {
-      // Al cerrar, limpiar cualquier operación pendiente
-      // Cancelar solicitudes pendientes
-      if (abortController.value) {
-        abortController.value.abort();
-        abortController.value = null;
-      }
-      // Resetear estado de carga
-      isLoading.value = false;
-      // Limpiar cliente para que no se vea al reabrir
-      cliente.value = null;
-    }
-  }
-);
-
 // === Cerrar modal ===
 function closeModal() {
   // Cancelar solicitudes pendientes
@@ -1264,6 +1148,9 @@ function closeModal() {
     abortController.value.abort();
     abortController.value = null;
   }
+
+  // Limpiar estado local al cerrar
+  cliente.value = null;
 
   // Limpiar temporizadores
 
@@ -1338,15 +1225,15 @@ async function eliminarPreferencia(prefId) {
 
     // Actualizar copia local (cliente.value) para reflejar el cambio inmediatamente
     try {
-      if (cliente.value?.preferencias) {
-        const p = cliente.value.preferencias;
+      if (props.cliente?.preferencias) {
+        const p = props.cliente.preferencias;
         if (Array.isArray(p.$values)) {
-          cliente.value.preferencias = {
+          props.cliente.preferencias = {
             ...p,
             $values: p.$values.filter((x) => x.id !== prefId),
           };
         } else if (Array.isArray(p)) {
-          cliente.value.preferencias = p.filter((x) => x.id !== prefId);
+          props.cliente.preferencias = p.filter((x) => x.id !== prefId);
         }
       }
     } catch (e) {
@@ -1355,7 +1242,7 @@ async function eliminarPreferencia(prefId) {
 
     // Emitir para que el padre (si desea) vuelva a recargar datos
     emit("pref-deleted", {
-      clienteId: cliente.value?.id ?? props.cliente?.id,
+      clienteId: props.cliente?.id,
       preferenciaId: prefId,
     });
   } catch (err) {
@@ -1375,7 +1262,7 @@ function editarPreferencia(prefId) {
     return;
   }
 
-  const clienteId = cliente.value?.id ?? props.cliente?.id ?? null;
+  const clienteId = props.cliente?.id ?? null;
 
   if (!clienteId) {
     console.error("Cliente ID no definido al intentar editar la preferencia.");
@@ -1394,7 +1281,7 @@ function editarPreferencia(prefId) {
 function detallePreferencia(prefId) {
   if (!prefId) return;
   try {
-    const clienteId = cliente.value?.id ?? props.cliente?.id ?? null;
+    const clienteId = props.cliente?.id ?? null;
     // console.debug("[detalleCliente] emitir open-preferencia-detail ->", { preferenciaId: prefId, clienteId });
 
     // Emitir al padre (si el padre quiere manejarlo)
@@ -1423,9 +1310,9 @@ async function handlePreferenciaChanged(evtOrDetail) {
       (evtOrDetail && evtOrDetail.preferencia ? evtOrDetail : null);
     if (!d || !d.preferencia) return;
     const targetClienteId = d.clienteId ?? null;
-    const ts = Number(d.timestamp ?? 0);
+    const ts = Number(d.timestamp ?? 0); 
     if (ts && lastProcessedTimestamp.value >= ts) return;
-    const myClienteId = cliente.value?.id ?? props.cliente?.id ?? null;
+    const myClienteId = props.cliente?.id ?? null; 
     if (!myClienteId || Number(myClienteId) !== Number(targetClienteId)) return;
     if (ts) lastProcessedTimestamp.value = ts;
 
@@ -1448,20 +1335,14 @@ async function handlePreferenciaChanged(evtOrDetail) {
 // NUEVO: refetch solo de preferencias/cliente
 const isRefreshingPrefs = ref(false);
 async function refreshClientePreferencias() {
-  const id = cliente.value?.id ?? props.cliente?.id;
+  const id = props.cliente?.id; 
   if (!id || isRefreshingPrefs.value) return;
   isRefreshingPrefs.value = true;
   try {
     const resp = await clienteService.getClienteById(id);
     const clienteData = resp?.$values ? resp.$values[0] : resp;
     if (clienteData) {
-      cliente.value = {
-        ...clienteData,
-        preferencias: {
-          ...clienteData.preferencias,
-          amenidades: clienteData.preferencias?.amenidades || [],
-        },
-      };
+      console.log("Datos del cliente refrescados:", clienteData);
     }
   } catch (e) {
     // console.warn("Fallo al refrescar cliente:", e);
@@ -1489,8 +1370,8 @@ onMounted(() => {
     if (raw) {
       const parsed = JSON.parse(raw);
       const targetClienteId = parsed?.clienteId ?? null;
-      const ts = Number(parsed?.timestamp ?? 0);
-      const myClienteId = cliente.value?.id ?? props.cliente?.id ?? null;
+      const ts = Number(parsed?.timestamp ?? 0);  
+      const myClienteId = props.cliente?.id ?? null;
       if (
         parsed &&
         parsed.preferencia &&
@@ -1625,10 +1506,10 @@ const currentRecordatorio = ref({
 
 const openUpdateModal = (rec = null) => {
   // Construir nombre del cliente de forma segura
-  const nombre = (cliente.value?.nombre || props.cliente?.nombre || "")
+  const nombre = (props.cliente?.nombre || "")
     .toString()
     .trim();
-  const apellido = (cliente.value?.apellido || props.cliente?.apellido || "")
+  const apellido = (props.cliente?.apellido || "")
     .toString()
     .trim();
   const clienteNombre =
@@ -1636,8 +1517,8 @@ const openUpdateModal = (rec = null) => {
 
   // Determinar estado actual del cliente (numérico)
   const estadoActual =
-    (typeof cliente.value?.status === "number"
-      ? cliente.value?.status
+    (typeof props.cliente?.status === "number"
+      ? props.cliente?.status
       : null) ??
     (typeof props.cliente?.status === "number" ? props.cliente?.status : 0);
 
@@ -1738,8 +1619,8 @@ const addInteraccion = async () => {
       descripcion: currentRecordatorio.value.notasInteraccion,
       statusInteraccion:
         statusMap[currentRecordatorio.value.estadoInteraccionRaw],
-      agenteId: loggedAgente.value?.id || null,
-      clienteId: cliente.value?.id || null,
+      agenteId: loggedAgente.value?.id || null,  
+      clienteId: props.cliente?.id || null,
     };
 
     // Enviar la nueva interacción a la API
