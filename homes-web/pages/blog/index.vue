@@ -18,7 +18,7 @@
                     No hay blogs disponibles para mostrar.
                 </div>
                 <div class="grid gap-10 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    <NuxtLink v-for="blog in paginatedBlogs" :key="blog.id" :to="`/blog/${blog.id}`"
+                    <NuxtLink v-for="blog in paginatedBlogs" :key="blog.id" :to="`/${blog.category.toLowerCase()}/${blog.slug}`"
                         class="group flex flex-col bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 h-full"
                         style="min-height: 280px;">
                         <div v-if="blog.previewImage" class="overflow-hidden rounded-t-lg w-full">

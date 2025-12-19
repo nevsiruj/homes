@@ -555,13 +555,22 @@ async function submitForm() {
 
     const amenidadIdsUnicos = deduplicateAmenidades(formData.value.preferencias.amenidades);
 
-    const preferenciaAmenidades = amenidadIdsUnicos.map((id) => {
-      const amen = amenidadesDisponibles.value.find((a) => Number(a.id) === Number(id));
-      const existingRel =
-        formData.value.preferencias?.preferenciaAmenidadesRaw?.find((r) => Number(r.AmenidadId) === Number(id)) ?? null;
-      const relIdNum = existingRel && Number.isFinite(Number(existingRel.Id)) ? Number(existingRel.Id) : 0;
-      return { Id: relIdNum, AmenidadId: Number(id), Nombre: amen?.nombre ?? `Amenidad ${id}` };
-    });
+    let preferenciaAmenidades;
+    if (isEditing.value) {
+      // Para edición, mantener la estructura completa con el ID de la relación
+      preferenciaAmenidades = amenidadIdsUnicos.map((id) => {
+        const amen = amenidadesDisponibles.value.find((a) => Number(a.id) === Number(id));
+        const existingRel = formData.value.preferencias?.preferenciaAmenidadesRaw?.find((r) => Number(r.AmenidadId) === Number(id)) ?? null;
+        const relIdNum = existingRel && Number.isFinite(Number(existingRel.Id)) ? Number(existingRel.Id) : 0;
+        return { Id: relIdNum, AmenidadId: Number(id), Nombre: amen?.nombre ?? `Amenidad ${id}` };
+      });
+    } else {
+      // Para creación, enviar solo AmenidadId y Nombre, sin el Id de la relación
+      preferenciaAmenidades = amenidadIdsUnicos.map((id) => {
+        const amen = amenidadesDisponibles.value.find((a) => Number(a.id) === Number(id));
+        return { AmenidadId: Number(id), Nombre: amen?.nombre ?? `Amenidad ${id}` };
+      });
+    }
 
     const clienteId = props.clienteId || formData.value.id || 0;
     const prefId = formData.value.preferencias?.id || 0;
@@ -593,17 +602,17 @@ async function submitForm() {
       Swal.fire("Éxito", "Preferencia actualizada correctamente.", "success");
     } else {
       const nuevaPreferencia = {
-        tipo: formData.value.preferencias.tipo || null,
-        operacion: formData.value.preferencias.operacion || null,
-        ubicacion: ubicacionStr,
-        precioMin: formData.value.preferencias.precioMin || null,
-        precioMax: formData.value.preferencias.precioMax || null,
-        habitaciones: formData.value.preferencias.habitaciones || null,
-        banos: formData.value.preferencias.banos || null,
-        metrosCuadrados: formData.value.preferencias.metrosCuadrados || null,
-        comentarios: formData.value.preferencias.comentarios || "",
-        clienteId: clienteId,
-        preferenciaAmenidades: preferenciaAmenidades,
+        Tipo: formData.value.preferencias.tipo || null,
+        Operacion: formData.value.preferencias.operacion || null,
+        Ubicacion: ubicacionStr,
+        PrecioMin: formData.value.preferencias.precioMin || null,
+        PrecioMax: formData.value.preferencias.precioMax || null,
+        Habitaciones: formData.value.preferencias.habitaciones || null,
+        Banos: formData.value.preferencias.banos || null,
+        MetrosCuadrados: formData.value.preferencias.metrosCuadrados || null,
+        Comentarios: formData.value.preferencias.comentarios || "",
+        ClienteId: clienteId,
+        PreferenciaAmenidades: preferenciaAmenidades,
       };
 
       const resp = await requerimientoService.addPreferencia(nuevaPreferencia);

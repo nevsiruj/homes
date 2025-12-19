@@ -11,7 +11,8 @@
             alt="image description"
           />
           <div class="flex mt-2 items-center justify-center">
-            <svg
+           <a href="https://www.facebook.com/homesguatemala" target="_blank" rel="noopener noreferrer">
+             <svg
               class="w-10 h-10 m-2"
               fill="#000000"
               version="1.1"
@@ -35,7 +36,10 @@
                 </g>
               </g>
             </svg>
-
+           </a>
+            
+           <a href="https://www.instagram.com/homesguatemala/" target="_blank" rel="noopener noreferrer">
+            
             <svg
               class="w-10 h-10 m-2"
               fill="#000000"
@@ -69,7 +73,9 @@
                 </g>
               </g>
             </svg>
+            </a>
 
+            <a href="https://www.youtube.com/@homesguatemala4975" target="_blank" rel="noopener noreferrer">
             <svg
               class="w-10 h-10 m-2"
               fill="#000000"
@@ -111,6 +117,7 @@
                 </g>
               </g>
             </svg>
+            </a>
           </div>
         </div>
         <div class="mx-auto text-center md:text-left lg:py-8">

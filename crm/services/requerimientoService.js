@@ -85,41 +85,13 @@ const requerimientoService = {
 
   // Crear una nueva preferencia para un cliente existente
   async addPreferencia(nuevaPreferencia) {
-    // console.log(" Enviando nueva preferencia (raw):", nuevaPreferencia);
-
-    // Normalización: asegurar que preferenciaAmenidades sea un array de objetos
-    const amenidadesRaw = Array.isArray(nuevaPreferencia.preferenciaAmenidades)
-      ? nuevaPreferencia.preferenciaAmenidades
-      : [];
-
-    const resolved = amenidadesRaw
-      .map((v) => {
-        if (typeof v === "number" && Number.isFinite(v)) return { AmenidadId: Number(v), Nombre: `Amenidad ${Number(v)}` };
-        if (typeof v === "string" && /^\d+$/.test(v)) return { AmenidadId: Number(v), Nombre: `Amenidad ${Number(v)}` };
-        if (v && typeof v === "object") {
-          const relId = Number(v.Id ?? v.id ?? v.preferenciaAmenidadId ?? NaN);
-          const id = Number(v.AmenidadId ?? v.amenidadId ?? v.id ?? NaN);
-          const name = v.Nombre ?? v.nombre ?? null;
-          if (Number.isFinite(id)) return { Id: Number.isFinite(relId) ? relId : 0, AmenidadId: id, Nombre: name ?? `Amenidad ${id}` };
-        }
-        return null;
-      })
-      .filter(Boolean)
-      .filter((it) => Number.isFinite(it.AmenidadId));
-
-    // Deduplicar por AmenidadId
-    const map = new Map();
-    for (const it of resolved) {
-      if (!map.has(it.AmenidadId)) {
-        map.set(it.AmenidadId, { Id: it.Id ?? 0, AmenidadId: it.AmenidadId, Nombre: it.Nombre ?? `Amenidad ${it.AmenidadId}` });
-      }
-    }
-    const cleanedPreferenciaAmenidades = Array.from(map.values());
-
+    // console.log(" Enviando nueva preferencia:", nuevaPreferencia);
+    
+    // CORRECCIÓN: El payload ya viene correctamente formateado desde modalRequerimiento.vue.
+    // No es necesario normalizarlo aquí. Se envía directamente.
     const payload = {
       ...nuevaPreferencia,
       id: 0, // asegurar id = 0 para creación
-      preferenciaAmenidades: cleanedPreferenciaAmenidades,
     };
 
     // console.log(" Enviando nueva preferencia (limpia):", payload);

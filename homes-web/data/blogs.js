@@ -2,6 +2,7 @@ export const blogs = [
     {
         id: 1,
         title: "Mejores Clubs de Guatemala",
+        slug: "mejores-clubs-de-guatemala",
         previewImage: "https://old-web.homesguatemala.com/wp-content/uploads/2024/07/Blogs-2-scaled.jpg",
         mainImage: "https://old-web.homesguatemala.com/wp-content/uploads/2024/07/Blogs-2-scaled.jpg",
         intro: `
@@ -75,6 +76,7 @@ export const blogs = [
     {
         id: 2,
         title: "Como preparar tu propiedad para una visita",
+        slug: "como-preparar-tu-propiedad-para-una-visita",
         previewImage: "https://old-web.homesguatemala.com/wp-content/uploads/2022/01/volha-flaxeco-jCPL0oxBhB0-unsplash-400x250.jpg",
         intro: `
         <p>
@@ -136,6 +138,7 @@ export const blogs = [
     {
         id: 3,
         title: "Mejores Proyectos de Casas",
+        slug: "mejores-proyectos-de-casas",
         previewImage: "https://old-web.homesguatemala.com/wp-content/uploads/2024/10/mejores-Pro-casas_Mesa-de-trabajo-1-copia-3.jpg",
         mainImage: "https://old-web.homesguatemala.com/wp-content/uploads/2024/10/mejores-Pro-casas_Mesa-de-trabajo-1-copia-3.jpg",
         intro: `
@@ -192,6 +195,7 @@ export const blogs = [
     {
         id: 4,
         title: "Las mejores zonas para vivir en Guatemala",
+        slug: "las-mejores-zonas-para-vivir-en-guatemala",
         previewImage: "https://old-web.homesguatemala.com/wp-content/uploads/2021/06/2EE0E7AB-775A-404C-A828-C66B2C65DD08-400x250.jpeg",
         intro: `
         <p>
@@ -259,6 +263,7 @@ export const blogs = [
     {
         id: 5,
         title: "Cómo es promover tu propiedad con nosotros",
+        slug: "como-es-promover-tu-propiedad-con-nosotros",
         previewImage: "https://old-web.homesguatemala.com/wp-content/uploads/2020/08/smartmockups_kdt029xm-1-400x250.jpg",
         intro: `
         <p>
@@ -313,6 +318,7 @@ export const blogs = [
     {
         id: 6,
         title: "Cómo hacer home office productivo",
+        slug: "como-hacer-home-office-productivo",
         previewImage: "https://old-web.homesguatemala.com/wp-content/uploads/2020/04/home-office-960x650-400x250.jpg",
         intro: `
         <p>
@@ -387,6 +393,7 @@ export const blogs = [
     {
         id: 7,
         title: "¿Cómo calcular el Retorno de Inversión?",
+        slug: "como-calcular-el-retorno-de-inversion",
         previewImage: "https://old-web.homesguatemala.com/wp-content/uploads/2019/06/calcular-retorno-de-inversion-400x250.jpg",
         mainImage: "https://old-web.homesguatemala.com/wp-content/uploads/2019/06/calcular-retorno-de-inversion-400x250.jpg",
         category: "CONSEJOS",

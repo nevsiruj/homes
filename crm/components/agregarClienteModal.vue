@@ -436,6 +436,8 @@ const selectedCountryCode = ref(countries.value[0]?.callingCode || "502");
 const isEditing = ref(false);
 const selectedAgenteId = ref(null);
 
+const allClientPreferences = ref([]); // NUEVO: Almacena todas las preferencias del cliente
+const allClientInteractions = ref([]); // NUEVO: Almacena todas las interacciones del cliente
 const formData = ref({
   id: null,
   nombre: "",
@@ -605,12 +607,27 @@ function mapClienteFromApi(clienteData) {
   let preferenciasRaw = {};
   if (clienteData.preferencias?.$values?.length) {
     preferenciasRaw = clienteData.preferencias.$values[0];
+  } else if (Array.isArray(clienteData.preferencias) && clienteData.preferencias.length > 0) {
+    preferenciasRaw = clienteData.preferencias[0]; // <-- Cambio clave: Aceptar array directamente
   } else if (Array.isArray(clienteData.preferencias) && clienteData.preferencias.length) {
     preferenciasRaw = clienteData.preferencias[0];
   } else if (clienteData.preferencias && typeof clienteData.preferencias === "object") {
     preferenciasRaw = clienteData.preferencias;
   }
 
+  // NUEVO: Guardar todas las preferencias existentes para no perderlas en la actualización
+  if (Array.isArray(clienteData.preferencias?.$values)) {
+    allClientPreferences.value = clienteData.preferencias.$values;
+  } else if (Array.isArray(clienteData.preferencias)) {
+    allClientPreferences.value = clienteData.preferencias;
+  }
+
+  // NUEVO: Guardar todas las interacciones existentes
+  if (Array.isArray(clienteData.interacciones?.$values)) {
+    allClientInteractions.value = clienteData.interacciones.$values;
+  } else if (Array.isArray(clienteData.interacciones)) {
+    allClientInteractions.value = clienteData.interacciones;
+  }
   // Ubicaciones
   const ubicacionesArray = [];
   if (typeof preferenciasRaw.ubicacion === "string" && preferenciasRaw.ubicacion.trim()) {
@@ -675,6 +692,8 @@ watch(
   async (newVal) => {
     if (!newVal) {
       resetForm();
+      allClientInteractions.value = []; // Limpiar interacciones al resetear
+      allClientPreferences.value = []; // Limpiar preferencias al resetear
       return;
     }
     if (!newVal.id) return;
@@ -762,6 +781,8 @@ function resetForm() {
   selectedCountryCode.value = "502";
   clienteAmenidades.value = [];
   isExistingClient.value = false; // NUEVO
+  allClientPreferences.value = []; // NUEVO: Limpiar al cerrar
+  allClientInteractions.value = []; // NUEVO: Limpiar al cerrar
   lastCheckedPhone.value = "";
 }
 
@@ -792,6 +813,61 @@ async function submitForm() {
             })
             .filter(Boolean);
 
+        // Lógica para construir la lista de preferencias
+        let finalPreferences = [];
+        const editedPreferenceId = formData.value.preferencias.id || 0;
+
+        // Añadir la preferencia que se está editando/creando
+        const currentPreferencePayload = {
+            Id: editedPreferenceId,
+            Tipo: formData.value.preferencias.tipo || null,
+            Operacion: formData.value.preferencias.operacion || null,
+            Ubicacion: ubicacionStr,
+            PrecioMin: formData.value.preferencias.precioMin || null,
+            PrecioMax: formData.value.preferencias.precioMax || null,
+            Habitaciones: formData.value.preferencias.habitaciones || null,
+            Banos: formData.value.preferencias.banos || null,
+            MetrosCuadrados: formData.value.preferencias.metrosCuadrados || null,
+            PreferenciaAmenidades: preferenciaAmenidades,
+        };
+
+        if (isEditing.value) {
+            // Reemplazar la preferencia editada en su posición original para mantener el orden
+            const index = allClientPreferences.value.findIndex(p => p.id === editedPreferenceId);
+            let tempPreferences = [...allClientPreferences.value];
+
+            if (index > -1) {
+                // Reemplaza el objeto en el índice encontrado con los datos del formulario
+                // (currentPreferencePayload ya tiene la estructura del DTO con claves en mayúscula)
+                tempPreferences[index] = currentPreferencePayload;
+            } else {
+                // Si por alguna razón no se encuentra (ej. es una nueva preferencia para un cliente existente), la añade al final.
+                tempPreferences.push(currentPreferencePayload);
+            }
+
+            // Mapear todas las preferencias al formato DTO final para asegurar consistencia
+            finalPreferences = tempPreferences.map(p => ({
+                Id: p.Id ?? p.id,
+                Tipo: p.Tipo ?? p.tipo,
+                Operacion: p.Operacion ?? p.operacion,
+                // ... y así sucesivamente para todos los campos, asegurando que el payload sea consistente
+                Ubicacion: p.Ubicacion ?? p.ubicacion,
+                PrecioMin: p.PrecioMin ?? p.precioMin,
+                PrecioMax: p.PrecioMax ?? p.precioMax,
+                Habitaciones: p.Habitaciones ?? p.habitaciones,
+                Banos: p.Banos ?? p.banos,
+                MetrosCuadrados: p.MetrosCuadrados ?? p.metrosCuadrados,
+                PreferenciaAmenidades: (p.PreferenciaAmenidades || p.preferenciaAmenidades?.$values || p.preferenciaAmenidades || []).map(a => ({ AmenidadId: a.AmenidadId ?? a.amenidadId, Nombre: a.Nombre ?? a.nombre })),
+            }));
+        } else {
+            // Si se está creando, solo se envía la nueva preferencia
+            finalPreferences = [currentPreferencePayload];
+        }
+
+        // NUEVO: Asegurarse de que las interacciones existentes se incluyan en el payload de actualización
+        const existingInteractions = isEditing.value ? allClientInteractions.value : [];
+
+
         const payload = {
             Id: isEditing.value ? parseInt(formData.value.id) : 0,
             AgenteId: selectedAgenteId.value || agenteId,
@@ -810,20 +886,8 @@ async function submitForm() {
             Notas: formData.value.notas || null,
             Email: formData.value.email || null,
             Status: 0,
-            Preferencias: [
-                {
-                    Id: formData.value.preferencias.id || 0,
-                    Tipo: formData.value.preferencias.tipo || null,
-                    Operacion: formData.value.preferencias.operacion || null,
-                    Ubicacion: ubicacionStr,
-                    PrecioMin: formData.value.preferencias.precioMin || null,
-                    PrecioMax: formData.value.preferencias.precioMax || null,
-                    Habitaciones: formData.value.preferencias.habitaciones || null,
-                    Banos: formData.value.preferencias.banos || null,
-                    MetrosCuadrados: formData.value.preferencias.metrosCuadrados || null,
-                    PreferenciaAmenidades: preferenciaAmenidades,
-                },
-            ],
+            Preferencias: finalPreferences, // Usar la lista de preferencias construida
+            Interacciones: existingInteractions, // <-- ¡CORRECCIÓN CLAVE!
         };
 
         let response;
