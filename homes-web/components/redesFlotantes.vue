@@ -23,7 +23,7 @@
 
     <!-- Botón Instagram -->
     <a
-      href="https://www.instagram.com/homesguatemala/)"
+      href="https://www.instagram.com/homesguatemala"
       target="_blank"
       class="w-12 h-12 bg-[#000] hover:opacity-90 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 invisible md:visible lg:visible"
     >
