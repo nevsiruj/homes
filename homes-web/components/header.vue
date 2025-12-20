@@ -6,6 +6,7 @@
         alt="Imagen de fondo"
         class="absolute inset-0 object-cover w-full h-full"
         loading="lazy"
+        onerror="this.onerror=null; this.src='/images/bg-header.jpg';"
       />
       <div
         class="flex items-end lg:pb-8 pb-18 justify-center h-full bg-[#00000060]"
@@ -30,6 +31,7 @@
               class="mr-3 xl:ml-24 xl:-mb-6 h-16 xl:-mt-6 xl:h-20"
               alt="Homesguatemala Logo"
               loading="lazy"
+              onerror="this.onerror=null; this.src='/images/placeholder.png';"
             />
           </NuxtLink>
           <div class="flex items-center lg:order-2">

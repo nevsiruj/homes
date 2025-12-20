@@ -186,16 +186,6 @@ export default defineNuxtConfig({
 
   // -------------------- Nitro & Server Configuration --------------------
   nitro: {
-    publicAssets: [
-      {
-        dir: "public/images",
-        baseURL: "/images",
-      },
-      {
-        dir: "assets/fonts",
-        baseURL: "/fonts",
-      },
-    ],
     compressPublicAssets: true,
     routeRules: {
       // PROXY para luxury-homes - muestra contenido del dominio antiguo

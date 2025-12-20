@@ -9,6 +9,7 @@
           class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
           alt="hero"
           src="https://app-pool.vylaris.online/dcmigserver/homes/f64ca937-cba0-4276-b350-9aca8a1b51bc.webp"
+          onerror="this.onerror=null; this.src='/images/placeholder.png';"
         />
       </div>
       <div
@@ -48,6 +49,7 @@
           class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
           alt="hero"
           src="https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp"
+          onerror="this.onerror=null; this.src='/images/placeholder.png';"
         />
       </div>
       <div
@@ -84,6 +86,7 @@
           class="object-cover w-140 object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
           alt="hero"
           src="https://app-pool.vylaris.online/dcmigserver/homes/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp"
+          onerror="this.onerror=null; this.src='/images/placeholder.png';"
         />
       </div>
       <div
@@ -118,11 +121,9 @@
     </div>
     <div
       v-else-if="suggestedPropertiesError"
-      class="mt-12 mb-12 text-center text-red-500"
+      class="mt-12 mb-12 text-center text-gray-500"
     >
-      <p>
-        Error al cargar propiedades destacadas: {{ suggestedPropertiesError }}
-      </p>
+      <p>Las propiedades sugeridas no están disponibles en este momento.</p>
     </div>
     <div class="mt-12 mb-12 px-5">
       <h2
@@ -137,9 +138,9 @@
       
       <div
         v-else-if="featuredPropertiesError"
-        class="text-center py-8 text-red-500"
+        class="text-center py-8 text-gray-500"
       >
-        <p>{{ featuredPropertiesError }}</p>
+        <p>Las propiedades destacadas no están disponibles en este momento.</p>
       </div>
       
       <swiper
@@ -164,6 +165,7 @@
               :src="property.imagenPrincipal"
               class="w-full h-full object-cover object-center transform transition-transform duration-500 group-hover:scale-105"
               :alt="property.titulo"
+              @error="handleImageError"
             />
             <div
               class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70 group-hover:opacity-80 transition-opacity duration-300"
@@ -242,6 +244,18 @@ const suggestedPropertiesError = ref(null);
 const featuredProperties = ref([]);
 const featuredPropertiesLoading = ref(false);
 const featuredPropertiesError = ref(null);
+
+// Placeholder image path for fallback when images fail to load
+const placeholderImage = '/images/placeholder.png';
+
+// Handle image loading errors by replacing with placeholder
+const handleImageError = (event) => {
+  // Prevent infinite loop if placeholder also fails
+  event.target.onerror = null;
+  if (event.target.src !== placeholderImage) {
+    event.target.src = placeholderImage;
+  }
+};
 
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 768; // Punto de corte para "móvil"
