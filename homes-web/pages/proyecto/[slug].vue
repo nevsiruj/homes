@@ -87,6 +87,8 @@
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
+                playsinline
+                loading="lazy"
                 class="w-full h-full"
               ></iframe>
             </div>
@@ -313,10 +315,6 @@ import { useProjectSchema, useBreadcrumbSchema, useJsonldSchema } from "~/compos
 
 // Swiper
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/mousewheel";
-import "swiper/css/navigation";
 import { FreeMode, Mousewheel, Navigation } from "swiper/modules";
 
 // ===== Variables reactivas =====
@@ -946,9 +944,4 @@ onMounted(async () => {
 .swiper-wrapper {
   align-items: flex-start;
 }
-  
-  @import "swiper/css";
-  @import "swiper/css/free-mode";
-  @import "swiper/css/mousewheel";
-  @import "swiper/css/navigation";
   </style>

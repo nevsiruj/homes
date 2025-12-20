@@ -6,6 +6,14 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-06-21",
   devtools: { enabled: false },
 
+  // Runtime configuration
+  runtimeConfig: {
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://homesguatemala.com',
+      apiBaseUrl: process.env.NUXT_PUBLIC_API_BASE_URL || 'https://app-pool.vylaris.online/homes/api'
+    }
+  },
+
   // Generación y despliegue del sitio
   ssr: true, // Se recomienda SSR (Server-Side Rendering) para SEO
   generate: {
@@ -67,15 +75,38 @@ export default defineNuxtConfig({
       link: [
         { rel: "icon", type: "image/x-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
         { rel: "apple-touch-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
-        // Core Web Vitals optimization
+        // Core Web Vitals optimization - Preconnect to CDN
         {
           rel: "preconnect",
           href: "https://app-pool.vylaris.online",
+          crossorigin: "anonymous"
         },
         {
           rel: "dns-prefetch",
           href: "https://app-pool.vylaris.online",
         },
+        // Preload critical fonts for iOS/Safari optimization
+        {
+          rel: "preload",
+          href: "/fonts/ralewey/raleway-v36-latin-regular.woff2",
+          as: "font",
+          type: "font/woff2",
+          crossorigin: "anonymous"
+        },
+        {
+          rel: "preload",
+          href: "/fonts/optima/OptimaMedium.woff",
+          as: "font",
+          type: "font/woff",
+          crossorigin: "anonymous"
+        },
+        {
+          rel: "preload",
+          href: "/fonts/alta/Alta_regular.woff2",
+          as: "font",
+          type: "font/woff2",
+          crossorigin: "anonymous"
+        }
       ],
       script: [
         // Script del Pixel de Facebook
@@ -161,7 +192,14 @@ export default defineNuxtConfig({
     storageKey: "nuxt-color-mode",
   },
 
-  css: ["~/assets/css/main.css"],
+  css: [
+    "~/assets/css/main.css",
+    "swiper/css",
+    "swiper/css/navigation",
+    "swiper/css/pagination",
+    "swiper/css/free-mode",
+    "swiper/css/mousewheel"
+  ],
 
   // -------------------- Build & Vite Configuration --------------------
   build: {
@@ -192,11 +230,12 @@ export default defineNuxtConfig({
         baseURL: "/images",
       },
       {
-        dir: "assets/fonts",
+        dir: "public/fonts",
         baseURL: "/fonts",
       },
     ],
     compressPublicAssets: true,
+    minify: true,
     routeRules: {
       // PROXY para luxury-homes - muestra contenido del dominio antiguo
       '/luxury-homes/**': { 
@@ -205,6 +244,28 @@ export default defineNuxtConfig({
       '/luxury-homes': { 
         proxy: 'https://old-web.homesguatemala.com/luxury-homes'
       },
+      // Cache headers para assets estáticos
+      '/_nuxt/**': { 
+        headers: { 
+          'cache-control': 'public, max-age=31536000, immutable' 
+        } 
+      },
+      '/fonts/**': { 
+        headers: { 
+          'cache-control': 'public, max-age=31536000, immutable' 
+        } 
+      },
+      '/images/**': { 
+        headers: { 
+          'cache-control': 'public, max-age=2592000' // 30 días
+        } 
+      },
+      // Prerender páginas importantes
+      '/': { prerender: true },
+      '/propiedades': { prerender: true },
+      '/proyectos-inmobiliarios': { prerender: true },
+      '/blog': { prerender: true },
+      '/nosotros': { prerender: true }
     },
   },
 

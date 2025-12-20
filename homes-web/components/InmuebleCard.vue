@@ -14,6 +14,8 @@
                     <img :data-src="getOptimizedImageUrl(inmueble.imagenPrincipal, 400)"
                         :srcset="getSrcset(inmueble.imagenPrincipal)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
+                        loading="lazy"
+                        decoding="async"
                         class="swiper-lazy w-sm h-64 object-cover" alt="Imagen principal del inmueble" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
                 </swiper-slide>
@@ -23,6 +25,8 @@
                     :key="index">
                     <img :data-src="getOptimizedImageUrl(imagen.url, 400)" :srcset="getSrcset(imagen.url)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
+                        loading="lazy"
+                        decoding="async"
                         class="swiper-lazy w-sm h-64 object-cover" :alt="`Imagen de referencia ${index + 1}`" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
                 </swiper-slide>
@@ -103,9 +107,6 @@
 import { ref, watch, computed } from 'vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
 import { getOptimizedImageUrl, getSrcset } from "../helpers/useImageOptimization.js";
 import { BedIcon, BathIcon, CarIcon } from "../components/icons";
 
@@ -155,7 +156,6 @@ watch(isHovering, (newValue) => {
 
 .property-card {
     position: relative;
-    will-change: transform;
     transition: transform 0.3s ease-in-out;
 }
 

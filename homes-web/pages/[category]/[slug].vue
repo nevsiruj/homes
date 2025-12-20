@@ -7,7 +7,7 @@
             </h1>
             <hr class="w-48 h-1 mx-auto my-2 mb-6 bg-gray-100 border-0 rounded-sm" />
             <div v-if="blog.mainImage" class="overflow-hidden rounded-lg shadow-lg mb-6">
-                <img :src="blog.mainImage" :alt="blog.title"
+                <img :src="blog.mainImage" :alt="`${blog.title} - Homes Guatemala`"
                     class="w-full h-auto max-h-[400px] object-cover object-center rounded-lg" />
             </div>
             <div class="prose max-w-none text-lg mb-8" v-html="blog.intro"></div>
@@ -15,7 +15,7 @@
                 <h2 class="text-xl font-semibold mb-2">{{ section.heading }}</h2>
                 <div class="prose max-w-none mb-8" v-html="section.content"></div>
                 <div v-if="section.image" class="overflow-hidden rounded-lg shadow mb-10">
-                    <img :src="section.image" :alt="section.heading"
+                    <img :src="section.image" :alt="`${section.heading} - ${blog.title}`"
                         class="w-full h-auto max-h-[400px] object-cover object-center rounded-lg" />
                 </div>
             </template>
@@ -81,6 +81,35 @@ useHead({
     ],
     link: [
         { rel: 'canonical', href: () => `${DOMINIO_BASE}${route.path}` }
+    ],
+    script: [
+        {
+            type: 'application/ld+json',
+            children: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Article',
+                headline: blog?.title || 'Artículo de blog',
+                description: metaDescription.value,
+                image: metaImage.value,
+                author: {
+                    '@type': 'Organization',
+                    name: 'Homes Guatemala',
+                    url: DOMINIO_BASE
+                },
+                publisher: {
+                    '@type': 'Organization',
+                    name: 'Homes Guatemala',
+                    logo: {
+                        '@type': 'ImageObject',
+                        url: `${DOMINIO_BASE}/logo.png`
+                    }
+                },
+                mainEntityOfPage: {
+                    '@type': 'WebPage',
+                    '@id': `${DOMINIO_BASE}${route.path}`
+                }
+            })
+        }
     ]
 });
 </script>
