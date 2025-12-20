@@ -6,8 +6,9 @@
     >
       <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
         <img loading="lazy"
+          decoding="async"
           class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
-          alt="hero"
+          alt="Proyectos inmobiliarios exclusivos en Guatemala - Homes Guatemala"
           src="https://app-pool.vylaris.online/dcmigserver/homes/f64ca937-cba0-4276-b350-9aca8a1b51bc.webp"
         />
       </div>
@@ -45,8 +46,9 @@
     >
       <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 order-1 md:order-2">
         <img loading="lazy"
+          decoding="async"
           class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
-          alt="hero"
+          alt="Propiedades en venta en Guatemala - Casas y apartamentos"
           src="https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp"
         />
       </div>
@@ -81,8 +83,9 @@
     >
       <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
         <img loading="lazy"
+          decoding="async"
           class="object-cover w-140 object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
-          alt="hero"
+          alt="Propiedades en renta en Guatemala - Apartamentos y casas amuebladas"
           src="https://app-pool.vylaris.online/dcmigserver/homes/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp"
         />
       </div>
