@@ -160,7 +160,7 @@
           :key="property.id"
         >
           <NuxtLink
-            :to="`/inmueble/${property.slugInmueble}`"
+            :to="getPropertyUrl(property)"
             class="relative block w-full h-80 overflow-hidden rounded-lg shadow-md group"
           >
             <img
@@ -217,6 +217,7 @@
 import { ref, onMounted, computed, watch, onUnmounted } from "vue";
 import { useRoute, useRouter  } from "vue-router";
 import inmuebleService from "../../services/inmuebleService";
+import { getPropertySlug, getPropertyUrl } from "../../helpers/slugHelper.js";
 // Componentes de Swiper
 import { Swiper, SwiperSlide } from "swiper/vue";
 // Estilos de Swiper
@@ -630,17 +631,6 @@ const handleRedirectToPropiedades = (operacion) => {
       Operaciones: operacion.toLowerCase(), // "venta" o "renta"
     },
   });
-};
-
-// slug nuevo
-const getSlug = (p) => {
-  const s = p?.slugInmueble ?? p?.slug ?? p?.SlugInmueble ?? '';
-  return encodeURIComponent(String(s).trim());
-};
-
-const getPropertyUrl = (p) => {
-  const s = getSlug(p);
-  return s ? `/inmueble/${s}` : '#';
 };
 </script>
 

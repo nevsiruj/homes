@@ -108,6 +108,7 @@ import { ref, watch, computed } from 'vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { getOptimizedImageUrl, getSrcset } from "../helpers/useImageOptimization.js";
+import { getPropertyUrl } from "../helpers/slugHelper.js";
 import { BedIcon, BathIcon, CarIcon } from "../components/icons";
 
 const props = defineProps({
@@ -115,7 +116,7 @@ const props = defineProps({
 });
 
 const modules = [Autoplay, Pagination, Navigation];
-const propertyPath = computed(() => `/inmueble/${props.inmueble?.slugInmueble || ''}`);
+const propertyPath = computed(() => getPropertyUrl(props.inmueble, 'propiedad'));
 
 
 const isHovering = ref(false);
