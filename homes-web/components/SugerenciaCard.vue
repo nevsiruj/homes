@@ -48,13 +48,31 @@ const props = defineProps({
   },
 });
 
+// Helper function to generate slug on client-side if missing from API
+const generateClientSlug = (item) => {
+  if (!item) return '';
+  
+  const title = item.titulo || '';
+  const code = item.codigoPropiedad || '';
+  const text = `${title} ${code}`.trim();
+  
+  if (!text) return '';
+  
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .replace(/[^a-z0-9]+/g, '-')     // Replace non-alphanumeric with hyphens
+    .replace(/^-+|-+$/g, '');         // Remove leading/trailing hyphens
+};
+
 // Normalizo posibles nombres del campo y lo preparo para URL
 const safeSlug = computed(() => {
   const s =
     props.item?.slugInmueble ??
     props.item?.slug ??
     props.item?.SlugInmueble ??
-    '';
+    generateClientSlug(props.item);
   return encodeURIComponent(String(s).trim());
 });
 

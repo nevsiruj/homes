@@ -115,7 +115,29 @@ const props = defineProps({
 });
 
 const modules = [Autoplay, Pagination, Navigation];
-const propertyPath = computed(() => `/inmueble/${props.inmueble?.slugInmueble || ''}`);
+
+// Helper function to generate slug on client-side if missing from API
+const generateClientSlug = (inmueble) => {
+  if (!inmueble) return '';
+  
+  const title = inmueble.titulo || '';
+  const code = inmueble.codigoPropiedad || '';
+  const text = `${title} ${code}`.trim();
+  
+  if (!text) return '';
+  
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .replace(/[^a-z0-9]+/g, '-')     // Replace non-alphanumeric with hyphens
+    .replace(/^-+|-+$/g, '');         // Remove leading/trailing hyphens
+};
+
+const propertyPath = computed(() => {
+  const slug = props.inmueble?.slugInmueble || generateClientSlug(props.inmueble);
+  return slug ? `/inmueble/${slug}` : '#';
+});
 
 
 const isHovering = ref(false);
