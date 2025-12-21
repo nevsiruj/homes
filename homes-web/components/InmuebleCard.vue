@@ -108,6 +108,7 @@ import { ref, watch, computed } from 'vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { getOptimizedImageUrl, getSrcset } from "../helpers/useImageOptimization.js";
+import { getPropertyUrl } from "../helpers/slugHelper.js";
 import { BedIcon, BathIcon, CarIcon } from "../components/icons";
 
 const props = defineProps({
@@ -115,29 +116,7 @@ const props = defineProps({
 });
 
 const modules = [Autoplay, Pagination, Navigation];
-
-// Helper function to generate slug on client-side if missing from API
-const generateClientSlug = (inmueble) => {
-  if (!inmueble) return '';
-  
-  const title = inmueble.titulo || '';
-  const code = inmueble.codigoPropiedad || '';
-  const text = `${title} ${code}`.trim();
-  
-  if (!text) return '';
-  
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove accents
-    .replace(/[^a-z0-9]+/g, '-')     // Replace non-alphanumeric with hyphens
-    .replace(/^-+|-+$/g, '');         // Remove leading/trailing hyphens
-};
-
-const propertyPath = computed(() => {
-  const slug = props.inmueble?.slugInmueble || generateClientSlug(props.inmueble);
-  return slug ? `/inmueble/${slug}` : '#';
-});
+const propertyPath = computed(() => getPropertyUrl(props.inmueble, 'propiedad'));
 
 
 const isHovering = ref(false);

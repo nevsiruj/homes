@@ -14,7 +14,7 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // SQL function to generate slugs (simplified version for SQL Server)
+            // SQL function to generate slugs with proper NULL handling
             migrationBuilder.Sql(@"
                 UPDATE Inmuebles
                 SET SlugInmueble = 
@@ -31,21 +31,34 @@ namespace Infrastructure.Migrations
                                                             REPLACE(
                                                                 REPLACE(
                                                                     REPLACE(
-                                                                        REPLACE(TRIM(CONCAT(Titulo, '-', CodigoPropiedad)), ' ', '-'),
-                                                                    'á', 'a'),
-                                                                'é', 'e'),
-                                                            'í', 'i'),
-                                                        'ó', 'o'),
-                                                    'ú', 'u'),
-                                                'ñ', 'n'),
-                                            'ü', 'u'),
-                                        'Á', 'a'),
-                                    'É', 'e'),
-                                'Í', 'i'),
-                            'Ó', 'o'),
-                        'Ú', 'u')
+                                                                        REPLACE(
+                                                                            TRIM(
+                                                                                CASE 
+                                                                                    WHEN Titulo IS NOT NULL AND CodigoPropiedad IS NOT NULL 
+                                                                                        THEN CONCAT(Titulo, ' ', CodigoPropiedad)
+                                                                                    WHEN Titulo IS NOT NULL 
+                                                                                        THEN Titulo
+                                                                                    WHEN CodigoPropiedad IS NOT NULL 
+                                                                                        THEN CodigoPropiedad
+                                                                                    ELSE ''
+                                                                                END
+                                                                            ), ' ', '-'),
+                                                                        'á', 'a'),
+                                                                    'é', 'e'),
+                                                                'í', 'i'),
+                                                            'ó', 'o'),
+                                                        'ú', 'u'),
+                                                    'ñ', 'n'),
+                                                'ü', 'u'),
+                                            'Á', 'a'),
+                                        'É', 'e'),
+                                    'Í', 'i'),
+                                'Ó', 'o'),
+                            'Ú', 'u')
+                        )
                     )
-                WHERE SlugInmueble IS NULL OR SlugInmueble = ''
+                WHERE (SlugInmueble IS NULL OR SlugInmueble = '') 
+                  AND (Titulo IS NOT NULL OR CodigoPropiedad IS NOT NULL)
             ");
 
             // Clean up the slugs to remove special characters and multiple hyphens
@@ -80,18 +93,18 @@ namespace Infrastructure.Migrations
                 WHERE SlugInmueble IS NOT NULL
             ");
 
-            // Remove multiple consecutive hyphens
+            // Remove multiple consecutive hyphens using PATINDEX
             migrationBuilder.Sql(@"
-                DECLARE @Continue BIT = 1;
-                WHILE @Continue = 1
-                BEGIN
-                    UPDATE Inmuebles
-                    SET SlugInmueble = REPLACE(SlugInmueble, '--', '-')
-                    WHERE CHARINDEX('--', SlugInmueble) > 0;
-                    
-                    IF @@ROWCOUNT = 0
-                        SET @Continue = 0;
-                END
+                UPDATE Inmuebles
+                SET SlugInmueble = 
+                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                        SlugInmueble, 
+                        '-----', '-'), 
+                        '----', '-'), 
+                        '---', '-'), 
+                        '--', '-'),
+                        '--', '-')
+                WHERE SlugInmueble LIKE '%-%-%'
             ");
 
             // Trim leading and trailing hyphens

@@ -38,6 +38,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { getPropertySlug } from '../helpers/slugHelper.js';
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -48,41 +49,16 @@ const props = defineProps({
   },
 });
 
-// Helper function to generate slug on client-side if missing from API
-const generateClientSlug = (item) => {
-  if (!item) return '';
-  
-  const title = item.titulo || '';
-  const code = item.codigoPropiedad || '';
-  const text = `${title} ${code}`.trim();
-  
-  if (!text) return '';
-  
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove accents
-    .replace(/[^a-z0-9]+/g, '-')     // Replace non-alphanumeric with hyphens
-    .replace(/^-+|-+$/g, '');         // Remove leading/trailing hyphens
-};
-
-// Normalizo posibles nombres del campo y lo preparo para URL
-const safeSlug = computed(() => {
-  const s =
-    props.item?.slugInmueble ??
-    props.item?.slug ??
-    props.item?.SlugInmueble ??
-    generateClientSlug(props.item);
-  return encodeURIComponent(String(s).trim());
-});
+const safeSlug = computed(() => getPropertySlug(props.item));
 
 const url = computed(() => {
+  if (!safeSlug.value) return '#';
+  
   if (props.type === 'propiedad') {
-    // Si no hay slug, dejo un fallback neutral para evitar links rotos
-    return safeSlug.value ? `/inmueble/${safeSlug.value}` : '#';
+    return `/inmueble/${safeSlug.value}`;
   }
-  // Proyectos: sin cambios (ajusta si también usás slug en proyectos)
-  return safeSlug.value ? `/proyecto/${safeSlug.value}` : '#';
+  
+  return `/proyecto/${safeSlug.value}`;
 });
 
 const formattedPrice = computed(() => {

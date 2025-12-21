@@ -217,6 +217,7 @@
 import { ref, onMounted, computed, watch, onUnmounted } from "vue";
 import { useRoute, useRouter  } from "vue-router";
 import inmuebleService from "../../services/inmuebleService";
+import { getPropertySlug, getPropertyUrl } from "../../helpers/slugHelper.js";
 // Componentes de Swiper
 import { Swiper, SwiperSlide } from "swiper/vue";
 // Estilos de Swiper
@@ -630,34 +631,6 @@ const handleRedirectToPropiedades = (operacion) => {
       Operaciones: operacion.toLowerCase(), // "venta" o "renta"
     },
   });
-};
-
-// slug nuevo - helper to generate client-side slug if missing
-const generateClientSlug = (item) => {
-  if (!item) return '';
-  
-  const title = item.titulo || '';
-  const code = item.codigoPropiedad || '';
-  const text = `${title} ${code}`.trim();
-  
-  if (!text) return '';
-  
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove accents
-    .replace(/[^a-z0-9]+/g, '-')     // Replace non-alphanumeric with hyphens
-    .replace(/^-+|-+$/g, '');         // Remove leading/trailing hyphens
-};
-
-const getSlug = (p) => {
-  const s = p?.slugInmueble ?? p?.slug ?? p?.SlugInmueble ?? generateClientSlug(p);
-  return encodeURIComponent(String(s).trim());
-};
-
-const getPropertyUrl = (p) => {
-  const s = getSlug(p);
-  return s ? `/inmueble/${s}` : '#';
 };
 </script>
 
