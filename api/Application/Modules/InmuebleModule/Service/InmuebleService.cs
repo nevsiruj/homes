@@ -71,6 +71,13 @@ namespace Application.Modules.InmuebleModule.Services
         public override async Task<InmuebleDTO> CreateAsync(InmuebleDTO dto)
         {
             var entity = _mapper.Map<Inmueble>(dto);
+            
+            // Auto-generate slug if not provided
+            if (string.IsNullOrWhiteSpace(entity.SlugInmueble))
+            {
+                entity.SlugInmueble = SlugGenerator.GenerateSlug(entity.Titulo, entity.CodigoPropiedad);
+            }
+            
             await _repository.CreateAsync(entity);
             await _repository.SaveChangesAsync();
             return _mapper.Map<InmuebleDTO>(entity);
@@ -87,6 +94,12 @@ namespace Application.Modules.InmuebleModule.Services
                 throw new KeyNotFoundException($"Inmueble con ID {dto.Id} no encontrado.");
 
             _mapper.Map(dto, inmuebleExistente);
+
+            // Auto-generate slug if not provided or empty
+            if (string.IsNullOrWhiteSpace(inmuebleExistente.SlugInmueble))
+            {
+                inmuebleExistente.SlugInmueble = SlugGenerator.GenerateSlug(inmuebleExistente.Titulo, inmuebleExistente.CodigoPropiedad);
+            }
 
             // Amenidades
             if (dto.Amenidades != null)
