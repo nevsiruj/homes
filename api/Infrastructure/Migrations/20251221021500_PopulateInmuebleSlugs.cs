@@ -1,8 +1,4 @@
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
 
 #nullable disable
 
@@ -93,16 +89,15 @@ namespace Infrastructure.Migrations
                 WHERE SlugInmueble IS NOT NULL
             ");
 
-            // Remove multiple consecutive hyphens using PATINDEX
+            // Remove multiple consecutive hyphens (handles up to 5 consecutive hyphens)
             migrationBuilder.Sql(@"
                 UPDATE Inmuebles
                 SET SlugInmueble = 
-                    REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(
+                    REPLACE(REPLACE(REPLACE(REPLACE(
                         SlugInmueble, 
                         '-----', '-'), 
                         '----', '-'), 
                         '---', '-'), 
-                        '--', '-'),
                         '--', '-')
                 WHERE SlugInmueble LIKE '%-%-%'
             ");

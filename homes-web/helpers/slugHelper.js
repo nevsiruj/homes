@@ -2,6 +2,12 @@
  * Generates a URL-friendly slug from a property object.
  * Used as a client-side fallback when the API doesn't provide a slug.
  * 
+ * **NOTE**: This implementation should match the backend SlugGenerator.cs logic:
+ * - Removes accents (á→a, é→e, etc.) using Unicode normalization
+ * - Converts to lowercase
+ * - Replaces non-alphanumeric characters with hyphens
+ * - Removes leading/trailing hyphens
+ * 
  * @param {Object} item - Property object with titulo and codigoPropiedad
  * @returns {string} URL-friendly slug
  * 
@@ -18,10 +24,13 @@ export function generateSlug(item) {
   
   if (!text) return '';
   
+  // NFD = Canonical Decomposition (splits accented chars into base + combining marks)
+  // Then we remove the combining marks ([\u0300-\u036f])
+  // This matches the backend's manual accent replacement
   return text
     .toLowerCase()
     .normalize('NFD')                  // Decompose accented characters
-    .replace(/[\u0300-\u036f]/g, '')   // Remove accents
+    .replace(/[\u0300-\u036f]/g, '')   // Remove accent marks (á→a, é→e, etc.)
     .replace(/[^a-z0-9]+/g, '-')       // Replace non-alphanumeric with hyphens
     .replace(/^-+|-+$/g, '');           // Remove leading/trailing hyphens
 }
