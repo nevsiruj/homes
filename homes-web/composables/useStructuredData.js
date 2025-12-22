@@ -11,19 +11,39 @@ export const useOrganizationSchema = () => {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
     name: 'Homes Guatemala',
+    alternateName: 'Homes GT',
     url: 'https://homesguatemala.com',
     logo: 'https://app-pool.vylaris.online/dcmigserver/homes/5369ffc1-5e81-4be1-a01e-617c564b7eed.webp',
-    description: 'En Homes Guatemala contamos con las mejores propiedades inmobiliarias. Casas, Apartamentos, Oficinas, Terrenos, Bodegas en Venta y alquiler. Mansiones y propiedades de lujo en Guatemala.',
+    description: 'Líderes en bienes raíces en Guatemala. Especialistas en venta y alquiler de propiedades de lujo.',
     telephone: '+502-5633-0961',
+    email: 'info@homesguatemala.com',
     address: {
       '@type': 'PostalAddress',
-      addressCountry: 'GT',
-      addressLocality: 'Guatemala'
+      streetAddress: 'Design Center Local 217, Zona 10',
+      addressLocality: 'Guatemala City',
+      addressRegion: 'Guatemala',
+      postalCode: '01010',
+      addressCountry: 'GT'
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: '14.6038',
+      longitude: '-90.5064'
     },
     sameAs: [
       'https://www.facebook.com/homesguatemala',
-      'https://www.instagram.com/homesguatemala'
-    ]
+      'https://www.instagram.com/homesguatemala',
+      'https://www.youtube.com/@homesguatemala4975',
+      'https://www.linkedin.com/company/homes-guatemala', // Placeholder
+      'https://twitter.com/homesguatemala' // Placeholder
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+502-5633-0961',
+      contactType: 'customer service',
+      areaServed: 'GT',
+      availableLanguage: ['es', 'en']
+    }
   }
 }
 
@@ -147,7 +167,7 @@ export const useJsonldSchema = (schema) => {
     script: [
       {
         type: 'application/ld+json',
-        children: JSON.stringify(schema)
+        innerHTML: JSON.stringify(schema)
       }
     ]
   })

@@ -1,0 +1,20 @@
+# Homes Guatemala
+
+Líderes en bienes raíces de lujo en Guatemala. Especialistas en venta y alquiler de casas, apartamentos, oficinas y terrenos en las zonas más exclusivas (Zona 10, 14, 15, 16 y Carretera a El Salvador).
+
+## Rutas Principales
+- [/](https://homesguatemala.com): Inicio con propiedades destacadas y servicios.
+- [/propiedades](https://homesguatemala.com/propiedades): Catálogo completo de inmuebles en venta y renta.
+- [/nosotros](https://homesguatemala.com/nosotros): Historia de la empresa y equipo de expertos.
+- [/inmueble/[slug]](https://homesguatemala.com/inmueble/): Detalles específicos de cada propiedad.
+
+## Contacto
+- Teléfono: +502 5633 0961
+- Email: info@homesguatemala.com
+- Dirección: Design Center Local 217, Zona 10, Ciudad de Guatemala.
+
+## Redes Sociales
+- Facebook: https://facebook.com/homesguatemala
+- Instagram: https://instagram.com/homesguatemala
+- YouTube: https://youtube.com/@homesguatemala4975
+- LinkedIn: https://www.linkedin.com/company/homes-guatemala

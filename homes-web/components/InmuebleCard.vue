@@ -14,7 +14,8 @@
                     <img :data-src="getOptimizedImageUrl(inmueble.imagenPrincipal, 400)"
                         :srcset="getSrcset(inmueble.imagenPrincipal)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
-                        class="swiper-lazy w-sm h-64 object-cover" alt="Imagen principal del inmueble" />
+                        class="swiper-lazy w-sm h-64 object-cover" 
+                        :alt="`Imagen de ${inmueble.titulo || 'propiedad en Guatemala'}`" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
                 </swiper-slide>
 
@@ -23,7 +24,8 @@
                     :key="index">
                     <img :data-src="getOptimizedImageUrl(imagen.url, 400)" :srcset="getSrcset(imagen.url)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
-                        class="swiper-lazy w-sm h-64 object-cover" :alt="`Imagen de referencia ${index + 1}`" />
+                        class="swiper-lazy w-sm h-64 object-cover" 
+                        :alt="`Vista de ${inmueble.titulo || 'propiedad'} - Foto ${index + 1}`" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
                 </swiper-slide>
 
