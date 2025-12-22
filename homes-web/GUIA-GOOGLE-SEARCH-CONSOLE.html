@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Paso a Paso - Google Search Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .step-card {
+            transition: transform 0.2s;
+        }
+        .step-card:hover {
+            transform: translateY(-4px);
+        }
+        .screenshot-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-5xl mx-auto p-6">
+        
+        <!-- Header -->
+        <header class="mb-10 text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-4xl font-bold mb-2">
+                <i class="fas fa-search mr-3"></i>
+                Guía Paso a Paso
+            </h1>
+            <h2 class="text-2xl">Google Search Console - Homes Guatemala</h2>
+            <p class="mt-4 text-blue-100">Recuperación de Indexación y Tráfico</p>
+        </header>
+
+        <!-- Accesos Requeridos -->
+        <section class="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-8 rounded-r-lg shadow">
+            <h3 class="text-xl font-bold text-yellow-800 mb-4">
+                <i class="fas fa-key mr-2"></i>
+                ¿QUIÉN DEBE HACER ESTO?
+            </h3>
+            <div class="space-y-3">
+                <div class="flex items-start">
+                    <i class="fas fa-user-tie text-yellow-600 mt-1 mr-3"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Responsable: Gerente de Marketing o Webmaster</p>
+                        <p class="text-gray-600">Debe tener acceso a la cuenta de Google Search Console de homesguatemala.com</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-envelope text-yellow-600 mt-1 mr-3"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Cuenta Requerida:</p>
+                        <p class="text-gray-600">Email con permisos de propietario o administrador en Google Search Console</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-clock text-yellow-600 mt-1 mr-3"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Tiempo Estimado:</p>
+                        <p class="text-gray-600">15-20 minutos en total</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Si no tienes acceso -->
+        <section class="bg-red-50 border-l-4 border-red-500 p-6 mb-8 rounded-r-lg shadow">
+            <h3 class="text-xl font-bold text-red-800 mb-4">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                ¿NO TIENES ACCESO A GOOGLE SEARCH CONSOLE?
+            </h3>
+            <div class="space-y-4">
+                <p class="text-gray-700">Si no tienes acceso, necesitas que alguien con acceso te agregue:</p>
+                <ol class="list-decimal list-inside space-y-2 ml-4">
+                    <li>Contactar al propietario actual de la cuenta</li>
+                    <li>Solicitar que te agreguen como "Propietario" o "Administrador"</li>
+                    <li>Recibirás un email de invitación de Google</li>
+                    <li>Aceptar la invitación y seguir esta guía</li>
+                </ol>
+                <div class="bg-white p-4 rounded border border-red-200 mt-4">
+                    <p class="font-semibold text-red-800">Contactos Posibles:</p>
+                    <ul class="mt-2 space-y-1 text-gray-700">
+                        <li>• Agencia de marketing digital anterior</li>
+                        <li>• Desarrollador web que configuró el sitio</li>
+                        <li>• Gerente de IT de la empresa</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- PARTE 1: Google Search Console -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-blue-500 pb-2">
+                <i class="fas fa-google text-blue-600 mr-2"></i>
+                PARTE 1: Google Search Console
+            </h2>
+
+            <!-- Paso 1 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">1</div>
+                    <h3 class="text-2xl font-semibold">Acceder a Google Search Console</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700">Abre tu navegador e ingresa a:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <a href="https://search.google.com/search-console" target="_blank" class="text-blue-600 hover:underline font-mono text-lg">
+                            https://search.google.com/search-console
+                        </a>
+                    </div>
+                    <div class="screenshot-placeholder">
+                        <div class="text-center">
+                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Pantalla de inicio de Google Search Console</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-blue-50 p-4 rounded border border-blue-200">
+                        <p class="font-semibold text-blue-800"><i class="fas fa-info-circle mr-2"></i>Nota:</p>
+                        <p class="text-gray-700">Debes iniciar sesión con la cuenta de Google que tiene acceso a homesguatemala.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 2 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">2</div>
+                    <h3 class="text-2xl font-semibold">Seleccionar la Propiedad</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700">En la esquina superior izquierda, haz clic en el selector de propiedades y elige:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4 text-center">
+                        <p class="font-mono text-xl font-bold">homesguatemala.com</p>
+                    </div>
+                    <div class="screenshot-placeholder">
+                        <div class="text-center">
+                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Menú desplegable con lista de propiedades</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-yellow-50 p-4 rounded border border-yellow-200">
+                        <p class="font-semibold text-yellow-800"><i class="fas fa-exclamation-circle mr-2"></i>Importante:</p>
+                        <p class="text-gray-700">Si no ves "homesguatemala.com" en la lista, no tienes acceso. Ver sección roja arriba.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">3</div>
+                    <h3 class="text-2xl font-semibold">Inspeccionar URL Principal</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700">En la barra de búsqueda superior que dice <strong>"Inspeccionar cualquier URL de..."</strong>, escribe:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <input type="text" value="https://homesguatemala.com/" readonly class="w-full p-3 border-2 border-blue-500 rounded font-mono text-lg">
+                    </div>
+                    <p class="mb-4 text-gray-700">Presiona <kbd class="bg-gray-200 px-3 py-1 rounded border border-gray-400">Enter</kbd></p>
+                    <div class="screenshot-placeholder">
+                        <div class="text-center">
+                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Barra de inspección de URL en la parte superior</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-green-50 p-4 rounded border border-green-200">
+                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Resultado esperado:</p>
+                        <p class="text-gray-700">Google comenzará a analizar la URL. Esto puede tomar 10-30 segundos.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 4 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">4</div>
+                    <h3 class="text-2xl font-semibold">Solicitar Indexación</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700">Una vez que Google termine de analizar, verás una pantalla con el estado de la URL.</p>
+                    <p class="mb-4 text-gray-700">Haz clic en el botón:</p>
+                    <div class="text-center mb-4">
+                        <button class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 cursor-default">
+                            SOLICITAR INDEXACIÓN
+                        </button>
+                    </div>
+                    <div class="screenshot-placeholder">
+                        <div class="text-center">
+                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Pantalla de resultados con botón "Solicitar indexación"</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 space-y-3">
+                        <div class="bg-blue-50 p-4 rounded border border-blue-200">
+                            <p class="font-semibold text-blue-800"><i class="fas fa-spinner fa-spin mr-2"></i>Durante el proceso:</p>
+                            <p class="text-gray-700">Google probará la URL en vivo (1-2 minutos). Verás un mensaje "Probando URL en vivo..."</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded border border-green-200">
+                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Confirmación:</p>
+                            <p class="text-gray-700">Aparecerá un mensaje: "Se solicitó la indexación". ¡Listo!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 5 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">5</div>
+                    <h3 class="text-2xl font-semibold">Reenviar Sitemap</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700">En el menú lateral izquierdo, busca y haz clic en:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <p class="font-semibold text-lg"><i class="fas fa-sitemap mr-2"></i>Sitemaps</p>
+                    </div>
+                    <div class="screenshot-placeholder mb-4">
+                        <div class="text-center">
+                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Menú lateral con opción "Sitemaps"</p>
+                        </div>
+                    </div>
+                    <p class="mb-4 text-gray-700">En el campo "Añadir un sitemap nuevo", escribe:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <input type="text" value="sitemap.xml" readonly class="w-full p-3 border-2 border-blue-500 rounded font-mono text-lg">
+                    </div>
+                    <p class="mb-4 text-gray-700">Haz clic en:</p>
+                    <div class="text-center mb-4">
+                        <button class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 cursor-default">
+                            ENVIAR
+                        </button>
+                    </div>
+                    <div class="screenshot-placeholder">
+                        <div class="text-center">
+                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Formulario para añadir sitemap</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-green-50 p-4 rounded border border-green-200">
+                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Verificación:</p>
+                        <p class="text-gray-700">En la tabla de sitemaps, el estado debe aparecer como <span class="text-green-600 font-bold">"Correcto"</span> en verde.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Paso 6 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">6</div>
+                    <h3 class="text-2xl font-semibold">Verificar Cobertura</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700">En el menú lateral izquierdo, haz clic en:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <p class="font-semibold text-lg"><i class="fas fa-chart-line mr-2"></i>Cobertura (o "Páginas")</p>
+                    </div>
+                    <div class="screenshot-placeholder mb-4">
+                        <div class="text-center">
+                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                            <p>Menú lateral con opción "Cobertura"</p>
+                        </div>
+                    </div>
+                    <p class="mb-4 text-gray-700">Verifica que NO aparezcan errores como:</p>
+                    <div class="space-y-2 mb-4">
+                        <div class="bg-red-50 p-3 rounded border border-red-200">
+                            <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Bloqueado por robots.txt"</p>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded border border-red-200">
+                            <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Error del servidor (5xx)"</p>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded border border-red-200">
+                            <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Página con redirección"</p>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded border border-green-200">
+                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si todo está bien:</p>
+                        <p class="text-gray-700">Deberías ver páginas en estado "Válido" o "Válido con advertencias"</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PARTE 2: Verificaciones -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b-4 border-purple-500 pb-2">
+                <i class="fas fa-check-double text-purple-600 mr-2"></i>
+                PARTE 2: Verificaciones Técnicas
+            </h2>
+
+            <!-- Verificación 1 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">1</div>
+                    <h3 class="text-2xl font-semibold">Verificar robots.txt en Producción</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700"><strong>¿Quién lo hace?</strong> Cualquier persona (no requiere acceso especial)</p>
+                    <p class="mb-4 text-gray-700">Abre tu navegador e ingresa a:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <a href="https://homesguatemala.com/robots.txt" target="_blank" class="text-blue-600 hover:underline font-mono text-lg">
+                            https://homesguatemala.com/robots.txt
+                        </a>
+                    </div>
+                    <p class="mb-4 text-gray-700">Debes ver EXACTAMENTE esto:</p>
+                    <div class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+                        <pre>User-agent: *
+Disallow: /admin
+Disallow: /_nuxt
+Allow: /
+
+Sitemap: https://homesguatemala.com/sitemap.xml</pre>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-green-50 p-4 rounded border border-green-200">
+                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si ves esto:</p>
+                            <p class="text-gray-700">¡Perfecto! El robots.txt está correcto.</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded border border-red-200">
+                            <p class="font-semibold text-red-800"><i class="fas fa-exclamation-triangle mr-2"></i>Si ves "Disallow: /":</p>
+                            <p class="text-gray-700">¡PROBLEMA! Contactar al equipo de desarrollo INMEDIATAMENTE.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verificación 2 -->
+            <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">2</div>
+                    <h3 class="text-2xl font-semibold">Verificar Sitemap en Producción</h3>
+                </div>
+                <div class="ml-16">
+                    <p class="mb-4 text-gray-700"><strong>¿Quién lo hace?</strong> Cualquier persona (no requiere acceso especial)</p>
+                    <p class="mb-4 text-gray-700">Abre tu navegador e ingresa a:</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <a href="https://homesguatemala.com/sitemap.xml" target="_blank" class="text-blue-600 hover:underline font-mono text-lg">
+                            https://homesguatemala.com/sitemap.xml
+                        </a>
+                    </div>
+                    <p class="mb-4 text-gray-700">Debes ver un archivo XML con una lista de URLs como:</p>
+                    <div class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
+                        <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://homesguatemala.com/&lt;/loc&gt;
+    &lt;lastmod&gt;2025-12-22&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://homesguatemala.com/propiedades&lt;/loc&gt;
+  &lt;/url&gt;
+  ...
+&lt;/urlset&gt;</pre>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-green-50 p-4 rounded border border-green-200">
+                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si ves XML con URLs:</p>
+                            <p class="text-gray-700">¡Perfecto! El sitemap se está generando correctamente.</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded border border-red-200">
+                            <p class="font-semibold text-red-800"><i class="fas fa-exclamation-triangle mr-2"></i>Si ves error 404:</p>
+                            <p class="text-gray-700">¡PROBLEMA! Contactar al equipo de desarrollo INMEDIATAMENTE.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Qué Esperar -->
+        <section class="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-lg shadow-lg mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-calendar-check text-green-600 mr-2"></i>
+                ¿Qué Esperar Después?
+            </h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-4xl text-blue-600 mb-3">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">24-48 Horas</h3>
+                    <p class="text-gray-600">Google comenzará a rastrear el sitio nuevamente</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-4xl text-green-600 mb-3">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">3-7 Días</h3>
+                    <p class="text-gray-600">Verás aumento en impresiones y clics</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <div class="text-4xl text-purple-600 mb-3">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="font-bold text-lg mb-2">2-4 Semanas</h3>
+                    <p class="text-gray-600">Recuperación significativa del tráfico</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contactos -->
+        <section class="bg-gray-800 text-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-4">
+                <i class="fas fa-phone-alt mr-2"></i>
+                ¿Necesitas Ayuda?
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-2">Equipo de Desarrollo</h3>
+                    <p class="text-gray-300">Para problemas técnicos con robots.txt o sitemap</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">Soporte de Google</h3>
+                    <p class="text-gray-300">
+                        <a href="https://support.google.com/webmasters" target="_blank" class="text-blue-400 hover:underline">
+                            support.google.com/webmasters
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>Generado el 22 de Diciembre 2025</p>
+            <p class="mt-2">Homes Guatemala - Recuperación SEO</p>
+        </footer>
+    </div>
+</body>
+</html>
