@@ -5,9 +5,6 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-06-21",
   devtools: { enabled: false },
   ssr: true,
-  features: {
-    inlineStyles: true
-  },
 
   app: {
     head: {
