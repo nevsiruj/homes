@@ -9,6 +9,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useNuxtApp, useRouter } from '#app'
+import { useOrganizationSchema, useJsonldSchema } from './composables/useStructuredData'
 //import Loader from '~/components/Loader.vue'
 
 const showLoader = ref(false)
@@ -29,10 +30,26 @@ const stopLoader = async () => {
   showLoader.value = false
 }
 
-onMounted(() => {
-  const nuxtApp = useNuxtApp()
-  const router = useRouter()
+const nuxtApp = useNuxtApp()
+const router = useRouter()
 
+useHead({
+  htmlAttrs: {
+    lang: 'es'
+  },
+  link: [
+    { rel: 'alternate', hreflang: 'es-GT', href: 'https://homesguatemala.com' },
+    { rel: 'alternate', hreflang: 'x-default', href: 'https://homesguatemala.com' }
+  ],
+  meta: [
+    { name: 'description', content: 'Líderes en bienes raíces en Guatemala. Encuentra casas y apartamentos.' }
+  ]
+})
+
+// Inyectar Schema de Organización Global (Identidad)
+useJsonldSchema(useOrganizationSchema())
+
+onMounted(() => {
   // Hooks nativos de Nuxt para navegación de páginas
   nuxtApp.hook('page:start', () => {
     startLoader()

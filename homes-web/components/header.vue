@@ -3,9 +3,10 @@
     <div class="relative h-[550px] w-full">
       <img
         src="https://app-pool.vylaris.online/dcmigserver/homes/0b304e4c-ed40-4c7e-8e44-2fe821bc5301.webp"
-        alt="Imagen de fondo"
+        alt="Bienes raíces de lujo en Guatemala - Vista panorámica"
         class="absolute inset-0 object-cover w-full h-full"
-        loading="lazy"
+        loading="eager"
+        fetchpriority="high"
       />
       <div
         class="flex items-end lg:pb-8 pb-18 justify-center h-full bg-[#00000060]"

@@ -109,8 +109,7 @@
                 v-show="openDropdown === 'saleRent'"
                 @click.stop
                 id="saleRentDropdownMenu"
-                class="absolute z-[9999] w-56 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 rounded-lg mt-1"
-                style="top: 100%; left: 0;"
+                class="absolute z-[9999] w-56 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 rounded-lg mt-1 top-full left-0"
               >
               <ul
                 class="p-3 space-y-3 text-xs text-gray-800"
@@ -183,8 +182,7 @@
               v-show="openDropdown === 'propiedades'"
               @click.stop
               id="dropdownDefaultCheckbox1"
-              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-              style="top: 100%; left: 0;"
+              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
             >
             <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -323,8 +321,7 @@
               v-show="openDropdown === 'ubicaciones'"
               @click.stop
               id="dropdownDefaultCheckbox2"
-              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-              style="top: 100%; left: 0;"
+              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
             >
             <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -617,8 +614,7 @@
               v-show="openDropdown === 'habitaciones'"
               @click.stop
               id="dropdownDefaultCheckbox3"
-              class="absolute z-[9999] w-48 md:w-40 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-              style="top: 100%; left: 0;"
+              class="absolute z-[9999] w-48 md:w-40 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
             >
               <ul
                 class="p-3 space-y-3 text-xs text-gray-800"

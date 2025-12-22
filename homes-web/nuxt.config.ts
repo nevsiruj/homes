@@ -2,14 +2,11 @@
 import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
-  // -------------------- Nuxt Core Configuration --------------------
   compatibilityDate: "2025-06-21",
   devtools: { enabled: false },
-
-  // Generación y despliegue del sitio
-  ssr: true, // Se recomienda SSR (Server-Side Rendering) para SEO
-  generate: {
-    fallback: true,
+  ssr: true,
+  features: {
+    inlineStyles: true
   },
 
   app: {
@@ -17,70 +14,57 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'es'
       },
+      title: 'Homes Guatemala - Bienes Raíces de Lujo',
       meta: [
-        // Metadatos de verificación de dominio
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'Líderes en bienes raíces en Guatemala. Encuentra casas, apartamentos y propiedades de lujo en venta y alquiler.' },
         { name: "p:domain_verify", content: "4ff93a868a573e1b24e15558f505f316" },
         { name: "facebook-domain-verification", content: "s7lsdi9b3qj53qjggc8lgumeiythqm" },
         { name: "google-site-verification", content: "0021L2ztWBVMwBLnR8VPXwfs8JspGBFnR3IhyqScj-c" },
-
-        // Metadatos de Open Graph
         { property: "fb:app_id", content: "239174403519612" },
-        { property: "og:locale", content: "es_ES" },
         { property: "og:type", content: "website" },
-        {
-          property: "og:title",
-          content: "Homes Guatemala - Apartamentos y Casas en Venta y Alquiler de propiedades",
-        },
-        {
-          property: "og:description",
-          content: "En Homes Guatemala contamos con las mejores propiedades inmobiliarias. Casas, Apartamentos, Oficinas, Terrenos, Bodegas en Venta y alquiler. Mansiones y propiedades de lujo en Guatemala.",
-        },
-        { property: "og:url", content: "https://homesguatemala.com/" },
-        {
-          property: "og:site_name",
-          content: "Homes Guatemala - Apartamentos y Casas en Venta y Alquiler",
-        },
-        {
-          property: "og:image",
-          content: "https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp",
-        },
-        {
-          property: "og:image:secure_url",
-          content: "https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp",
-        },
-
-        // Metadatos para Twitter Card
-        { name: "twitter:card", content: "summary_large_image" },
-        {
-          name: "twitter:title",
-          content: "Homes Guatemala - Casas y Apartamentos. Venta y Alquiler de propiedades",
-        },
-        {
-          name: "twitter:description",
-          content: "En Homes Guatemala contamos con las mejores propiedades inmobiliarias. Casas, Apartamentos, Oficinas, Terrenos, Bodegas en Venta y alquiler. Mansiones y propiedades de lujo en Guatemala.",
-        },
-        {
-          name: "twitter:image",
-          content: "https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp",
-        },
+        { property: "og:locale", content: "es_GT" },
+        { name: 'robots', content: 'index, follow' }
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
-        { rel: "apple-touch-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
-        // Core Web Vitals optimization
-        {
-          rel: "preconnect",
-          href: "https://app-pool.vylaris.online",
-        },
-        {
-          rel: "dns-prefetch",
-          href: "https://app-pool.vylaris.online",
-        },
+        { rel: "canonical", href: "https://homesguatemala.com" },
+        { rel: "preconnect", href: "https://app-pool.vylaris.online" },
+        { rel: "dns-prefetch", href: "https://app-pool.vylaris.online" },
+        { rel: "alternate", hreflang: "es-GT", href: "https://homesguatemala.com" },
+        { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" }
       ],
       script: [
-        // Script del Pixel de Facebook
         {
-          hid: "facebook-pixel",
+          key: "schema-org",
+          type: "application/ld+json",
+          innerHTML: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "RealEstateAgent",
+            "name": "Homes Guatemala",
+            "image": "https://app-pool.vylaris.online/dcmigserver/homes/5369ffc1-5e81-4be1-a01e-617c564b7eed.webp",
+            "@id": "https://homesguatemala.com",
+            "url": "https://homesguatemala.com",
+            "telephone": "+502-5633-0961",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Design Center Local 217, Zona 10",
+              "addressLocality": "Guatemala City",
+              "postalCode": "01010",
+              "addressCountry": "GT"
+            },
+            "sameAs": [
+              "https://www.facebook.com/homesguatemala",
+              "https://www.instagram.com/homesguatemala",
+              "https://www.youtube.com/@homesguatemala4975",
+              "https://www.linkedin.com/company/homes-guatemala",
+              "https://twitter.com/homesguatemala"
+            ]
+          })
+        },
+        {
+          key: "facebook-pixel",
           innerHTML: `!function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
           n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -91,79 +75,49 @@ export default defineNuxtConfig({
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '239174403519612');
           fbq('track', 'PageView');`,
-        },
+        }
       ],
-      noscript: [
-        // NoScript del Pixel de Facebook
-        {
-          hid: "facebook-pixel-noscript",
-          innerHTML: `<img height="1" width="1" style="display:none"
-          src="https://www.facebook.com/tr?id=239174403519612&ev=PageView&noscript=1"/>`,
-        },
-      ],
-    },
+    }
   },
 
-  // -------------------- Modules & Global Styles --------------------
   modules: [
     "@nuxt/image-edge",
     "@nuxtjs/seo",
     "@nuxt/content",
     "@pinia/nuxt",
-    "@nuxtjs/color-mode",
+    "@nuxtjs/color-mode"
   ],
 
-  // Configuración de los módulos de SEO
-  robots: {},
+  // Sitemap configuration
+  site: {
+    url: 'https://homesguatemala.com',
+    name: 'Homes Guatemala',
+    description: 'Bienes Raíces de Lujo en Guatemala',
+    defaultLocale: 'es',
+    indexable: true,
+  },
+
+  robots: {
+    disallow: ['/admin', '/_nuxt'],
+    allow: ['/'],
+    sitemap: ['https://homesguatemala.com/sitemap.xml'],
+  },
+
   sitemap: {
-    hostname: 'https://homesguatemala.com',
-    routes: async () => {
-      try {
-        const API_INMUEBLE = 'https://app-pool.vylaris.online/homes/api/Inmueble';
-        const API_PROYECTO = 'https://app-pool.vylaris.online/homes/api/Proyecto';
-
-        // Fetch de Inmuebles
-        const responseInmueble = await fetch(API_INMUEBLE);
-        if (!responseInmueble.ok) {
-          throw new Error(`Error Inmueble: ${responseInmueble.statusText}`);
-        }
-        const dataInmueble = await responseInmueble.json();
-        const propiedades = dataInmueble?.items?.$values || [];
-        const slugsInmuebles = propiedades.map(
-          (propiedad: any) => `/inmueble/${propiedad.slugInmueble}`
-        );
-
-        // Fetch de Proyectos
-        const responseProyecto = await fetch(API_PROYECTO);
-        if (!responseProyecto.ok) {
-          throw new Error(`Error Proyecto: ${responseProyecto.statusText}`);
-        }
-        const dataProyecto = await responseProyecto.json();
-        const proyectos = dataProyecto?.items?.$values || [];
-        const slugsProyectos = proyectos.map(
-          (proyecto: any) => `/proyecto/${proyecto.slugProyecto}`
-        );
-
-        // Combinar ambos arrays
-        return [...slugsInmuebles, ...slugsProyectos];
-      } catch (error) {
-        console.error('Error al generar las rutas del sitemap:', error);
-        return [];
-      }
-    },
+    sources: [
+      '/api/sitemap-urls'
+    ]
   },
 
   colorMode: {
     classSuffix: "",
     preference: "light",
     fallback: "light",
-    hid: "nuxt-color-mode-script",
     storageKey: "nuxt-color-mode",
   },
 
   css: ["~/assets/css/main.css"],
 
-  // -------------------- Build & Vite Configuration --------------------
   build: {
     transpile: ["flowbite", "swiper"],
   },
@@ -184,34 +138,19 @@ export default defineNuxtConfig({
     },
   },
 
-  // -------------------- Nitro & Server Configuration --------------------
   nitro: {
-    publicAssets: [
-      {
-        dir: "public/images",
-        baseURL: "/images",
-      },
-      {
-        dir: "assets/fonts",
-        baseURL: "/fonts",
-      },
-    ],
     compressPublicAssets: true,
     routeRules: {
-      // PROXY para luxury-homes - muestra contenido del dominio antiguo
-      '/luxury-homes/**': { 
+      '/luxury-homes/**': {
         proxy: 'https://old-web.homesguatemala.com/luxury-homes/**'
       },
-      '/luxury-homes': { 
+      '/luxury-homes': {
         proxy: 'https://old-web.homesguatemala.com/luxury-homes'
-      },
-    },
+      }
+    }
   },
 
   image: {
-    // Allowed domains for remote images
-    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar'],
-    // Default provider - can switch to a CDN or provider if needed
-    providers: {}
-  },
+    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar']
+  }
 });

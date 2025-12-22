@@ -110,8 +110,7 @@
                   v-show="openDropdown === 'saleRent'"
                   @click.stop
                   id="saleRentDropdownMenu"
-                  class="absolute z-[9999] w-56 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 rounded-lg mt-1"
-                  style="top: 100%; left: 0;"
+                  class="absolute z-[9999] w-56 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 rounded-lg mt-1 top-full left-0"
                 >
                 <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -202,8 +201,7 @@
                   v-show="openDropdown === 'propiedades'"
                   @click.stop
                   id="dropdownDefaultCheckbox1"
-                  class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-                  style="top: 100%; left: 0;"
+                  class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
                 >
                 <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -350,8 +348,7 @@
                 v-show="openDropdown === 'ubicaciones'"
                 @click.stop
                 id="dropdownDefaultCheckbox2"
-                class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-                style="top: 100%; left: 0;"
+                class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
               >
                 <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -664,8 +661,7 @@
                   v-show="openDropdown === 'habitaciones'"
                   @click.stop
                   id="dropdownDefaultCheckbox3"
-                  class="absolute z-[9999] w-48 md:w-40 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-                  style="top: 100%; left: 0;"
+                  class="absolute z-[9999] w-48 md:w-40 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
                 >
                 <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -747,6 +743,7 @@
                 type="number"
                 v-model.number="filters.precioMinimo"
                 id="min_price_input"
+                aria-label="Precio mínimo"
                 class="border border-gray-300 text-gray-900 text-xs block w-full p-2.5 font-roboto focus:ring-black focus:border-black"
                 placeholder="$ Mínimo"
               />
@@ -755,6 +752,7 @@
                 type="number"
                 v-model.number="filters.precioMaximo"
                 id="max_price_input"
+                aria-label="Precio máximo"
                 class="border border-gray-300 text-gray-900 text-xs block w-full p-2.5"
                 placeholder="$ Máximo"
               />
@@ -784,6 +782,7 @@
               v-model="filters.nombre"
               name="property_name"
               id="property_name"
+              aria-label="Buscar por palabra clave"
               class="block w-full p-2.5 text-sm lg:mr-2 md:mr-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-black focus:border-black"
               placeholder="Ingrese Palabra clave"
             />

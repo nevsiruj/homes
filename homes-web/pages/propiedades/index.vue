@@ -265,6 +265,21 @@ import inmuebleService from "../../services/inmuebleService";
 import { initFlowbite } from "flowbite";
 import skeleton from "~/components/skeleton.vue";
 
+useSeoMeta({
+  title: 'Propiedades en Venta y Renta | Homes Guatemala',
+  description: 'Descubre exclusivas propiedades en venta y renta en las mejores zonas de Guatemala. Encuentra tu hogar ideal o inversión perfecta hoy mismo.',
+  ogTitle: 'Propiedades en Venta y Renta | Homes Guatemala',
+  ogDescription: 'Descubre exclusivas propiedades en venta y renta en las mejores zonas de Guatemala. Encuentra tu hogar ideal o inversión perfecta hoy mismo.',
+  ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp',
+  twitterCard: 'summary_large_image',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://homesguatemala.com/propiedades' }
+  ]
+})
+
 const route = useRoute();
 const router = useRouter();
 

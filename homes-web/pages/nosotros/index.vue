@@ -162,6 +162,21 @@
 import { ref } from "vue";
 import RedesFlotantes from "../../components/redesFlotantes.vue";
 
+useSeoMeta({
+  title: 'Sobre Homes Guatemala | Expertos Inmobiliarios',
+  description: 'Conoce a Homes Guatemala, líderes con 18 años de experiencia en bienes raíces de lujo.',
+  ogTitle: 'Sobre Nosotros - Homes Guatemala',
+  ogDescription: 'Nuestra historia, misión y equipo de expertos inmobiliarios.',
+  ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp',
+  twitterCard: 'summary_large_image',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://homesguatemala.com/nosotros' }
+  ]
+})
+
 // Datos de ejemplo del equipo
 const equipo = ref([
   {
