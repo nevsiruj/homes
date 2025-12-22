@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,26 +11,19 @@
         .step-card {
             transition: transform 0.2s;
         }
+
         .step-card:hover {
             transform: translateY(-4px);
         }
-        .screenshot-placeholder {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-            border-radius: 8px;
-        }
     </style>
 </head>
+
 <body class="bg-gray-50">
     <div class="max-w-5xl mx-auto p-6">
-        
+
         <!-- Header -->
-        <header class="mb-10 text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg shadow-lg">
+        <header
+            class="mb-10 text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white p-8 rounded-lg shadow-lg">
             <h1 class="text-4xl font-bold mb-2">
                 <i class="fas fa-search mr-3"></i>
                 Guía Paso a Paso
@@ -49,14 +43,16 @@
                     <i class="fas fa-user-tie text-yellow-600 mt-1 mr-3"></i>
                     <div>
                         <p class="font-semibold text-gray-800">Responsable: Gerente de Marketing o Webmaster</p>
-                        <p class="text-gray-600">Debe tener acceso a la cuenta de Google Search Console de homesguatemala.com</p>
+                        <p class="text-gray-600">Debe tener acceso a la cuenta de Google Search Console de
+                            homesguatemala.com</p>
                     </div>
                 </div>
                 <div class="flex items-start">
                     <i class="fas fa-envelope text-yellow-600 mt-1 mr-3"></i>
                     <div>
                         <p class="font-semibold text-gray-800">Cuenta Requerida:</p>
-                        <p class="text-gray-600">Email con permisos de propietario o administrador en Google Search Console</p>
+                        <p class="text-gray-600">Email con permisos de propietario o administrador en Google Search
+                            Console</p>
                     </div>
                 </div>
                 <div class="flex items-start">
@@ -104,25 +100,44 @@
             <!-- Paso 1 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">1</div>
+                    <div
+                        class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        1</div>
                     <h3 class="text-2xl font-semibold">Acceder a Google Search Console</h3>
                 </div>
                 <div class="ml-16">
                     <p class="mb-4 text-gray-700">Abre tu navegador e ingresa a:</p>
                     <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                        <a href="https://search.google.com/search-console" target="_blank" class="text-blue-600 hover:underline font-mono text-lg">
+                        <a href="https://search.google.com/search-console" target="_blank"
+                            class="text-blue-600 hover:underline font-mono text-lg">
                             https://search.google.com/search-console
                         </a>
                     </div>
-                    <div class="screenshot-placeholder">
-                        <div class="text-center">
-                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
-                            <p>Pantalla de inicio de Google Search Console</p>
-                        </div>
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-6">
+                        <svg viewBox="0 0 800 400" class="w-full">
+                            <!-- Header azul de Google -->
+                            <rect fill="#4285f4" width="800" height="60" />
+                            <text x="20" y="40" font-family="Arial" font-size="20" fill="white"
+                                font-weight="bold">Google Search Console</text>
+
+                            <!-- Sidebar -->
+                            <rect fill="#f5f5f5" y="60" width="200" height="340" />
+                            <text x="20" y="100" font-family="Arial" font-size="14">📊 Overview</text>
+                            <text x="20" y="130" font-family="Arial" font-size="14">📈 Performance</text>
+                            <text x="20" y="160" font-family="Arial" font-size="14">🔍 URL Inspection</text>
+                            <text x="20" y="190" font-family="Arial" font-size="14">📄 Coverage</text>
+                            <text x="20" y="220" font-family="Arial" font-size="14">🗺️ Sitemaps</text>
+
+                            <!-- Main content area -->
+                            <rect fill="white" x="200" y="60" width="600" height="340" />
+                            <text x="500" y="230" font-family="Arial" font-size="18" text-anchor="middle"
+                                fill="#666">Selecciona una propiedad para comenzar</text>
+                        </svg>
                     </div>
                     <div class="mt-4 bg-blue-50 p-4 rounded border border-blue-200">
                         <p class="font-semibold text-blue-800"><i class="fas fa-info-circle mr-2"></i>Nota:</p>
-                        <p class="text-gray-700">Debes iniciar sesión con la cuenta de Google que tiene acceso a homesguatemala.com</p>
+                        <p class="text-gray-700">Debes iniciar sesión con la cuenta de Google que tiene acceso a
+                            homesguatemala.com</p>
                     </div>
                 </div>
             </div>
@@ -130,23 +145,41 @@
             <!-- Paso 2 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">2</div>
+                    <div
+                        class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        2</div>
                     <h3 class="text-2xl font-semibold">Seleccionar la Propiedad</h3>
                 </div>
                 <div class="ml-16">
-                    <p class="mb-4 text-gray-700">En la esquina superior izquierda, haz clic en el selector de propiedades y elige:</p>
+                    <p class="mb-4 text-gray-700">En la esquina superior izquierda, haz clic en el selector de
+                        propiedades y elige:</p>
                     <div class="bg-gray-100 p-4 rounded-lg mb-4 text-center">
                         <p class="font-mono text-xl font-bold">homesguatemala.com</p>
                     </div>
-                    <div class="screenshot-placeholder">
-                        <div class="text-center">
-                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
-                            <p>Menú desplegable con lista de propiedades</p>
-                        </div>
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-6">
+                        <svg viewBox="0 0 400 300" class="w-full max-w-md mx-auto">
+                            <!-- Dropdown -->
+                            <rect fill="white" stroke="#ccc" stroke-width="2" width="350" height="250" rx="8" />
+                            <text x="20" y="30" font-family="Arial" font-size="12" fill="#666">Selecciona una
+                                propiedad:</text>
+
+                            <!-- Opción destacada -->
+                            <rect fill="#e3f2fd" x="10" y="50" width="330" height="40" rx="4" />
+                            <text x="20" y="75" font-family="Arial" font-size="16"
+                                font-weight="bold">homesguatemala.com</text>
+                            <circle cx="320" cy="70" r="8" fill="#4285f4" />
+
+                            <!-- Otras opciones -->
+                            <text x="20" y="115" font-family="Arial" font-size="14" fill="#999">ejemplo1.com</text>
+                            <text x="20" y="145" font-family="Arial" font-size="14" fill="#999">ejemplo2.com</text>
+                            <text x="20" y="175" font-family="Arial" font-size="14" fill="#999">ejemplo3.com</text>
+                        </svg>
                     </div>
                     <div class="mt-4 bg-yellow-50 p-4 rounded border border-yellow-200">
-                        <p class="font-semibold text-yellow-800"><i class="fas fa-exclamation-circle mr-2"></i>Importante:</p>
-                        <p class="text-gray-700">Si no ves "homesguatemala.com" en la lista, no tienes acceso. Ver sección roja arriba.</p>
+                        <p class="font-semibold text-yellow-800"><i
+                                class="fas fa-exclamation-circle mr-2"></i>Importante:</p>
+                        <p class="text-gray-700">Si no ves "homesguatemala.com" en la lista, no tienes acceso. Ver
+                            sección roja arriba.</p>
                     </div>
                 </div>
             </div>
@@ -154,24 +187,44 @@
             <!-- Paso 3 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">3</div>
+                    <div
+                        class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        3</div>
                     <h3 class="text-2xl font-semibold">Inspeccionar URL Principal</h3>
                 </div>
                 <div class="ml-16">
-                    <p class="mb-4 text-gray-700">En la barra de búsqueda superior que dice <strong>"Inspeccionar cualquier URL de..."</strong>, escribe:</p>
+                    <p class="mb-4 text-gray-700">En la barra de búsqueda superior que dice <strong>"Inspeccionar
+                            cualquier URL de..."</strong>, escribe:</p>
                     <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                        <input type="text" value="https://homesguatemala.com/" readonly class="w-full p-3 border-2 border-blue-500 rounded font-mono text-lg">
+                        <input type="text" value="https://homesguatemala.com/" readonly
+                            class="w-full p-3 border-2 border-blue-500 rounded font-mono text-lg">
                     </div>
-                    <p class="mb-4 text-gray-700">Presiona <kbd class="bg-gray-200 px-3 py-1 rounded border border-gray-400">Enter</kbd></p>
-                    <div class="screenshot-placeholder">
-                        <div class="text-center">
-                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
-                            <p>Barra de inspección de URL en la parte superior</p>
-                        </div>
+                    <p class="mb-4 text-gray-700">Presiona <kbd
+                            class="bg-gray-200 px-3 py-1 rounded border border-gray-400">Enter</kbd></p>
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-6">
+                        <svg viewBox="0 0 800 200" class="w-full">
+                            <!-- Barra de búsqueda -->
+                            <rect fill="#f5f5f5" stroke="#4285f4" stroke-width="3" width="780" height="60" x="10" y="20"
+                                rx="30" />
+                            <text x="30" y="55" font-family="Arial" font-size="18" fill="#666">🔍 Inspeccionar cualquier
+                                URL de homesguatemala.com</text>
+
+                            <!-- Indicador -->
+                            <text x="400" y="120" font-family="Arial" font-size="14" text-anchor="middle"
+                                fill="#999">Escribe la URL aquí y presiona Enter</text>
+                            <path d="M 400 130 L 400 50" stroke="#999" stroke-width="2" marker-end="url(#arrow)" />
+                            <defs>
+                                <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto">
+                                    <polygon points="0 0, 10 3, 0 6" fill="#999" />
+                                </marker>
+                            </defs>
+                        </svg>
                     </div>
                     <div class="mt-4 bg-green-50 p-4 rounded border border-green-200">
-                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Resultado esperado:</p>
-                        <p class="text-gray-700">Google comenzará a analizar la URL. Esto puede tomar 10-30 segundos.</p>
+                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Resultado
+                            esperado:</p>
+                        <p class="text-gray-700">Google comenzará a analizar la URL. Esto puede tomar 10-30 segundos.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -179,30 +232,56 @@
             <!-- Paso 4 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">4</div>
+                    <div
+                        class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        4</div>
                     <h3 class="text-2xl font-semibold">Solicitar Indexación</h3>
                 </div>
                 <div class="ml-16">
-                    <p class="mb-4 text-gray-700">Una vez que Google termine de analizar, verás una pantalla con el estado de la URL.</p>
+                    <p class="mb-4 text-gray-700">Una vez que Google termine de analizar, verás una pantalla con el
+                        estado de la URL.</p>
                     <p class="mb-4 text-gray-700">Haz clic en el botón:</p>
                     <div class="text-center mb-4">
-                        <button class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 cursor-default">
+                        <button
+                            class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 cursor-default shadow-lg">
                             SOLICITAR INDEXACIÓN
                         </button>
                     </div>
-                    <div class="screenshot-placeholder">
-                        <div class="text-center">
-                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
-                            <p>Pantalla de resultados con botón "Solicitar indexación"</p>
-                        </div>
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-6">
+                        <svg viewBox="0 0 600 300" class="w-full max-w-lg mx-auto">
+                            <!-- Resultado de inspección -->
+                            <rect fill="#e8f5e9" width="580" height="80" x="10" y="10" rx="8" />
+                            <text x="30" y="40" font-family="Arial" font-size="16" font-weight="bold" fill="#2e7d32">✓
+                                URL está en Google</text>
+                            <text x="30" y="65" font-family="Arial" font-size="12" fill="#666">Última vez rastreada:
+                                hace 2 días</text>
+
+                            <!-- Botón de solicitar indexación -->
+                            <rect fill="#4285f4" width="250" height="50" x="175" y="120" rx="25" />
+                            <text x="300" y="150" font-family="Arial" font-size="16" fill="white" text-anchor="middle"
+                                font-weight="bold">SOLICITAR INDEXACIÓN</text>
+
+                            <!-- Indicador -->
+                            <text x="300" y="210" font-family="Arial" font-size="12" text-anchor="middle"
+                                fill="#999">Haz clic aquí</text>
+                            <path d="M 300 200 L 300 175" stroke="#999" stroke-width="2" marker-end="url(#arrow2)" />
+                            <defs>
+                                <marker id="arrow2" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto">
+                                    <polygon points="0 0, 10 3, 0 6" fill="#999" />
+                                </marker>
+                            </defs>
+                        </svg>
                     </div>
                     <div class="mt-4 space-y-3">
                         <div class="bg-blue-50 p-4 rounded border border-blue-200">
-                            <p class="font-semibold text-blue-800"><i class="fas fa-spinner fa-spin mr-2"></i>Durante el proceso:</p>
-                            <p class="text-gray-700">Google probará la URL en vivo (1-2 minutos). Verás un mensaje "Probando URL en vivo..."</p>
+                            <p class="font-semibold text-blue-800"><i class="fas fa-spinner fa-spin mr-2"></i>Durante el
+                                proceso:</p>
+                            <p class="text-gray-700">Google probará la URL en vivo (1-2 minutos). Verás un mensaje
+                                "Probando URL en vivo..."</p>
                         </div>
                         <div class="bg-green-50 p-4 rounded border border-green-200">
-                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Confirmación:</p>
+                            <p class="font-semibold text-green-800"><i
+                                    class="fas fa-check-circle mr-2"></i>Confirmación:</p>
                             <p class="text-gray-700">Aparecerá un mensaje: "Se solicitó la indexación". ¡Listo!</p>
                         </div>
                     </div>
@@ -212,7 +291,9 @@
             <!-- Paso 5 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">5</div>
+                    <div
+                        class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        5</div>
                     <h3 class="text-2xl font-semibold">Reenviar Sitemap</h3>
                 </div>
                 <div class="ml-16">
@@ -220,31 +301,48 @@
                     <div class="bg-gray-100 p-4 rounded-lg mb-4">
                         <p class="font-semibold text-lg"><i class="fas fa-sitemap mr-2"></i>Sitemaps</p>
                     </div>
-                    <div class="screenshot-placeholder mb-4">
-                        <div class="text-center">
-                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
-                            <p>Menú lateral con opción "Sitemaps"</p>
-                        </div>
-                    </div>
                     <p class="mb-4 text-gray-700">En el campo "Añadir un sitemap nuevo", escribe:</p>
                     <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                        <input type="text" value="sitemap.xml" readonly class="w-full p-3 border-2 border-blue-500 rounded font-mono text-lg">
+                        <input type="text" value="sitemap.xml" readonly
+                            class="w-full p-3 border-2 border-blue-500 rounded font-mono text-lg">
                     </div>
                     <p class="mb-4 text-gray-700">Haz clic en:</p>
                     <div class="text-center mb-4">
-                        <button class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 cursor-default">
+                        <button
+                            class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 cursor-default shadow-lg">
                             ENVIAR
                         </button>
                     </div>
-                    <div class="screenshot-placeholder">
-                        <div class="text-center">
-                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
-                            <p>Formulario para añadir sitemap</p>
-                        </div>
+                    <div class="bg-white border-2 border-gray-300 rounded-lg p-6">
+                        <svg viewBox="0 0 700 250" class="w-full">
+                            <!-- Formulario -->
+                            <text x="20" y="30" font-family="Arial" font-size="16" font-weight="bold">Añadir un sitemap
+                                nuevo</text>
+                            <rect fill="white" stroke="#ccc" stroke-width="2" width="500" height="45" x="20" y="50"
+                                rx="4" />
+                            <text x="30" y="78" font-family="Arial" font-size="14"
+                                fill="#666">homesguatemala.com/</text>
+                            <text x="200" y="78" font-family="Arial" font-size="14">sitemap.xml</text>
+
+                            <rect fill="#4285f4" width="120" height="45" x="540" y="50" rx="4" />
+                            <text x="600" y="78" font-family="Arial" font-size="14" fill="white" text-anchor="middle"
+                                font-weight="bold">ENVIAR</text>
+
+                            <!-- Tabla de resultados -->
+                            <text x="20" y="140" font-family="Arial" font-size="14" font-weight="bold">Sitemaps
+                                enviados</text>
+                            <rect fill="#f5f5f5" width="660" height="40" x="20" y="150" rx="4" />
+                            <text x="30" y="175" font-family="Arial" font-size="12">sitemap.xml</text>
+                            <text x="300" y="175" font-family="Arial" font-size="12" fill="#2e7d32" font-weight="bold">✓
+                                Correcto</text>
+                            <text x="450" y="175" font-family="Arial" font-size="12" fill="#666">Hace 1 minuto</text>
+                        </svg>
                     </div>
                     <div class="mt-4 bg-green-50 p-4 rounded border border-green-200">
-                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Verificación:</p>
-                        <p class="text-gray-700">En la tabla de sitemaps, el estado debe aparecer como <span class="text-green-600 font-bold">"Correcto"</span> en verde.</p>
+                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Verificación:
+                        </p>
+                        <p class="text-gray-700">En la tabla de sitemaps, el estado debe aparecer como <span
+                                class="text-green-600 font-bold">"Correcto"</span> en verde.</p>
                     </div>
                 </div>
             </div>
@@ -252,34 +350,34 @@
             <!-- Paso 6 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">6</div>
+                    <div
+                        class="bg-blue-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        6</div>
                     <h3 class="text-2xl font-semibold">Verificar Cobertura</h3>
                 </div>
                 <div class="ml-16">
                     <p class="mb-4 text-gray-700">En el menú lateral izquierdo, haz clic en:</p>
                     <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                        <p class="font-semibold text-lg"><i class="fas fa-chart-line mr-2"></i>Cobertura (o "Páginas")</p>
-                    </div>
-                    <div class="screenshot-placeholder mb-4">
-                        <div class="text-center">
-                            <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
-                            <p>Menú lateral con opción "Cobertura"</p>
-                        </div>
+                        <p class="font-semibold text-lg"><i class="fas fa-chart-line mr-2"></i>Cobertura (o "Páginas")
+                        </p>
                     </div>
                     <p class="mb-4 text-gray-700">Verifica que NO aparezcan errores como:</p>
                     <div class="space-y-2 mb-4">
                         <div class="bg-red-50 p-3 rounded border border-red-200">
-                            <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Bloqueado por robots.txt"</p>
+                            <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Bloqueado por robots.txt"
+                            </p>
                         </div>
                         <div class="bg-red-50 p-3 rounded border border-red-200">
-                            <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Error del servidor (5xx)"</p>
+                            <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Error del servidor (5xx)"
+                            </p>
                         </div>
                         <div class="bg-red-50 p-3 rounded border border-red-200">
                             <p class="text-red-700"><i class="fas fa-times-circle mr-2"></i>"Página con redirección"</p>
                         </div>
                     </div>
                     <div class="bg-green-50 p-4 rounded border border-green-200">
-                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si todo está bien:</p>
+                        <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si todo está
+                            bien:</p>
                         <p class="text-gray-700">Deberías ver páginas en estado "Válido" o "Válido con advertencias"</p>
                     </div>
                 </div>
@@ -296,14 +394,18 @@
             <!-- Verificación 1 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">1</div>
+                    <div
+                        class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        1</div>
                     <h3 class="text-2xl font-semibold">Verificar robots.txt en Producción</h3>
                 </div>
                 <div class="ml-16">
-                    <p class="mb-4 text-gray-700"><strong>¿Quién lo hace?</strong> Cualquier persona (no requiere acceso especial)</p>
+                    <p class="mb-4 text-gray-700"><strong>¿Quién lo hace?</strong> Cualquier persona (no requiere acceso
+                        especial)</p>
                     <p class="mb-4 text-gray-700">Abre tu navegador e ingresa a:</p>
                     <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                        <a href="https://homesguatemala.com/robots.txt" target="_blank" class="text-blue-600 hover:underline font-mono text-lg">
+                        <a href="https://homesguatemala.com/robots.txt" target="_blank"
+                            class="text-blue-600 hover:underline font-mono text-lg">
                             https://homesguatemala.com/robots.txt
                         </a>
                     </div>
@@ -318,11 +420,13 @@ Sitemap: https://homesguatemala.com/sitemap.xml</pre>
                     </div>
                     <div class="space-y-3">
                         <div class="bg-green-50 p-4 rounded border border-green-200">
-                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si ves esto:</p>
+                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si ves esto:
+                            </p>
                             <p class="text-gray-700">¡Perfecto! El robots.txt está correcto.</p>
                         </div>
                         <div class="bg-red-50 p-4 rounded border border-red-200">
-                            <p class="font-semibold text-red-800"><i class="fas fa-exclamation-triangle mr-2"></i>Si ves "Disallow: /":</p>
+                            <p class="font-semibold text-red-800"><i class="fas fa-exclamation-triangle mr-2"></i>Si ves
+                                "Disallow: /":</p>
                             <p class="text-gray-700">¡PROBLEMA! Contactar al equipo de desarrollo INMEDIATAMENTE.</p>
                         </div>
                     </div>
@@ -332,14 +436,18 @@ Sitemap: https://homesguatemala.com/sitemap.xml</pre>
             <!-- Verificación 2 -->
             <div class="step-card bg-white p-6 rounded-lg shadow-md mb-6">
                 <div class="flex items-center mb-4">
-                    <div class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">2</div>
+                    <div
+                        class="bg-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl mr-4">
+                        2</div>
                     <h3 class="text-2xl font-semibold">Verificar Sitemap en Producción</h3>
                 </div>
                 <div class="ml-16">
-                    <p class="mb-4 text-gray-700"><strong>¿Quién lo hace?</strong> Cualquier persona (no requiere acceso especial)</p>
+                    <p class="mb-4 text-gray-700"><strong>¿Quién lo hace?</strong> Cualquier persona (no requiere acceso
+                        especial)</p>
                     <p class="mb-4 text-gray-700">Abre tu navegador e ingresa a:</p>
                     <div class="bg-gray-100 p-4 rounded-lg mb-4">
-                        <a href="https://homesguatemala.com/sitemap.xml" target="_blank" class="text-blue-600 hover:underline font-mono text-lg">
+                        <a href="https://homesguatemala.com/sitemap.xml" target="_blank"
+                            class="text-blue-600 hover:underline font-mono text-lg">
                             https://homesguatemala.com/sitemap.xml
                         </a>
                     </div>
@@ -359,11 +467,13 @@ Sitemap: https://homesguatemala.com/sitemap.xml</pre>
                     </div>
                     <div class="space-y-3">
                         <div class="bg-green-50 p-4 rounded border border-green-200">
-                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si ves XML con URLs:</p>
+                            <p class="font-semibold text-green-800"><i class="fas fa-check-circle mr-2"></i>Si ves XML
+                                con URLs:</p>
                             <p class="text-gray-700">¡Perfecto! El sitemap se está generando correctamente.</p>
                         </div>
                         <div class="bg-red-50 p-4 rounded border border-red-200">
-                            <p class="font-semibold text-red-800"><i class="fas fa-exclamation-triangle mr-2"></i>Si ves error 404:</p>
+                            <p class="font-semibold text-red-800"><i class="fas fa-exclamation-triangle mr-2"></i>Si ves
+                                error 404:</p>
                             <p class="text-gray-700">¡PROBLEMA! Contactar al equipo de desarrollo INMEDIATAMENTE.</p>
                         </div>
                     </div>
@@ -416,7 +526,8 @@ Sitemap: https://homesguatemala.com/sitemap.xml</pre>
                 <div>
                     <h3 class="font-semibold mb-2">Soporte de Google</h3>
                     <p class="text-gray-300">
-                        <a href="https://support.google.com/webmasters" target="_blank" class="text-blue-400 hover:underline">
+                        <a href="https://support.google.com/webmasters" target="_blank"
+                            class="text-blue-400 hover:underline">
                             support.google.com/webmasters
                         </a>
                     </p>
@@ -431,4 +542,5 @@ Sitemap: https://homesguatemala.com/sitemap.xml</pre>
         </footer>
     </div>
 </body>
+
 </html>
