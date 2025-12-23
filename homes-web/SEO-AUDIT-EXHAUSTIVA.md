@@ -1,6 +1,6 @@
 # 📊 Reporte de Auditoría SEO Exhaustiva
 
-Generado el: 22/12/2025, 04:39:14
+Generado el: 23/12/2025, 12:41:47
 
 ### /
 
@@ -52,14 +52,14 @@ Generado el: 22/12/2025, 04:39:14
 | Prueba | Estado | Detalle |
 |---|---|---|
 | HTTP Status | ✅ | 200 OK |
-| Data Check | ✅ | 231 bytes recibidos |
+| Data Check | ✅ | 351 bytes recibidos |
 
 ### /sitemap.xml
 
 | Prueba | Estado | Detalle |
 |---|---|---|
 | HTTP Status | ✅ | 200 OK |
-| Data Check | ✅ | 2153 bytes recibidos |
+| Data Check | ✅ | 1959 bytes recibidos |
 
 ### /llms.txt
 
