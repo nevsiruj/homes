@@ -100,11 +100,11 @@ export default defineNuxtConfig({
     sitemap: ['https://homesguatemala.com/sitemap.xml'],
   },
 
-  sitemap: {
-    sources: [
-      '/api/sitemap-urls'
-    ]
-  },
+  // sitemap: {
+  //   sources: [
+  //     '/api/sitemap-urls'
+  //   ]
+  // },
 
   colorMode: {
     classSuffix: "",
