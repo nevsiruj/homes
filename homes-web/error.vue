@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   error: {
     type: Object,
     required: true
