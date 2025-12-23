@@ -138,11 +138,41 @@ export default defineNuxtConfig({
   nitro: {
     compressPublicAssets: true,
     routeRules: {
+      // Proxy para luxury homes (mantener)
       '/luxury-homes/**': {
         proxy: 'https://old-web.homesguatemala.com/luxury-homes/**'
       },
       '/luxury-homes': {
         proxy: 'https://old-web.homesguatemala.com/luxury-homes'
+      },
+
+      // Redirecciones para URLs antiguas de propiedades
+      '/propiedad/**': { redirect: '/propiedades' },
+      '/property/**': { redirect: '/propiedades' },
+      '/inmueble/**': { redirect: '/propiedades' },
+      '/listing/**': { redirect: '/propiedades' },
+
+      // Redirecciones de URLs comunes mal escritas
+      '/home': { redirect: '/' },
+      '/inicio': { redirect: '/' },
+      '/index': { redirect: '/' },
+      '/index.html': { redirect: '/' },
+      '/index.php': { redirect: '/' },
+
+      // Redirecciones de secciones antiguas
+      '/contacto': { redirect: '/nosotros' },
+      '/contact': { redirect: '/nosotros' },
+      '/about': { redirect: '/nosotros' },
+      '/acerca-de': { redirect: '/nosotros' },
+
+      // Headers de seguridad y SEO
+      '/**': {
+        headers: {
+          'X-Robots-Tag': 'index, follow',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'SAMEORIGIN',
+          'Referrer-Policy': 'strict-origin-when-cross-origin'
+        }
       }
     }
   },
