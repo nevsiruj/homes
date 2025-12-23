@@ -261,6 +261,7 @@ import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
 import RedesFlotantes from "../../components/redesFlotantes.vue";
 import InmuebleCard from "../../components/InmuebleCard.vue";
+import LazyRender from "../../components/LazyRender.vue";
 import inmuebleService from "../../services/inmuebleService";
 import { initFlowbite } from "flowbite";
 import skeleton from "~/components/skeleton.vue";
