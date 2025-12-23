@@ -503,13 +503,15 @@ const loadFeaturedProperties = async () => {
       'apartamento-amueblado-en-venta-zona-10-aav5776'
     ];
 
-    // Cargar solo 10 propiedades en lugar de hacer 6-7 llamadas individuales
-    const response = await inmuebleService.getInmueblesPaginados(1, 10);
-    const allProps = response?.items || [];
-
-    // Filtrar solo las propiedades destacadas que están en nuestra lista
-    const featuredPropertiesData = allProps
-      .filter(prop => featuredSlugs.includes(prop.slugInmueble))
+    // Cargar propiedades destacadas individualmente (método confiable)
+    const fetchPromises = featuredSlugs.map((slug) =>
+      inmuebleService.getInmuebleBySlug(slug).catch(() => null)
+    );
+    
+    const resolved = await Promise.all(fetchPromises);
+    
+    const featuredPropertiesData = resolved
+      .filter(property => property !== null)
       .map((property) => {
         const plainProperty = JSON.parse(JSON.stringify(property));
         return {
