@@ -102,7 +102,8 @@ const { data: propiedades, pending: isLoading } = await useAsyncData(
   `zona-${zona}`,
   async () => {
     try {
-      const response = await inmuebleService.getInmueblesPaginados(1, 200);
+      // Optimización: Reducido de 200 a 50 para mejor rendimiento inicial
+      const response = await inmuebleService.getInmueblesPaginados(1, 50);
       const allProps = response?.items || [];
       
       // Filtrar por zona (buscar en zona, ubicaciones, o ubicacion)

@@ -878,9 +878,9 @@ if (Array.isArray(amenidadesArray)) {
 const loadAllInmueblesForCounts = async () => {
   try {
     countsLoading.value = true;
-    // Mejor approach: solicitar pocas páginas en paralelo y sumarizar conteos
-    const pagesToFetch = 3; // Ajustable según la carga
-    const pageSize = 200; // 200 * 3 = 600 elementos max (mucho menos que 1000)
+    // OPTIMIZACIÓN: Reducido de 3x200 a 2x100 para mejorar rendimiento inicial
+    const pagesToFetch = 2; // Reducido de 3 a 2
+    const pageSize = 100; // Reducido de 200 a 100 (total: 200 en lugar de 600)
     const fetches = [];
     for (let i = 1; i <= pagesToFetch; i++) {
       fetches.push(inmuebleService.getInmueblesPaginados(i, pageSize));

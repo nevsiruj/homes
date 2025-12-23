@@ -13,7 +13,7 @@
       >
         <div class="grid grid-rows-2 gap-2 w-3xl">
           <div class="flex items-end"></div>
-          <Filtro v-if="!isBusquedaRoute" />
+          <Filtro v-if="shouldShowFilter" />
         </div>
       </div>
     </div>
@@ -251,8 +251,16 @@ import Filtro from "@/components/filtro.vue";
 const route = useRoute();
 const router = useRouter();
 
-const isBusquedaRoute = computed(() => {
-  return route.path === "/busqueda";
+// Evitar cargar el filtro en páginas que ya tienen sus propios filtros o no lo necesitan
+const shouldShowFilter = computed(() => {
+  const path = route.path;
+  // No mostrar filtro en:
+  // - /busqueda (tiene su propio filtro avanzado)
+  // - /propiedades (tiene su propio filtro)
+  // - /inmueble/* (páginas de detalle no necesitan filtro)
+  return path !== "/busqueda" && 
+         path !== "/propiedades" && 
+         !path.startsWith("/inmueble/");
 });
 
 const isMobileMenuOpen = ref(false);

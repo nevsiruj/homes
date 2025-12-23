@@ -129,7 +129,7 @@
           :space-between="8"
           :mousewheel="!isMobile"
           :free-mode="true"
-          :loop="true"
+          :loop="shouldEnableLoop"
           :modules="[FreeMode, Mousewheel, Navigation]"
           class="lg:h-[600px] md:h-[600px] w-full"
         >
@@ -667,6 +667,12 @@ const allMedia = computed(() => {
   return media;
 });
 
+// Para evitar el warning de Swiper, solo habilitar loop cuando hay suficientes slides
+const shouldEnableLoop = computed(() => {
+  const minSlidesForLoop = isMobile.value ? 4 : 5; // slidesPerView + 1
+  return allMedia.value.length >= minSlidesForLoop;
+});
+
 const setMainMedia = (url, type) => {
   mainMedia.value = { url, type };
   currentMediaIndex.value = allMedia.value.findIndex(
@@ -704,6 +710,16 @@ const getYouTubeThumbnail = (url) => {
     ? url.split("v=")[1] || url.split("youtu.be/")[1]
     : "";
   return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null;
+};
+
+// Función para mezclar array aleatoriamente (Fisher-Yates shuffle)
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 };
 
 // Helper para convertir zona a slug
@@ -774,7 +790,9 @@ const MAX_SUGGESTIONS = 3;
 
 const loadSuggestedProperties = async () => {
   try {
-    const responseData = await inmuebleService.getInmueblesPaginados(1, 200);
+    // Optimización: Reducido de 200 a 20 para evitar over-fetching
+    // Solo necesitamos 3 sugerencias, no tiene sentido cargar 200 propiedades
+    const responseData = await inmuebleService.getInmueblesPaginados(1, 20);
     const allRaw = Array.isArray(responseData?.items)
       ? responseData.items
       : Array.isArray(responseData)

@@ -1,7 +1,5 @@
-@import "tailwindcss";
-
-
-/* Fuente Roboto Condensed (de Google Fonts) */
-
+/* Fuente Raleway (de Google Fonts) - DEBE estar antes de TailwindCSS */
 @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import "tailwindcss";
 

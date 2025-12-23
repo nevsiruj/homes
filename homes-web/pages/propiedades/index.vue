@@ -150,13 +150,13 @@
           </div>
           <div v-else>
             <div id="propiedades-grid" class="flex flex-wrap -m-4 mt-10 justify-center">
-              <LazyRender
+              <div
                 v-for="inmueble in inmuebles"
                 :key="inmueble.id"
                 class="w-full sm:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 p-4"
               >
                 <InmuebleCard :inmueble="inmueble" />
-              </LazyRender>
+              </div>
             </div>
             <div v-if="totalPages > 1" class="flex justify-center py-12">
               <nav aria-label="Page navigation" class="flex justify-center">
@@ -261,7 +261,6 @@ import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
 import RedesFlotantes from "../../components/redesFlotantes.vue";
 import InmuebleCard from "../../components/InmuebleCard.vue";
-import LazyRender from "../../components/LazyRender.vue";
 import inmuebleService from "../../services/inmuebleService";
 import { initFlowbite } from "flowbite";
 import skeleton from "~/components/skeleton.vue";
@@ -367,7 +366,7 @@ const fetchInmuebles = async () => {
         : undefined, // si no viene, no lo envía
   };
 
-  console.log("Filters sent to backend:", filters); // Log the filters being sent
+  // console.log("Filters sent to backend:", filters); // Deshabilitado para producción
 
   try {
     const cleanedFilters = Object.fromEntries(
@@ -402,14 +401,14 @@ const fetchInmuebles = async () => {
       totalCount.value = response.totalCount || 0;
       totalPages.value = response.totalPages || 0;
 
-      console.log("Fetched inmuebles:", inmuebles.value); // Log the fetched results
+      // console.log("Fetched inmuebles:", inmuebles.value); // Deshabilitado para producción
     } else {
       inmuebles.value = [];
       totalCount.value = 0;
       totalPages.value = 0;
     }
   } catch (err) {
-    console.error("Error fetching inmuebles:", err); // Log any errors
+    // console.error("Error fetching inmuebles:", err); // Deshabilitado para producción
     error.value =
       "No se pudieron cargar los inmuebles. Intenta de nuevo más tarde.";
   } finally {
@@ -602,16 +601,8 @@ const buscarPorCodigo = async (propertyCode) => {
   }
 };
 
-watch(
-  // Observa los cambios en el parámetro `CodigoPropiedad`
-  () => route.query.CodigoPropiedad,
-  (newCode, oldCode) => {
-    if (newCode !== oldCode) {
-      fetchInmuebles(); // Asegúrate de que se llame a fetchInmuebles al cambiar el código
-    }
-  },
-  { immediate: true } // Ejecuta el watcher al cargar el componente
-);
+// Watcher eliminado: Ya está cubierto por el watcher principal de route.query arriba (línea 530)
+// Este watcher duplicado causaba llamadas redundantes a la API
 </script>
 
 <style scoped>

@@ -8,12 +8,13 @@
                 :observeParents="true" :spaceBetween="30" :centeredSlides="true" :autoplay="{
                 delay: 2500,
             }" :loop="true" :pagination="{ clickable: true }" :modules="modules" :speed="800" :grabCursor="true"
-                :lazy="true" @swiper="onSwiperInit" class="mySwiper">
+                :lazy="true" @swiper="onSwiperInit" @click.prevent class="mySwiper">
 
                 <swiper-slide v-if="inmueble.imagenPrincipal">
                     <img :data-src="getOptimizedImageUrl(inmueble.imagenPrincipal, 400)"
                         :srcset="getSrcset(inmueble.imagenPrincipal)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
+                        loading="lazy"
                         class="swiper-lazy w-sm h-64 object-cover" 
                         :alt="`Imagen de ${inmueble.titulo || 'propiedad en Guatemala'}`" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
@@ -24,6 +25,7 @@
                     :key="index">
                     <img :data-src="getOptimizedImageUrl(imagen.url, 400)" :srcset="getSrcset(imagen.url)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
+                        loading="lazy"
                         class="swiper-lazy w-sm h-64 object-cover" 
                         :alt="`Vista de ${inmueble.titulo || 'propiedad'} - Foto ${index + 1}`" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
@@ -143,7 +145,7 @@ watch(isHovering, (newValue) => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap');
+/* Fuente Raleway cargada globalmente en assets/css/main.css */
 
 .fuente-raleway {
   font-family: 'Raleway', sans-serif;

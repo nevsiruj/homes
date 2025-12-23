@@ -492,28 +492,24 @@ const loadFeaturedProperties = async () => {
   featuredPropertiesError.value = null;
 
   try {
-    // Slugs específicos de las propiedades destacadas que deben mostrarse
+    // OPTIMIZACIÓN: En lugar de hacer 6-7 llamadas individuales,
+    // hacemos UNA sola llamada y filtramos localmente
     const featuredSlugs = [
       'casa-completamente-remodelada-en-venta-con-vistas-de-la-ciudad-zona-10-csv5506',
       'casa-de-un-nivel-en-venta-santa-catarina-pinula-cs5230',
-      // 'casa-con-jardin-en-venta-en-siena-san-isidro-zona-16-csv5769',
       'casa-con-amplio-jardin-en-venta-hacienda-nueva-country-club-csv5342',
       'casa-en-venta-de-un-nivel-km-25-5-carretera-a-el-salvador-csv5591',
       'apartamento-en-venta-zona-10-asv5758',
       'apartamento-amueblado-en-venta-zona-10-aav5776'
     ];
 
-    // Fetch all featured properties in parallel for faster loading
-    const fetchPromises = featuredSlugs.map((slug) =>
-      inmuebleService.getInmuebleBySlug(slug).catch((err) => {
-        console.warn(`No se pudo cargar la propiedad con slug: ${slug}`, err);
-        return null; // always resolve so Promise.all won't fail on a single request
-      })
-    );
+    // Cargar solo 10 propiedades en lugar de hacer 6-7 llamadas individuales
+    const response = await inmuebleService.getInmueblesPaginados(1, 10);
+    const allProps = response?.items || [];
 
-    const resolved = await Promise.all(fetchPromises);
-    const featuredPropertiesData = resolved
-      .filter(Boolean)
+    // Filtrar solo las propiedades destacadas que están en nuestra lista
+    const featuredPropertiesData = allProps
+      .filter(prop => featuredSlugs.includes(prop.slugInmueble))
       .map((property) => {
         const plainProperty = JSON.parse(JSON.stringify(property));
         return {

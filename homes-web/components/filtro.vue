@@ -958,8 +958,9 @@ const displayVentaRentaTotal = computed(() => {
 
 const loadAllInmueblesForCounts = () => {
   try {
-    const pagesToFetch = 3;
-    const pageSize = 200; // 3 * 200 = 600
+    // OPTIMIZACIÓN: Reducido de 3x200 a 2x100 para mejorar rendimiento inicial
+    const pagesToFetch = 2; // Reducido de 3 a 2
+    const pageSize = 100; // Reducido de 200 a 100 (total: 200 en lugar de 600)
     allInmueblesForCounts.value = [];
 
     // Cargar cada página y actualizar conteos inmediatamente

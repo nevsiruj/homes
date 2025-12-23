@@ -136,7 +136,11 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    compressPublicAssets: true,
+    compressPublicAssets: {
+      gzip: true,
+      brotli: true,
+    },
+    minify: true,
     routeRules: {
       // Proxy para luxury homes (mantener)
       '/luxury-homes/**': {
@@ -149,7 +153,7 @@ export default defineNuxtConfig({
       // Redirecciones para URLs antiguas de propiedades
       '/propiedad/**': { redirect: '/propiedades' },
       '/property/**': { redirect: '/propiedades' },
-      '/inmueble/**': { redirect: '/propiedades' },
+      // '/inmueble/**': { redirect: '/propiedades' }, // REMOVIDO: Esta regla impedía ver detalles de inmuebles
       '/listing/**': { redirect: '/propiedades' },
 
       // Redirecciones de URLs comunes mal escritas
@@ -178,6 +182,42 @@ export default defineNuxtConfig({
   },
 
   image: {
-    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar']
+    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar'],
+    format: ['webp', 'avif'],
+    quality: 80,
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+    },
+    presets: {
+      card: {
+        modifiers: {
+          format: 'webp',
+          quality: 80,
+          width: 400,
+          height: 256
+        }
+      },
+      thumbnail: {
+        modifiers: {
+          format: 'webp',
+          quality: 75,
+          width: 150,
+          height: 150
+        }
+      },
+      hero: {
+        modifiers: {
+          format: 'webp',
+          quality: 85,
+          width: 1200,
+          height: 600
+        }
+      }
+    }
   }
 });
