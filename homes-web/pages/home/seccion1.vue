@@ -1,6 +1,43 @@
 <template>
-  <h1 class="sr-only">Homes Guatemala - Bienes Raíces, Venta y Renta de Propiedades</h1>
-  <section class="text-gray-600 body-font mt-28">
+  <!-- Hero Section con H1 visible y contenido SEO optimizado -->
+  <section class="bg-gradient-to-b from-gray-50 to-white py-12 md:py-16">
+    <div class="container mx-auto px-5">
+      <h1 class="title-alta text-center text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+        Homes Guatemala - Bienes Raíces de Lujo
+      </h1>
+      <div class="max-w-4xl mx-auto text-center">
+        <p class="long-text-roboto text-lg md:text-xl text-gray-700 mb-4 leading-relaxed">
+          Somos líderes en <strong>bienes raíces de lujo en Guatemala (GT)</strong>, especializados en la 
+          <strong>venta y renta de propiedades exclusivas</strong> en las zonas más prestigiosas de Ciudad de Guatemala. 
+          Como la principal agencia de <strong>bienes raíces de lujo GT</strong>, nuestro portafolio incluye 
+          <strong>casas de lujo, apartamentos premium y proyectos inmobiliarios</strong> en Zona 10, Zona 14, 
+          Zona 15, Zona 16 y Carretera a El Salvador.
+        </p>
+        <p class="long-text-roboto text-lg text-gray-600 mb-6 leading-relaxed">
+          Con más de una década de experiencia en el mercado inmobiliario guatemalteco, en <strong>Homes Guatemala</strong> 
+          ofrecemos un servicio personalizado para ayudarte a encontrar la propiedad perfecta que se adapte a tu estilo 
+          de vida y necesidades de inversión. Descubre propiedades exclusivas con las mejores amenidades, ubicaciones 
+          estratégicas y oportunidades de inversión inmobiliaria en Guatemala.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4 mt-8">
+          <NuxtLink
+            to="/propiedades?Operaciones=venta"
+            class="inline-flex boton-optima text-white bg-black border-0 py-4 px-8 focus:outline-none hover:bg-gray-700 rounded-lg text-lg transition-colors duration-300"
+          >
+            Ver Propiedades en Venta
+          </NuxtLink>
+          <NuxtLink
+            to="/propiedades?Operaciones=renta"
+            class="inline-flex boton-optima text-gray-900 bg-white border-2 border-gray-900 py-4 px-8 focus:outline-none hover:bg-gray-100 rounded-lg text-lg transition-colors duration-300"
+          >
+            Ver Propiedades en Renta
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="text-gray-600 body-font mt-12">
     <div
       class="container mx-auto flex px-5 lg:py-12 md:flex-row flex-col items-center py-6"
     >
@@ -17,17 +54,23 @@
         <h2
           class="title-font title-alta sm:text-4xl text-3xl mb-4 font-medium text-gray-900"
         >
-          PROYECTOS
+          PROYECTOS INMOBILIARIOS DE LUJO
         </h2>
         <p class="mb-4 leading-relaxed long-text-roboto">
           Descubre nuestros
           <strong>proyectos inmobiliarios más exclusivos</strong> en Ciudad de
           Guatemala, diseñados para quienes buscan un estilo de vida moderno y
           una excelente oportunidad de inversión. En Homes Guatemala
-          desarrollamos y comercializamos casas y apartamentos nuevos o en
+          desarrollamos y comercializamos <strong>casas y apartamentos nuevos</strong> o en
           construcción, estratégicamente ubicados en zonas con alta demanda y
-          crecimiento como Zona 10, Zona 13, Zona 14, Zona 15, Zona 16 y
-          Carretera a El Salvador ...
+          crecimiento como <strong>Zona 10, Zona 13, Zona 14, Zona 15, Zona 16</strong> y
+          <strong>Carretera a El Salvador</strong>.
+        </p>
+        <p class="mb-4 leading-relaxed long-text-roboto">
+          Nuestros <strong>proyectos de bienes raíces</strong> destacan por su arquitectura contemporánea, 
+          acabados de primera calidad y amenidades exclusivas que incluyen áreas verdes, seguridad 24/7, 
+          gimnasios, salones de eventos y espacios de coworking. Cada desarrollo inmobiliario está pensado 
+          para ofrecer el máximo confort, privacidad y plusvalía a largo plazo.
         </p>
         <div class="flex justify-center">
           <NuxtLink
@@ -56,13 +99,21 @@
         <h2
           class="title-font title-alta sm:text-4xl text-3xl mb-4 mt-4 font-medium text-gray-900"
         >
-          VENTA
+          PROPIEDADES EN VENTA
         </h2>
         <p class="mb-4 leading-relaxed long-text-roboto">
-          En esta sección encontrarás una cuidadosa selección de propiedades en
-          venta en Guatemala, pensadas para quienes están listos para dar el
+          En esta sección encontrarás una cuidadosa selección de <strong>propiedades en
+          venta en Guatemala</strong>, pensadas para quienes están listos para dar el
           siguiente paso: invertir en su patrimonio, iniciar una nueva etapa de
-          vida o diversificar su portafolio inmobiliario ...
+          vida o diversificar su portafolio inmobiliario. Ofrecemos <strong>casas de lujo, 
+          apartamentos exclusivos, condominios premium</strong> y terrenos en las mejores ubicaciones 
+          de Ciudad de Guatemala.
+        </p>
+        <p class="mb-4 leading-relaxed long-text-roboto">
+          Cada <strong>propiedad en venta</strong> ha sido cuidadosamente evaluada para garantizar 
+          la mejor relación calidad-precio, documentación en regla y potencial de plusvalía. 
+          Nuestro equipo de asesores inmobiliarios te acompaña en todo el proceso: desde la 
+          búsqueda inicial, visitas guiadas, negociación, hasta el cierre legal de la transacción.
         </p>
         <div class="flex justify-center">
           <button
@@ -92,14 +143,21 @@
         <h2
           class="title-font title-alta sm:text-4xl text-3xl mb-4 font-medium text-gray-900"
         >
-          RENTA
+          PROPIEDADES EN RENTA
         </h2>
         <p class="mb-4 leading-relaxed long-text-roboto">
-          Nuestras propiedades en renta han sido seleccionadas para ofrecer una
+          Nuestras <strong>propiedades en renta</strong> han sido seleccionadas para ofrecer una
           experiencia de vida sofisticada, funcional y adaptada a distintos
-          estilos de vida. Desde apartamentos modernos hasta casas espaciosas en
-          zonas residenciales, ofrecemos una variedad de opciones para elevar tu
-          calidad de vida ...
+          estilos de vida. Desde <strong>apartamentos modernos amueblados</strong> hasta <strong>casas espaciosas en
+          zonas residenciales</strong>, ofrecemos una variedad de opciones para elevar tu
+          calidad de vida en las mejores zonas de Guatemala.
+        </p>
+        <p class="mb-4 leading-relaxed long-text-roboto">
+          Todas nuestras <strong>propiedades en alquiler</strong> cuentan con excelente ubicación, 
+          seguridad garantizada y fácil acceso a centros comerciales, escuelas internacionales, 
+          hospitales y vías principales. Ofrecemos opciones amuebladas y sin amueblar, con contratos 
+          flexibles y asesoría legal incluida. Ideal para ejecutivos, familias y profesionales que 
+          buscan <strong>rentar una casa o apartamento de lujo en Guatemala</strong>.
         </p>
         <div class="flex justify-center">
           <button
@@ -112,7 +170,84 @@
         </div>
       </div>
     </div>
+  </section>
 
+  <!-- Nueva sección: Por qué elegir Homes Guatemala -->
+  <section class="bg-white py-16 px-5">
+    <div class="container mx-auto max-w-6xl">
+      <h2 class="title-alta-2 text-3xl md:text-4xl text-center font-bold text-gray-900 mb-8">
+        ¿Por Qué Elegir Homes Guatemala?
+      </h2>
+      
+      <div class="grid md:grid-cols-2 gap-8 mb-8">
+        <div>
+          <h3 class="title-font text-xl font-semibold text-gray-900 mb-3">
+            Experiencia en Bienes Raíces de Lujo
+          </h3>
+          <p class="long-text-roboto text-gray-700 leading-relaxed">
+            Con más de una década en el mercado inmobiliario guatemalteco, <strong>Homes Guatemala</strong> 
+            se ha consolidado como líder en <strong>bienes raíces de lujo</strong>. Nuestro equipo de 
+            asesores especializados conoce a profundidad cada zona de la ciudad, desde las exclusivas 
+            áreas de <strong>Zona 10 y Zona 14</strong>, hasta las emergentes zonas residenciales en 
+            <strong>Zona 15, Zona 16 y Carretera a El Salvador</strong>.
+          </p>
+        </div>
+        
+        <div>
+          <h3 class="title-font text-xl font-semibold text-gray-900 mb-3">
+            Servicio Integral y Personalizado
+          </h3>
+          <p class="long-text-roboto text-gray-700 leading-relaxed">
+            Ofrecemos un servicio completo que abarca desde la búsqueda de la propiedad ideal hasta 
+            el cierre legal de la transacción. Nuestros clientes reciben asesoría en valoración de 
+            propiedades, análisis de inversión, gestión de documentación legal y acompañamiento en 
+            todo el proceso de <strong>compra, venta o renta de propiedades de lujo en Guatemala</strong>.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-8">
+        <h3 class="title-font text-xl font-semibold text-gray-900 mb-4 text-center">
+          Zonas Exclusivas que Cubrimos
+        </h3>
+        <p class="long-text-roboto text-gray-700 leading-relaxed mb-4">
+          Especializados en las zonas más prestigiosas de Ciudad de Guatemala, donde se concentran 
+          las mejores <strong>casas de lujo, apartamentos premium y proyectos inmobiliarios</strong> 
+          del país. Nuestro portafolio incluye propiedades en ubicaciones estratégicas con acceso a 
+          centros comerciales de primer nivel, colegios internacionales, hospitales privados, 
+          restaurantes gourmet y áreas de entretenimiento.
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+          <div class="bg-white rounded p-3">
+            <p class="font-semibold text-gray-900">Zona 10</p>
+            <p class="text-sm text-gray-600">Zona Viva</p>
+          </div>
+          <div class="bg-white rounded p-3">
+            <p class="font-semibold text-gray-900">Zona 14</p>
+            <p class="text-sm text-gray-600">Residencial</p>
+          </div>
+          <div class="bg-white rounded p-3">
+            <p class="font-semibold text-gray-900">Zona 15</p>
+            <p class="text-sm text-gray-600">Vista Hermosa</p>
+          </div>
+          <div class="bg-white rounded p-3">
+            <p class="font-semibold text-gray-900">Zona 16</p>
+            <p class="text-sm text-gray-600">Cayalá</p>
+          </div>
+          <div class="bg-white rounded p-3">
+            <p class="font-semibold text-gray-900">Carretera a El Salvador</p>
+            <p class="text-sm text-gray-600">En crecimiento</p>
+          </div>
+          <div class="bg-white rounded p-3">
+            <p class="font-semibold text-gray-900">Santa Catarina Pinula</p>
+            <p class="text-sm text-gray-600">Exclusivo</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="text-gray-600 body-font">
     <div v-if="suggestedPropertiesLoading" class="mt-12 mb-12 text-center">
       <p>Cargando propiedades destacadas...</p>
     </div>
@@ -492,8 +627,7 @@ const loadFeaturedProperties = async () => {
   featuredPropertiesError.value = null;
 
   try {
-    // OPTIMIZACIÓN: En lugar de hacer 6-7 llamadas individuales,
-    // hacemos UNA sola llamada y filtramos localmente
+    // Lista de slugs de propiedades destacadas
     const featuredSlugs = [
       'casa-completamente-remodelada-en-venta-con-vistas-de-la-ciudad-zona-10-csv5506',
       'casa-de-un-nivel-en-venta-santa-catarina-pinula-cs5230',
@@ -503,10 +637,16 @@ const loadFeaturedProperties = async () => {
       'apartamento-amueblado-en-venta-zona-10-aav5776'
     ];
 
-    // Cargar propiedades destacadas individualmente (método confiable)
-    const fetchPromises = featuredSlugs.map((slug) =>
-      inmuebleService.getInmuebleBySlug(slug).catch(() => null)
-    );
+    // Cargar propiedades destacadas individualmente con mejor manejo de errores
+    const fetchPromises = featuredSlugs.map(async (slug) => {
+      try {
+        const property = await inmuebleService.getInmuebleBySlug(slug);
+        return property;
+      } catch (error) {
+        console.warn(`No se pudo cargar la propiedad destacada: ${slug}`, error.message);
+        return null;
+      }
+    });
     
     const resolved = await Promise.all(fetchPromises);
     
@@ -525,6 +665,36 @@ const loadFeaturedProperties = async () => {
           precioActivo: plainProperty.precio != null && plainProperty.precio > 0,
         };
       });
+
+    // Si no se cargaron suficientes propiedades destacadas, cargar propiedades aleatorias como fallback
+    if (featuredPropertiesData.length < 3) {
+      console.log('Cargando propiedades aleatorias como fallback...');
+      try {
+        const fallbackResponse = await inmuebleService.getInmueblesPaginados(1, 6);
+        if (fallbackResponse && Array.isArray(fallbackResponse.items)) {
+          const fallbackProperties = fallbackResponse.items
+            .filter(prop => prop.imagenPrincipal) // Solo propiedades con imagen
+            .slice(0, 6 - featuredPropertiesData.length)
+            .map((property) => {
+              const plainProperty = JSON.parse(JSON.stringify(property));
+              return {
+                ...plainProperty,
+                imagenesReferencia:
+                  plainProperty.imagenesReferencia?.$values ||
+                  plainProperty.imagenesReferencia ||
+                  [],
+                amenidades:
+                  plainProperty.amenidades?.$values || plainProperty.amenidades || [],
+                precioActivo: plainProperty.precio != null && plainProperty.precio > 0,
+              };
+            });
+          
+          featuredPropertiesData.push(...fallbackProperties);
+        }
+      } catch (fallbackError) {
+        console.error('Error al cargar propiedades de fallback:', fallbackError);
+      }
+    }
 
     featuredProperties.value = featuredPropertiesData;
 

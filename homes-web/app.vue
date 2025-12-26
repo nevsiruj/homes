@@ -37,10 +37,6 @@ useHead({
   htmlAttrs: {
     lang: 'es'
   },
-  link: [
-    { rel: 'alternate', hreflang: 'es-GT', href: 'https://homesguatemala.com' },
-    { rel: 'alternate', hreflang: 'x-default', href: 'https://homesguatemala.com' }
-  ],
   meta: [
     { name: 'description', content: 'Líderes en bienes raíces en Guatemala. Encuentra casas y apartamentos.' }
   ]

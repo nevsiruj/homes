@@ -133,6 +133,23 @@ export default defineNuxtConfig({
         },
       },
     },
+    build: {
+      // Consolidar CSS en menos archivos
+      cssCodeSplit: false, // Genera un solo archivo CSS en lugar de múltiples
+      rollupOptions: {
+        output: {
+          // Agrupar chunks de manera más eficiente
+          manualChunks: {
+            'vendor': ['vue', 'vue-router'],
+            'swiper': ['swiper'],
+          },
+        },
+      },
+      // Inline CSS pequeños (menos de 4kb)
+      assetsInlineLimit: 4096,
+      // Minificar CSS
+      cssMinify: true,
+    },
   },
 
   nitro: {
