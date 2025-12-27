@@ -6,35 +6,30 @@
   <Footer />
 </template>
 
-<script>
-import Header from "../../components/header.vue";
-import Seccion1 from "./seccion1.vue";
+<script setup>
 import { defineAsyncComponent } from 'vue';
-const Seccion2 = defineAsyncComponent(() => import('./seccion2.vue'));
-const Seccion3 = defineAsyncComponent(() => import('./seccion3.vue'));
-const Seccion4 = defineAsyncComponent(() => import('./seccion4.vue'));
-import Footer from "../../components/footer.vue";
-import RedesFlotantes from "../../components/redesFlotantes.vue";
-import Loader from "../../components/Loader.vue";
 
-export default {
-  components: {
-    Header,
-    Seccion1,
-    Seccion2,
-    Seccion3,
-    Seccion4,
-    Footer,
-    RedesFlotantes,
-    Loader,    
-  },
+// Componentes críticos - carga síncrona
+import Header from "~/components/header.vue";
+import Seccion1 from "./seccion1.vue";
 
-  setup() {
-    // No loader by default — removed forced 2s wait to improve perceived load performance
-    return {};
-  },
-  
-};
+// Componentes no críticos - carga diferida (async)
+const Footer = defineAsyncComponent(() => import('~/components/footer.vue'));
+const RedesFlotantes = defineAsyncComponent(() => import('~/components/redesFlotantes.vue'));
+
+// Precargar fuentes críticas
+useHead({
+  link: [
+    // Preload fuentes críticas para evitar FOIT (Flash of Invisible Text)
+    {
+      rel: 'preload',
+      href: '/assets/font/ralewey/raleway-v36-latin-300.woff2',
+      as: 'font',
+      type: 'font/woff2',
+      crossorigin: 'anonymous'
+    }
+  ]
+});
 </script>
 
 <style>
@@ -85,8 +80,9 @@ export default {
     format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
 }
 
-/* Fuente Roboto*/
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap");
+/* Fuente Roboto - Usar font-display swap en lugar de @import bloqueante */
+/* Removido: @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap"); */
+/* Las fuentes de Roboto se cargan ahora via preconnect en nuxt.config.ts */
 
 /* Estilos directos */
 .title-alta {

@@ -42,7 +42,12 @@
       class="container mx-auto flex px-5 lg:py-12 md:flex-row flex-col items-center py-6"
     >
       <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
-        <img loading="lazy"
+        <nuxt-img 
+          preload
+          format="webp"
+          quality="80"
+          width="512"
+          height="300"
           class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
           alt="Proyecto inmobiliario destacado en Guatemala"
           src="https://app-pool.vylaris.online/dcmigserver/homes/f64ca937-cba0-4276-b350-9aca8a1b51bc.webp"
@@ -501,8 +506,7 @@ useHead({
         "openingHoursSpecification": {
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-          "opens": "09:00",
-          "closes": "18:00"
+              "closes": "18:00"
         },
         "sameAs": [
           "https://www.facebook.com/homesguatemala",
@@ -511,6 +515,27 @@ useHead({
           "https://www.linkedin.com/company/homes-guatemala"
         ]
       })
+    }
+  ]
+});
+
+// Precargar fuentes críticas y la imagen LCP (Largest Contentful Paint)
+useHead({
+  link: [
+    // Preload fuentes críticas
+    {
+      rel: 'preload',
+      href: '/assets/font/ralewey/raleway-v36-latin-300.woff2',
+      as: 'font',
+      type: 'font/woff2',
+      crossorigin: 'anonymous'
+    },
+    // Preload de la imagen principal del proyecto destacado (LCP)
+    {
+      rel: 'preload',
+      href: 'https://app-pool.vylaris.online/dcmigserver/homes/f64ca937-cba0-4276-b350-9aca8a1b51bc.webp',
+      as: 'image',
+      type: 'image/webp'
     }
   ]
 });

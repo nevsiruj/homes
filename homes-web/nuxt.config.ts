@@ -27,8 +27,14 @@ export default defineNuxtConfig({
       link: [
         { rel: "icon", type: "image/x-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
         { rel: "canonical", href: "https://homesguatemala.com" },
+        // Preconnect para recursos externos - mejora rendimiento
         { rel: "preconnect", href: "https://app-pool.vylaris.online" },
         { rel: "dns-prefetch", href: "https://app-pool.vylaris.online" },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
+        // Google Fonts con display=swap para evitar FOIT
+        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap", media: "print", onload: "this.media='all'" },
+        // Hreflang para SEO internacional
         { rel: "alternate", hreflang: "es-GT", href: "https://homesguatemala.com" },
         { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" }
       ],
@@ -136,6 +142,8 @@ export default defineNuxtConfig({
     build: {
       // Consolidar CSS en menos archivos
       cssCodeSplit: false, // Genera un solo archivo CSS en lugar de múltiples
+      target: 'esnext',
+      minify: 'terser', // Terser suele comprimir mejor que esbuild para JS complejo
       rollupOptions: {
         output: {
           // Agrupar chunks de manera más eficiente
@@ -150,6 +158,52 @@ export default defineNuxtConfig({
       // Minificar CSS
       cssMinify: true,
     },
+  },
+
+  experimental: {
+    payloadExtraction: true, // Mejora la carga de datos en navegación SPA
+    renderJsonPayloads: true
+  },
+
+  image: {
+    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar'],
+    provider: 'ipx',
+    quality: 80,
+    format: ['webp', 'avif', 'jpg'],
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+    },
+    presets: {
+      card: {
+        modifiers: {
+          format: 'webp',
+          quality: 80,
+          width: 400,
+          height: 256
+        }
+      },
+      thumbnail: {
+        modifiers: {
+          format: 'webp',
+          quality: 75,
+          width: 150,
+          height: 150
+        }
+      },
+      hero: {
+        modifiers: {
+          format: 'webp',
+          quality: 85,
+          width: 1200,
+          height: 600
+        }
+      }
+    }
   },
 
   nitro: {
@@ -270,46 +324,6 @@ export default defineNuxtConfig({
           'X-Content-Type-Options': 'nosniff',
           'X-Frame-Options': 'SAMEORIGIN',
           'Referrer-Policy': 'strict-origin-when-cross-origin'
-        }
-      }
-    }
-  },
-
-  image: {
-    domains: ['app-pool.vylaris.online', 'homesguatemala.com', 'via.placeholder.com', 'vylaris.ar'],
-    format: ['webp', 'avif'],
-    quality: 80,
-    screens: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-      xxl: 1536,
-    },
-    presets: {
-      card: {
-        modifiers: {
-          format: 'webp',
-          quality: 80,
-          width: 400,
-          height: 256
-        }
-      },
-      thumbnail: {
-        modifiers: {
-          format: 'webp',
-          quality: 75,
-          width: 150,
-          height: 150
-        }
-      },
-      hero: {
-        modifiers: {
-          format: 'webp',
-          quality: 85,
-          width: 1200,
-          height: 600
         }
       }
     }
