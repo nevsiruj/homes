@@ -1,12 +1,16 @@
 <template>
   <div class="relative">
     <div class="relative h-[550px] w-full">
-      <img
+      <nuxt-img
         src="https://app-pool.vylaris.online/dcmigserver/homes/0b304e4c-ed40-4c7e-8e44-2fe821bc5301.webp"
         alt="Bienes raíces de lujo en Guatemala - Vista panorámica"
         class="absolute inset-0 object-cover w-full h-full"
         loading="eager"
         fetchpriority="high"
+        preload
+        width="1920"
+        height="550"
+        format="webp"
       />
       <div
         class="flex items-end lg:pb-8 pb-18 justify-center h-full bg-[#00000060]"
@@ -122,19 +126,19 @@
                 >
                   <ul class="py-2 text-sm text-gray-700">
                     <li>
-                      <a
-                        href="#"
-                        @click.prevent="handlePropertyFilter('Venta')"
+                      <NuxtLink
+                        to="/propiedades/venta"
+                        @click="isPropertiesDropdownOpen = false"
                         class="block px-4 py-2 hover:bg-gray-100"
-                        >Venta</a
+                        >Venta</NuxtLink
                       >
                     </li>
                     <li>
-                      <a
-                        href="#"
-                        @click.prevent="handlePropertyFilter('Renta')"
+                      <NuxtLink
+                        to="/propiedades/renta"
+                        @click="isPropertiesDropdownOpen = false"
                         class="block px-4 py-2 hover:bg-gray-100"
-                        >Renta</a
+                        >Renta</NuxtLink
                       >
                     </li>
                   </ul>

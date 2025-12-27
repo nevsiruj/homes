@@ -1,9 +1,9 @@
 <template>
   <div class="homepage-section">
-    <!-- Hero Section -->
+    <!-- 1. HERO SECTION -->
     <section class="bg-gradient-to-b from-gray-50 to-white py-12 md:py-16">
       <div class="container mx-auto px-5">
-        <h1 class="title-alta text-center text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+        <h1 class="title-alta text-center text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 uppercase">
           Homes Guatemala - Bienes Raíces de Lujo
         </h1>
         <div class="max-w-4xl mx-auto text-center">
@@ -23,94 +23,125 @@
       </div>
     </section>
 
-    <!-- Proyectos destacados -->
-    <section class="py-12 px-5 bg-white">
-      <div class="container mx-auto flex flex-col md:flex-row items-center">
+    <!-- 2. SECCIÓN PROYECTOS (Imagen corregida) -->
+    <section class="text-gray-600 body-font mt-12 pb-12">
+      <div class="container mx-auto flex px-5 md:flex-row flex-col items-center">
         <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
-          <nuxt-img 
-            preload
+          <img 
             src="https://app-pool.vylaris.online/dcmigserver/homes/f64ca937-cba0-4276-b350-9aca8a1b51bc.webp"
-            class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px]"
-            alt="Proyectos inmobiliarios de lujo en Guatemala"
-            width="512"
-            height="300"
+            class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px] w-full shadow-lg"
+            alt="Proyectos inmobiliarios destacados en Guatemala"
+            loading="eager"
           />
         </div>
         <div class="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center">
           <h2 class="title-font title-alta sm:text-4xl text-3xl mb-4 font-medium text-gray-900 uppercase">
-            Proyectos Inmobiliarios de Lujo
+            PROYECTOS INMOBILIARIOS DE LUJO
           </h2>
-          <p class="mb-4 leading-relaxed long-text-roboto">
-            Descubre nuestros <strong>proyectos inmobiliarios más exclusivos</strong> en Ciudad de Guatemala, diseñados para un estilo de vida moderno y una inversión segura.
+          <p class="mb-6 leading-relaxed long-text-roboto text-lg">
+            Descubre nuestros <strong>proyectos inmobiliarios más exclusivos</strong> en las zonas 10, 14, 15 y 16. Desarrollos diseñados para un estilo de vida sofisticado y con la mejor plusvalía del mercado guatemalteco.
           </p>
-          <NuxtLink to="/proyectos-inmobiliarios" class="inline-flex boton-optima text-white bg-black py-4 px-6 hover:bg-gray-600 rounded text-lg">
-            Ver proyectos
+          <NuxtLink to="/proyectos-inmobiliarios" class="inline-flex boton-optima text-white bg-black py-4 px-8 hover:bg-gray-700 rounded-lg text-lg transition-all duration-300">
+            Ver Proyectos
           </NuxtLink>
         </div>
       </div>
     </section>
 
-    <!-- Carrusel de Propiedades Destacadas (SSR REAL) -->
+    <!-- 3. SECCIÓN VENTA (Carousel con SSR) -->
     <section class="py-16 bg-gray-50 overflow-hidden">
-      <div class="container mx-auto px-5 text-center">
-        <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10">
-          PROPIEDADES DESTACADAS
+      <div class="container mx-auto px-5">
+        <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
+          Propiedades en Venta
         </h2>
-        
-        <div v-if="featuredProperties.length > 0" class="featured-slider">
+        <div v-if="ventaProperties.length > 0">
           <Swiper
-            v-if="!isMobile"
             :modules="[Pagination, Autoplay]"
-            :slides-per-view="3"
-            :space-between="30"
+            :slides-per-view="1"
+            :space-between="20"
             :pagination="{ clickable: true }"
+            :breakpoints="{
+              '768': { slidesPerView: 2 },
+              '1024': { slidesPerView: 3 }
+            }"
             class="pb-12"
           >
-            <SwiperSlide v-for="p in featuredProperties" :key="p.id">
-              <div class="bg-white rounded-lg shadow-lg overflow-hidden h-full">
+            <SwiperSlide v-for="p in ventaProperties" :key="p.id">
+              <div class="bg-white rounded-xl shadow-md overflow-hidden h-full group">
                 <NuxtLink :to="getPropertyUrl(p)">
-                   <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-64 object-cover" />
+                   <div class="relative h-64 overflow-hidden">
+                     <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
+                     <div class="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase rounded">Venta</div>
+                   </div>
                    <div class="p-6">
-                     <h3 class="text-xl font-bold mb-2">{{ p.titulo }}</h3>
-                     <p class="text-gray-600 text-sm mb-4">{{ p.ubicaciones }}</p>
+                     <h3 class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</h3>
+                     <p class="text-gray-500 text-sm mb-4"><i class="fas fa-map-marker-alt mr-1"></i> {{ p.ubicaciones }}</p>
                      <p v-if="p.precio" class="text-2xl font-bold text-gray-900">${{ p.precio.toLocaleString() }}</p>
                    </div>
                 </NuxtLink>
               </div>
             </SwiperSlide>
           </Swiper>
-          
-          <!-- Versión móvil (lista para ahorrar JS inicial si fuera necesario, pero por ahora Swiper) -->
-          <div v-else class="grid grid-cols-1 gap-6">
-            <div v-for="p in featuredProperties.slice(0, 4)" :key="p.id" class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <NuxtLink :to="getPropertyUrl(p)">
-                   <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-64 object-cover" />
-                   <div class="p-6">
-                     <h3 class="text-xl font-bold mb-2">{{ p.titulo }}</h3>
-                     <p class="text-gray-600 text-sm">{{ p.ubicaciones }}</p>
-                   </div>
-                </NuxtLink>
-            </div>
-          </div>
         </div>
-        <div v-else class="text-center py-8 text-gray-500">
-          No hay propiedades disponibles ahora.
+        <div class="text-center mt-8">
+          <NuxtLink to="/propiedades/venta" class="text-gray-900 font-bold border-b-2 border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-all">Ver todas las ventas</NuxtLink>
         </div>
       </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="bg-white py-16 px-5" itemscope itemtype="https://schema.org/FAQPage">
+    <!-- 4. SECCIÓN RENTA (Carousel con SSR) -->
+    <section class="py-16 bg-white overflow-hidden">
+      <div class="container mx-auto px-5">
+        <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
+          Propiedades en Renta
+        </h2>
+        <div v-if="rentaProperties.length > 0">
+          <Swiper
+            :modules="[Pagination, Autoplay]"
+            :slides-per-view="1"
+            :space-between="20"
+            :pagination="{ clickable: true }"
+            :breakpoints="{
+              '768': { slidesPerView: 2 },
+              '1024': { slidesPerView: 3 }
+            }"
+            class="pb-12"
+          >
+            <SwiperSlide v-for="p in rentaProperties" :key="p.id">
+              <div class="bg-gray-50 rounded-xl shadow-md overflow-hidden h-full group border border-gray-100">
+                <NuxtLink :to="getPropertyUrl(p)">
+                   <div class="relative h-64 overflow-hidden">
+                     <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
+                     <div class="absolute top-4 left-4 bg-gray-600 text-white px-3 py-1 text-xs font-bold uppercase rounded">Renta</div>
+                   </div>
+                   <div class="p-6">
+                     <h3 class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</h3>
+                     <p class="text-gray-500 text-sm mb-4">{{ p.ubicaciones }}</p>
+                     <p v-if="p.precio" class="text-2xl font-bold text-gray-900">${{ p.precio.toLocaleString() }}</p>
+                   </div>
+                </NuxtLink>
+              </div>
+            </SwiperSlide>
+          </Swiper>
+        </div>
+        <div class="text-center mt-8">
+          <NuxtLink to="/propiedades/renta" class="text-gray-900 font-bold border-b-2 border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-all">Ver todas las rentas</NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FAQ SECTION -->
+    <section class="bg-gray-50 py-16 px-5" itemscope itemtype="https://schema.org/FAQPage">
       <div class="container mx-auto max-w-4xl">
         <h2 class="title-alta-2 text-3xl md:text-4xl text-center font-bold text-gray-900 mb-10">
           Preguntas Frecuentes sobre Bienes Raíces en Guatemala
         </h2>
-        <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div v-for="(faq, i) in faqs" :key="i" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" 
-               class="bg-gray-50 rounded-lg p-6">
+               class="bg-white rounded-lg p-6 shadow-sm">
             <h3 itemprop="name" class="text-lg font-semibold text-gray-900 mb-3">{{ faq.q }}</h3>
             <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-              <p itemprop="text" class="text-gray-700 leading-relaxed" v-html="faq.a"></p>
+              <p itemprop="text" class="text-gray-700 leading-relaxed text-sm" v-html="faq.a"></p>
             </div>
           </div>
         </div>
@@ -120,57 +151,37 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+import { useRouter } from "vue-router";
 import inmuebleService from "~/services/inmuebleService";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-// --- ⚡️ FIX DRÁSTICO PARA SEO (SSR REAL) ---
-const { data: featuredData } = await useAsyncData('home-featured', () => 
-  inmuebleService.getInmueblesPaginados(1, 10, { Destacado: true })
-);
+// --- ⚡️ SSR DATA FETCHING ---
+const [{ data: ventaData }, { data: rentaData }] = await Promise.all([
+  useAsyncData('home-venta', () => inmuebleService.getInmueblesPaginados(1, 6, { Operaciones: 'Venta', Destacado: true })),
+  useAsyncData('home-renta', () => inmuebleService.getInmueblesPaginados(1, 6, { Operaciones: 'Renta', Destacado: true }))
+]);
 
-const featuredProperties = computed(() => featuredData.value?.items || []);
+const ventaProperties = computed(() => ventaData.value?.items || []);
+const rentaProperties = computed(() => rentaData.value?.items || []);
 
-const isMobile = ref(false);
 const router = useRouter();
 
-const checkMobile = () => {
-  if (process.client) {
-    isMobile.value = window.innerWidth < 768;
-  }
-};
-
-onMounted(() => {
-  checkMobile();
-  window.addEventListener("resize", checkMobile);
-});
-
-onUnmounted(() => {
-  if (process.client) {
-    window.removeEventListener("resize", checkMobile);
-  }
-});
-
-const getSlug = (p) => {
-  return encodeURIComponent(String(p?.slugInmueble || p?.slug || '').trim());
-};
-
 const getPropertyUrl = (p) => {
-  const s = getSlug(p);
-  return s ? `/inmueble/${s}` : '#';
+  const slug = encodeURIComponent(String(p?.slugInmueble || p?.slug || '').trim());
+  return slug ? `/inmueble/${slug}` : '#';
 };
 
 const faqs = [
-  { q: '¿Cuáles son las mejores zonas para comprar propiedades de lujo en Guatemala?', a: 'Las zonas exclusivas incluyen <strong>Zona 10, 14, 15, 16 y Carretera a El Salvador</strong>.' },
-  { q: '¿Cuánto cuesta una casa de lujo en Guatemala?', a: 'Los precios varían entre <strong>$350,000 USD y más de $2,000,000 USD</strong>.' },
-  { q: '¿Qué servicios ofrece Homes Guatemala?', a: 'Ofrecemos <strong>asesoría personalizada</strong>, marketing premium y gestión legal.' }
+  { q: '¿Cuáles son las mejores zonas en Guatemala?', a: 'Las zonas exclusivas incluyen <strong>Zona 10, 14, 15, 16 y Carretera a El Salvador</strong>.' },
+  { q: '¿Cuánto cuesta una casa de lujo?', a: 'Los precios varían entre <strong>$350,000 USD y más de $2,000,000 USD</strong>.' },
+  { q: '¿Servicios de Homes Guatemala?', a: 'Ofrecemos <strong>asesoría personalizada</strong>, marketing premium y gestión integral.' },
+  { q: '¿Es buena inversión?', a: 'Sí, la <strong>plusvalía promedio ha sido del 50%</strong> en la última década en zonas premium.' }
 ];
 
-// Meta tags optimizados
 useSeoMeta({
   title: 'Homes Guatemala | Bienes Raíces de Lujo - Casas y Apartamentos',
   description: 'Descubre las mejores propiedades de lujo en Guatemala con Homes Guatemala. Venta y renta en las zonas más exclusivas: 10, 14, 15 y 16.',
@@ -182,4 +193,5 @@ useSeoMeta({
 .title-alta { font-family: "Raleway", sans-serif; font-weight: 300; }
 .title-alta-2 { font-family: "Raleway", sans-serif; font-weight: 300; }
 .boton-optima { font-family: "Optima", serif; font-weight: 400; }
+.long-text-roboto { font-family: "Raleway", sans-serif; font-weight: 300; }
 </style>

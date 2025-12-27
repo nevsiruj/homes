@@ -101,7 +101,7 @@ export default defineNuxtConfig({
   },
 
   robots: {
-    disallow: ['/admin', '/_nuxt'],
+    disallow: ['/admin'], // Solo bloquear el panel de administración
     allow: ['/'],
     sitemap: ['https://homesguatemala.com/sitemap.xml'],
   },
