@@ -21,13 +21,13 @@
         </p>
         <div class="flex flex-wrap justify-center gap-4 mt-8">
           <NuxtLink
-            to="/propiedades?Operaciones=venta"
+            to="/propiedades/venta"
             class="inline-flex boton-optima text-white bg-black border-0 py-4 px-8 focus:outline-none hover:bg-gray-700 rounded-lg text-lg transition-colors duration-300"
           >
             Ver Propiedades en Venta
           </NuxtLink>
           <NuxtLink
-            to="/propiedades?Operaciones=renta"
+            to="/propiedades/renta"
             class="inline-flex boton-optima text-gray-900 bg-white border-2 border-gray-900 py-4 px-8 focus:outline-none hover:bg-gray-100 rounded-lg text-lg transition-colors duration-300"
           >
             Ver Propiedades en Renta
@@ -343,10 +343,100 @@
       </div>
     </div>
   </section>
+
+  <!-- Sección FAQ para SEO y Rich Snippets -->
+  <section class="bg-gray-50 py-16 px-5" itemscope itemtype="https://schema.org/FAQPage">
+    <div class="container mx-auto max-w-4xl">
+      <h2 class="title-alta-2 text-3xl md:text-4xl text-center font-bold text-gray-900 mb-10">
+        Preguntas Frecuentes sobre Bienes Raíces en Guatemala
+      </h2>
+      
+      <div class="space-y-6">
+        <!-- FAQ 1 -->
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" 
+             class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+          <h3 itemprop="name" class="text-lg font-semibold text-gray-900 mb-3">
+            ¿Cuáles son las mejores zonas para comprar propiedades de lujo en Guatemala?
+          </h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="text-gray-700 leading-relaxed">
+              Las zonas más exclusivas para propiedades de lujo en Guatemala incluyen <strong>Zona 10</strong> 
+              (conocida como Zona Viva), <strong>Zona 14</strong> (área residencial premium), 
+              <strong>Zona 15 Vista Hermosa</strong>, <strong>Zona 16 Cayalá</strong> (la nueva ciudad moderna) 
+              y <strong>Carretera a El Salvador</strong> con desarrollos como Santa Catarina Pinula y Condados 
+              de San Cristóbal. Estas áreas ofrecen seguridad 24/7, acceso a servicios premium y alta plusvalía.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 2 -->
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" 
+             class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+          <h3 itemprop="name" class="text-lg font-semibold text-gray-900 mb-3">
+            ¿Cuánto cuesta comprar una casa de lujo en Guatemala?
+          </h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="text-gray-700 leading-relaxed">
+              Los precios de casas de lujo en Guatemala varían según la ubicación y características. 
+              En zonas exclusivas como Zona 14 y Zona 16, las casas de lujo pueden oscilar entre 
+              <strong>$350,000 USD hasta más de $2,000,000 USD</strong>. Los apartamentos premium 
+              en edificios de alta gama comienzan desde <strong>$180,000 USD</strong>. En Homes Guatemala 
+              te ayudamos a encontrar opciones que se ajusten a tu presupuesto y necesidades.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 3 -->
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" 
+             class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+          <h3 itemprop="name" class="text-lg font-semibold text-gray-900 mb-3">
+            ¿Qué servicios ofrece Homes Guatemala como agencia inmobiliaria?
+          </h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="text-gray-700 leading-relaxed">
+              En Homes Guatemala ofrecemos un servicio integral que incluye: <strong>asesoría personalizada</strong> 
+              en la búsqueda de propiedades, <strong>valoración profesional de inmuebles</strong>, 
+              <strong>fotografía y video profesional</strong> para vendedores, <strong>gestión legal</strong> 
+              de compra-venta y alquileres, <strong>análisis de inversión inmobiliaria</strong> y 
+              <strong>acompañamiento completo</strong> desde la primera visita hasta el cierre de la transacción.
+            </p>
+          </div>
+        </div>
+
+        <!-- FAQ 4 -->
+        <div itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" 
+             class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
+          <h3 itemprop="name" class="text-lg font-semibold text-gray-900 mb-3">
+            ¿Es buena inversión comprar bienes raíces en Guatemala?
+          </h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+            <p itemprop="text" class="text-gray-700 leading-relaxed">
+              Sí, Guatemala ofrece excelentes oportunidades de inversión inmobiliaria. Las propiedades en 
+              zonas estratégicas han mostrado una <strong>plusvalía promedio del 50% en los últimos 10 años</strong>. 
+              Los apartamentos en renta pueden generar <strong>retornos anuales del 4-6%</strong>, superiores a 
+              los certificados bancarios. Además, el crecimiento económico y la demanda de vivienda de calidad 
+              continúan impulsando el mercado inmobiliario guatemalteco.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Final -->
+      <div class="text-center mt-10">
+        <p class="text-gray-600 mb-4">¿Tienes más preguntas? Estamos aquí para ayudarte.</p>
+        <NuxtLink
+          to="/nosotros"
+          class="inline-flex boton-optima text-white bg-black border-0 py-3 px-8 focus:outline-none hover:bg-gray-700 rounded-lg text-lg transition-colors duration-300"
+        >
+          Contáctanos
+        </NuxtLink>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter  } from "vue-router";
 import inmuebleService from "../../services/inmuebleService";
 // Componentes de Swiper
@@ -361,6 +451,69 @@ import { Pagination, Autoplay } from "swiper/modules";
 
 // Define los módulos que se pasarán al componente Swiper
 const swiperModules = [Pagination, Autoplay];
+
+// SEO Meta Tags optimizados para la página principal
+useSeoMeta({
+  title: 'Homes Guatemala | Bienes Raíces de Lujo - Casas y Apartamentos en Venta y Renta',
+  description: 'Líder en bienes raíces de lujo en Guatemala. Encuentra casas, apartamentos y propiedades exclusivas en venta y renta en Zona 10, 14, 15, 16 y Carretera a El Salvador. Asesoría inmobiliaria profesional.',
+  ogTitle: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
+  ogDescription: 'Descubre propiedades exclusivas en las mejores zonas de Guatemala. Casas de lujo, apartamentos premium y proyectos inmobiliarios con asesoría personalizada.',
+  ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp',
+  twitterCard: 'summary_large_image',
+  twitterTitle: 'Homes Guatemala - Bienes Raíces de Lujo',
+  twitterDescription: 'Encuentra tu propiedad ideal en Guatemala. Casas, apartamentos y terrenos en las zonas más exclusivas.',
+});
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://homesguatemala.com/' }
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "name": "Homes Guatemala",
+        "description": "Agencia líder en bienes raíces de lujo en Guatemala, especializada en venta y renta de casas, apartamentos y propiedades exclusivas.",
+        "url": "https://homesguatemala.com",
+        "logo": "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp",
+        "image": "https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp",
+        "telephone": "+502-5633-0961",
+        "email": "info@homesguatemala.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Design Center Local 217, Zona 10",
+          "addressLocality": "Ciudad de Guatemala",
+          "postalCode": "01010",
+          "addressCountry": "GT"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "14.6349",
+          "longitude": "-90.5069"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Ciudad de Guatemala"
+        },
+        "priceRange": "$$$",
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        "sameAs": [
+          "https://www.facebook.com/homesguatemala",
+          "https://www.instagram.com/homesguatemala",
+          "https://www.youtube.com/@homesguatemala4975",
+          "https://www.linkedin.com/company/homes-guatemala"
+        ]
+      })
+    }
+  ]
+});
 
 const isMobile = ref(false);
 const route = useRoute();
@@ -789,12 +942,8 @@ onUnmounted(() => {
 });
 
 const handleRedirectToPropiedades = (operacion) => {
-  router.push({
-    path: "/propiedades",
-    query: {
-      Operaciones: operacion.toLowerCase(), // "venta" o "renta"
-    },
-  });
+  // Usar URLs limpias sin query params para mejor SEO
+  router.push(`/propiedades/${operacion.toLowerCase()}`);
 };
 
 // slug nuevo
