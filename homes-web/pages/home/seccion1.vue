@@ -183,8 +183,8 @@ const faqs = [
 ];
 
 useSeoMeta({
-  title: 'Homes Guatemala | Bienes Raíces de Lujo - Casas y Apartamentos',
-  description: 'Descubre las mejores propiedades de lujo en Guatemala con Homes Guatemala. Venta y renta en las zonas más exclusivas: 10, 14, 15 y 16.',
+  title: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
+  description: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala. Ofrecemos asesoría personalizada y propiedades premium.',
   ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp'
 });
 </script>

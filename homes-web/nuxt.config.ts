@@ -11,11 +11,11 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'es'
       },
-      title: 'Homes Guatemala - Bienes Raíces de Lujo',
+      title: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Líderes en bienes raíces en Guatemala. Encuentra casas, apartamentos y propiedades de lujo en venta y alquiler.' },
+        { name: 'description', content: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala. Ofrecemos asesoría personalizada y propiedades premium.' },
         { name: "p:domain_verify", content: "4ff93a868a573e1b24e15558f505f316" },
         { name: "facebook-domain-verification", content: "s7lsdi9b3qj53qjggc8lgumeiythqm" },
         { name: "google-site-verification", content: "0021L2ztWBVMwBLnR8VPXwfs8JspGBFnR3IhyqScj-c" },

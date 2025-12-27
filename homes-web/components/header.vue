@@ -1,16 +1,12 @@
 <template>
   <div class="relative">
     <div class="relative h-[550px] w-full">
-      <nuxt-img
+      <img
         src="https://app-pool.vylaris.online/dcmigserver/homes/0b304e4c-ed40-4c7e-8e44-2fe821bc5301.webp"
         alt="Bienes raíces de lujo en Guatemala - Vista panorámica"
         class="absolute inset-0 object-cover w-full h-full"
         loading="eager"
         fetchpriority="high"
-        preload
-        width="1920"
-        height="550"
-        format="webp"
       />
       <div
         class="flex items-end lg:pb-8 pb-18 justify-center h-full bg-[#00000060]"
@@ -34,7 +30,7 @@
               src="https://app-pool.vylaris.online/dcmigserver/homes/684980eb-ab75-41e5-8c2a-045abba3b954.webp"
               class="mr-3 xl:ml-24 xl:-mb-6 h-16 xl:-mt-6 xl:h-20"
               alt="Homesguatemala Logo"
-              loading="lazy"
+              loading="eager"
             />
           </NuxtLink>
           <div class="flex items-center lg:order-2">

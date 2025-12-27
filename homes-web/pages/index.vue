@@ -7,10 +7,10 @@
   import Index from "./home/index.vue";
   
   useSeoMeta({
-    title: 'Homes Guatemala - Bienes Raíces de Lujo GT',
-    description: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala.',
-    ogTitle: 'Homes Guatemala - Bienes Raíces de Lujo GT',
-    ogDescription: 'Venta y alquiler de casas y apartamentos en las zonas más exclusivas de Guatemala.',
+    title: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
+    description: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala. Ofrecemos asesoría personalizada y propiedades premium.',
+    ogTitle: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
+    ogDescription: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala.',
     ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp',
     ogUrl: 'https://homesguatemala.com',
     twitterCard: 'summary_large_image',
