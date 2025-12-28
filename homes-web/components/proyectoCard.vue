@@ -6,9 +6,9 @@
             <img class="w-full h-64 object-cover" :src="proyecto.image" :alt="proyecto.title" />
 
             <div class="p-5 pb-20">
-                <h5 class="text-xl max-w-xl subtitle-optima font-bold tracking-tight text-gray-900">
+                <p class="text-xl max-w-xl subtitle-optima font-bold tracking-tight text-gray-900">
                     {{ proyecto.title }}
-                </h5>
+                </p>
                 <p class="text-gray-600">
                     {{ proyecto.tipos }}
                 </p>
@@ -24,8 +24,10 @@
             <div
                 class="absolute bottom-0 left-0 w-full bg-white p-4 flex items-center justify-end">
                 <div
-                    class="text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                    class="text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5"
+                    :aria-label="`Ver detalles del proyecto ${proyecto.title}`">
                     Ver detalles
+                    <span class="sr-only">del proyecto {{ proyecto.title }}</span>
                 </div>
             </div>
         </NuxtLink>

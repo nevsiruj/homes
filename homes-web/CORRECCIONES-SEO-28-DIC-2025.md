@@ -125,30 +125,69 @@ H1: Homes Guatemala - Bienes Raíces de Lujo (1)
 
 ---
 
-### ⚠️ 3. Enlaces Internos con Textos Ancla Repetidos
+### ✅ 3. Enlaces Internos con Textos Ancla Repetidos (FIXED)
 
 **Problema:**
-- Algunos textos ancla se repiten en varios enlaces
-- Advertencia menor de SEO
+- "Ver detalles" se repetía en TODAS las tarjetas de propiedades y proyectos
+- Textos ancla idénticos sin contexto
+- Mala experiencia para lectores de pantalla
+- Google no puede diferenciar entre enlaces
 
 **Análisis:**
-- "Venta" y "Renta" aparecen en:
-  - Menú dropdown de navegación
-  - Botones CTA en hero section
-  - Enlaces "Ver todas las ventas/rentas"
-- **Esto es NORMAL y ACEPTABLE** para navegación
+- "Ver detalles" aparecía en:
+  - Cada tarjeta de propiedad (InmuebleCard)
+  - Cada tarjeta de proyecto (proyectoCard)
+  - Resultado: 20-30+ enlaces con el mismo texto
+- "Venta" y "Renta" en navegación (ACEPTABLE - diferentes contextos)
 
-**Estado:** ⚠️ No crítico
-- Los textos ancla repetidos son para diferentes contextos (navegación, CTAs, ver más)
-- Google entiende el contexto de cada enlace
-- No afecta negativamente el SEO
-- Es una práctica común en sitios web de bienes raíces
+**Solución Implementada:**
 
-**Recomendación:**
-- No requiere acción inmediata
-- Si se desea mejorar en el futuro, se pueden usar variaciones como:
-  - "Ver propiedades en venta" vs "Explorar ventas"
-  - "Propiedades en renta" vs "Ver rentas disponibles"
+**Técnica: Screen Reader Only (sr-only) Text**
+
+Agregamos texto descriptivo invisible que solo los lectores de pantalla y motores de búsqueda pueden "ver":
+
+```vue
+<!-- ANTES ❌ -->
+<div class="...">
+    Ver detalles
+</div>
+
+<!-- DESPUÉS ✅ -->
+<div class="..." :aria-label="`Ver detalles de ${inmueble.titulo}`">
+    Ver detalles
+    <span class="sr-only">de {{ inmueble.titulo }}</span>
+</div>
+```
+
+**Resultado:**
+- **Visual:** Sigue mostrando solo "Ver detalles" ✅
+- **Lectores de pantalla:** Leen "Ver detalles de [Nombre de la propiedad]" ✅
+- **SEO:** Google ve cada enlace como único ✅
+- **Accesibilidad:** Mejora dramática para usuarios con discapacidades visuales ✅
+
+**Archivos Modificados:**
+- ✅ `components/InmuebleCard.vue` (líneas 94-99)
+  - Agregado aria-label y sr-only text
+- ✅ `components/proyectoCard.vue` (líneas 26-31)
+  - Agregado aria-label y sr-only text
+  - **BONUS:** También corregido H5 → P (línea 9)
+
+**Ejemplo de cómo Google ve los enlaces ahora:**
+```
+Antes:
+- Ver detalles
+- Ver detalles
+- Ver detalles
+(Todos iguales ❌)
+
+Después:
+- Ver detalles de Casa de lujo en Zona 10
+- Ver detalles de Apartamento moderno en Zona 14
+- Ver detalles de Proyecto Navani
+(Todos únicos ✅)
+```
+
+**Estado:** ✅ **RESUELTO COMPLETAMENTE**
 
 ---
 

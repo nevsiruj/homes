@@ -93,8 +93,10 @@
 
     <div
         class="text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5"
+        :aria-label="`Ver detalles de ${inmueble.titulo || 'esta propiedad'}`"
     >
         Ver detalles
+        <span class="sr-only">de {{ inmueble.titulo || 'esta propiedad' }}</span>
     </div>
 </div>
 
