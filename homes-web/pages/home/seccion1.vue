@@ -77,7 +77,7 @@
                      </div>
                    </div>
                    <div class="p-6">
-                     <h3 class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</h3>
+                     <p class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</p>
                      <p class="text-gray-500 text-sm mb-4">{{ p.ubicaciones }}</p>
                      <p v-if="p.precio" class="text-2xl font-bold text-gray-900">${{ p.precio.toLocaleString() }}</p>
                    </div>
@@ -115,7 +115,7 @@
                      <div class="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase rounded">Venta</div>
                    </div>
                    <div class="p-6">
-                     <h3 class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</h3>
+                     <p class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</p>
                      <p class="text-gray-500 text-sm mb-4">{{ p.ubicaciones }}</p>
                      <p v-if="p.precio" class="text-2xl font-bold text-gray-900">${{ p.precio.toLocaleString() }}</p>
                    </div>
@@ -156,7 +156,7 @@
                      <div class="absolute top-4 left-4 bg-gray-600 text-white px-3 py-1 text-xs font-bold uppercase rounded">Renta</div>
                    </div>
                    <div class="p-6">
-                     <h3 class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</h3>
+                     <p class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</p>
                      <p class="text-gray-500 text-sm mb-4">{{ p.ubicaciones }}</p>
                      <p v-if="p.precio" class="text-2xl font-bold text-gray-900">${{ p.precio.toLocaleString() }}</p>
                    </div>
@@ -224,7 +224,7 @@ const faqs = [
 
 useSeoMeta({
   title: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
-  description: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala. Ofrecemos asesoría personalizada y propiedades premium.',
+  description: 'Casas y apartamentos de lujo en venta y renta en Guatemala. Propiedades exclusivas en Zona 10, 14, 15, 16. Asesoría personalizada premium.',
   ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp'
 });
 </script>

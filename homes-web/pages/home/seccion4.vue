@@ -56,12 +56,12 @@
                 </a>
                 <div class="flex items-center justify-between px-3 pb-5">
                   <a :href="blog.link || '#'">
-                    <h5
+                    <p
                       class="text-xl subtitle-optima font-semibold tracking-tight text-gray-900 mb-2"
                     >
                       {{ blog.title }}
-                    </h5>
-                    <h4 class="mb-3">{{ blog.ubicacion }}</h4>
+                    </p>
+                    <p class="mb-3 font-medium text-gray-700">{{ blog.ubicacion }}</p>
                     <p class="mb-3">
                       {{ truncateText(blog.descripcion, 80) }}
                     </p>

@@ -44,9 +44,9 @@
                     <ul v-once class="flex flex-wrap items-center justify-center text-gray-900 mt-2 mb-4">
                     </ul>
 
-                    <h5 class="text-xl max-w-xl subtitle-optima font-bold tracking-tight text-gray-900">
+                    <p class="text-xl max-w-xl subtitle-optima font-bold tracking-tight text-gray-900">
                         {{ inmueble.titulo || "Propiedad sin título" }}
-                    </h5>
+                    </p>
                     <p class="text-gray-600">
                         {{ inmueble.tipos }} en {{ inmueble.operaciones }}
                     </p>
