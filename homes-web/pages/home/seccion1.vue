@@ -23,7 +23,7 @@
       </div>
     </section>
 
-    <!-- 2. SECCIÓN PROYECTOS (Imagen corregida) -->
+    <!-- 2. SECCIÓN PROYECTOS -->
     <section class="text-gray-600 body-font mt-12 pb-12">
       <div class="container mx-auto flex px-5 md:flex-row flex-col items-center">
         <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
@@ -31,7 +31,7 @@
             src="https://app-pool.vylaris.online/dcmigserver/homes/f64ca937-cba0-4276-b350-9aca8a1b51bc.webp"
             class="object-cover object-center rounded lg:h-[300px] md:h-[300px] h-[250px] w-full shadow-lg"
             alt="Proyectos inmobiliarios destacados en Guatemala"
-            loading="eager"
+            loading="lazy"
           />
         </div>
         <div class="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center">
@@ -48,7 +48,48 @@
       </div>
     </section>
 
-    <!-- 3. SECCIÓN VENTA (Carousel con SSR) -->
+    <!-- 3. SECCIÓN PROPIEDADES DESTACADAS (NUEVO/RESTAURADO) -->
+    <section class="py-16 bg-white overflow-hidden">
+      <div class="container mx-auto px-5">
+        <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
+          Propiedades Destacadas
+        </h2>
+        <div v-if="destacadasProperties.length > 0">
+          <Swiper
+            :modules="[Pagination, Autoplay]"
+            :slides-per-view="1"
+            :space-between="20"
+            :pagination="{ clickable: true }"
+            :autoplay="{ delay: 5000 }"
+            :breakpoints="{
+              '768': { slidesPerView: 2 },
+              '1024': { slidesPerView: 3 }
+            }"
+            class="pb-12"
+          >
+            <SwiperSlide v-for="p in destacadasProperties" :key="p.id">
+              <div class="bg-gray-50 rounded-xl shadow-md overflow-hidden h-full group border border-gray-100">
+                <NuxtLink :to="getPropertyUrl(p)">
+                   <div class="relative h-64 overflow-hidden">
+                     <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
+                     <div v-if="p.operacion" class="absolute top-4 left-4 bg-gray-900 text-white px-3 py-1 text-xs font-bold uppercase rounded">
+                        {{ p.operacion }}
+                     </div>
+                   </div>
+                   <div class="p-6">
+                     <h3 class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</h3>
+                     <p class="text-gray-500 text-sm mb-4">{{ p.ubicaciones }}</p>
+                     <p v-if="p.precio" class="text-2xl font-bold text-gray-900">${{ p.precio.toLocaleString() }}</p>
+                   </div>
+                </NuxtLink>
+              </div>
+            </SwiperSlide>
+          </Swiper>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. SECCIÓN VENTA -->
     <section class="py-16 bg-gray-50 overflow-hidden">
       <div class="container mx-auto px-5">
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
@@ -75,7 +116,7 @@
                    </div>
                    <div class="p-6">
                      <h3 class="text-xl font-bold mb-2 text-gray-900">{{ p.titulo }}</h3>
-                     <p class="text-gray-500 text-sm mb-4"><i class="fas fa-map-marker-alt mr-1"></i> {{ p.ubicaciones }}</p>
+                     <p class="text-gray-500 text-sm mb-4">{{ p.ubicaciones }}</p>
                      <p v-if="p.precio" class="text-2xl font-bold text-gray-900">${{ p.precio.toLocaleString() }}</p>
                    </div>
                 </NuxtLink>
@@ -89,7 +130,7 @@
       </div>
     </section>
 
-    <!-- 4. SECCIÓN RENTA (Carousel con SSR) -->
+    <!-- 5. SECCIÓN RENTA -->
     <section class="py-16 bg-white overflow-hidden">
       <div class="container mx-auto px-5">
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
@@ -130,7 +171,7 @@
       </div>
     </section>
 
-    <!-- 5. FAQ SECTION -->
+    <!-- 6. FAQ SECTION -->
     <section class="bg-gray-50 py-16 px-5" itemscope itemtype="https://schema.org/FAQPage">
       <div class="container mx-auto max-w-4xl">
         <h2 class="title-alta-2 text-3xl md:text-4xl text-center font-bold text-gray-900 mb-10">
@@ -152,7 +193,6 @@
 
 <script setup>
 import { computed } from "vue";
-import { useRouter } from "vue-router";
 import inmuebleService from "~/services/inmuebleService";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Autoplay } from "swiper/modules";
@@ -160,15 +200,15 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 // --- ⚡️ SSR DATA FETCHING ---
-const [{ data: ventaData }, { data: rentaData }] = await Promise.all([
+const [{ data: destacadasData }, { data: ventaData }, { data: rentaData }] = await Promise.all([
+  useAsyncData('home-destacadas', () => inmuebleService.getInmueblesPaginados(1, 10, { Destacado: true })),
   useAsyncData('home-venta', () => inmuebleService.getInmueblesPaginados(1, 6, { Operaciones: 'Venta', Destacado: true })),
   useAsyncData('home-renta', () => inmuebleService.getInmueblesPaginados(1, 6, { Operaciones: 'Renta', Destacado: true }))
 ]);
 
+const destacadasProperties = computed(() => destacadasData.value?.items || []);
 const ventaProperties = computed(() => ventaData.value?.items || []);
 const rentaProperties = computed(() => rentaData.value?.items || []);
-
-const router = useRouter();
 
 const getPropertyUrl = (p) => {
   const slug = encodeURIComponent(String(p?.slugInmueble || p?.slug || '').trim());

@@ -2,8 +2,8 @@
   <div class="relative">
     <div class="relative h-[550px] w-full">
       <img
-        src="https://app-pool.vylaris.online/dcmigserver/homes/0b304e4c-ed40-4c7e-8e44-2fe821bc5301.webp"
-        alt="Bienes raíces de lujo en Guatemala - Vista panorámica"
+        src="https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp"
+        alt="Casas y apartamentos de lujo en Guatemala"
         class="absolute inset-0 object-cover w-full h-full"
         loading="eager"
         fetchpriority="high"
