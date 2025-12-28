@@ -6,6 +6,7 @@
     <a
       href="https://www.facebook.com/homesguatemala/"
       target="_blank"
+      rel="noopener noreferrer"
       class="w-12 h-12 bg-[#000] text-white rounded-full shadow-lg flex items-center justify-center transition-colors duration-300 hover:scale-110 invisible md:visible lg:visible"
     >
       <svg
@@ -25,6 +26,7 @@
     <a
       href="https://www.instagram.com/homesguatemala"
       target="_blank"
+      rel="noopener noreferrer"
       class="w-12 h-12 bg-[#000] hover:opacity-90 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 invisible md:visible lg:visible"
     >
       <svg
@@ -44,6 +46,7 @@
     <a
       href="https://www.youtube.com/@homesguatemala4975"
       target="_blank"
+      rel="noopener noreferrer"
       class="w-12 h-12 bg-[#000] text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 invisible md:visible lg:visible"
     >
       <svg
@@ -63,6 +66,7 @@
     <a
   href="https://wa.me/50256330961?text=Hola%20estoy%20interesado%20en%20una%20propiedad%20de%20Homes%20Guatemala."
   target="_blank"
+  rel="noopener noreferrer"
   class="w-12 h-12 bg-[#000] text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
 >
       <svg

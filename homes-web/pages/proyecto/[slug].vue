@@ -230,6 +230,7 @@
               <a
                 :href="whatsappLink"
                 target="_blank"
+                rel="noopener noreferrer"
                 class="inline-flex boton-optima text-white bg-black border-0 py-2 px-6 focus:outline-none hover:bg-gray-600 rounded text-lg"
               >
               <svg
