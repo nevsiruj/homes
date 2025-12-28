@@ -27,18 +27,44 @@ export default defineNuxtConfig({
       link: [
         { rel: "icon", type: "image/x-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
         { rel: "canonical", href: "https://homesguatemala.com" },
-        // Preconnect para recursos externos - mejora rendimiento
+
+        // ===================================================================
+        // OPTIMIZACIÓN: Preconnect para recursos externos
+        // ===================================================================
         { rel: "preconnect", href: "https://app-pool.vylaris.online" },
         { rel: "dns-prefetch", href: "https://app-pool.vylaris.online" },
+
+        // ===================================================================
+        // OPTIMIZACIÓN: Google Fonts - Non-blocking
+        // Preconnect acelera la conexión, preload prioriza fuentes críticas
+        // ===================================================================
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
-        // Google Fonts con display=swap para evitar FOIT
-        { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400&display=swap", media: "print", onload: "this.media='all'" },
+
+        // Preload de fuentes críticas (Raleway 300 y 400 son las más usadas)
+        {
+          rel: "preload",
+          as: "style",
+          href: "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&family=Roboto+Condensed:wght@300;400&display=swap"
+        },
+
+        // Carga asíncrona de fuentes (no bloquea render)
+        // Técnica: media="print" + onload para cargar sin bloquear
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&family=Roboto+Condensed:wght@300;400&display=swap",
+          media: "print",
+          onload: "this.media='all'"
+        },
+
         // Hreflang para SEO internacional
         { rel: "alternate", hreflang: "es-GT", href: "https://homesguatemala.com" },
         { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" }
       ],
       script: [
+        // ===================================================================
+        // Schema.org - SEO Structured Data (no bloquea render)
+        // ===================================================================
         {
           key: "schema-org",
           type: "application/ld+json",
@@ -66,18 +92,27 @@ export default defineNuxtConfig({
             ]
           })
         },
+        // ===================================================================
+        // OPTIMIZACIÓN: Facebook Pixel - Async + Defer
+        // Carga después del contenido principal para no bloquear render
+        // ===================================================================
         {
-          key: "facebook-pixel",
-          innerHTML: `!function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}(window, document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '239174403519612');
-          fbq('track', 'PageView');`,
+          key: "facebook-pixel-script",
+          src: "https://connect.facebook.net/en_US/fbevents.js",
+          async: true,
+          defer: true,
+        },
+        {
+          key: "facebook-pixel-init",
+          innerHTML: `
+            // Inicializar Facebook Pixel después de que la página cargue
+            window.addEventListener('load', function() {
+              if (typeof fbq !== 'undefined') {
+                fbq('init', '239174403519612');
+                fbq('track', 'PageView');
+              }
+            });
+          `,
         }
       ],
     }

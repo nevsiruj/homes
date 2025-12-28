@@ -1,5 +1,23 @@
-/* Fuente Raleway (de Google Fonts) - DEBE estar antes de TailwindCSS */
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+/* 
+ * OPTIMIZACIÓN: Google Fonts ahora se cargan de forma asíncrona en nuxt.config.ts
+ * Esto elimina el render blocking y mejora FCP (First Contentful Paint)
+ * Fallback fonts aseguran que el texto sea visible inmediatamente
+ */
 
 @import "tailwindcss";
 
+/* Fallback font stack mientras carga Raleway */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Cuando Raleway cargue, se aplicará automáticamente */
+.font-raleway,
+.title-alta,
+.title-alta-2,
+.subtitle-optima,
+.long-text-roboto {
+    font-family: 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
