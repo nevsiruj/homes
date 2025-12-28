@@ -36,7 +36,7 @@
         </div>
         <div class="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center">
           <h2 class="title-font title-alta sm:text-4xl text-3xl mb-4 font-medium text-gray-900 uppercase">
-            PROYECTOS INMOBILIARIOS DE LUJO
+            PROYECTOS INMOBILIARIOS EN ZONA 10, 14, 15 Y 16
           </h2>
           <p class="mb-6 leading-relaxed long-text-roboto text-lg">
             Descubre nuestros <strong>proyectos inmobiliarios más exclusivos</strong> en las zonas 10, 14, 15 y 16. Desarrollos diseñados para un estilo de vida sofisticado y con la mejor plusvalía del mercado guatemalteco.
@@ -52,7 +52,7 @@
     <section class="py-16 bg-white overflow-hidden">
       <div class="container mx-auto px-5">
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
-          Propiedades Destacadas
+          Casas y Apartamentos Destacados
         </h2>
         <div v-if="destacadasProperties.length > 0">
           <Swiper
@@ -93,7 +93,7 @@
     <section class="py-16 bg-gray-50 overflow-hidden">
       <div class="container mx-auto px-5">
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
-          Propiedades en Venta
+          Casas y Apartamentos en Venta
         </h2>
         <div v-if="ventaProperties.length > 0">
           <Swiper
@@ -134,7 +134,7 @@
     <section class="py-16 bg-white overflow-hidden">
       <div class="container mx-auto px-5">
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
-          Propiedades en Renta
+          Casas y Apartamentos en Renta
         </h2>
         <div v-if="rentaProperties.length > 0">
           <Swiper
@@ -223,7 +223,7 @@ const faqs = [
 ];
 
 useSeoMeta({
-  title: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
+  title: 'Homes Guatemala | Venta y Renta de Casas y Apartamentos Zona 10-16',
   description: 'Casas y apartamentos de lujo en venta y renta en Guatemala. Propiedades exclusivas en Zona 10, 14, 15, 16. Asesoría personalizada premium.',
   ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp'
 });
