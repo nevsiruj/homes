@@ -19,7 +19,7 @@
       to="/propiedades"
       class="inline-flex items-center px-6 py-3 rounded-md bg-black text-white hover:bg-gray-700"
     >
-      Ver propiedades disponibles
+      Ver catálogo completo de propiedades
     </NuxtLink>
   </div>
 
@@ -237,7 +237,7 @@
                   :to="`/propiedades/zona/${slugifyZona(inmuebleDetalle.ubicaciones)}`"
                   class="text-xs text-blue-600 hover:underline mt-1"
                 >
-                  Ver más en {{ inmuebleDetalle.ubicaciones }}
+                  Propiedades disponibles en {{ inmuebleDetalle.ubicaciones }}
                 </NuxtLink>
               </div>
             </div>

@@ -26,6 +26,7 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
+        { rel: "apple-touch-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
         { rel: "canonical", href: "https://homesguatemala.com" },
 
         // ===================================================================
@@ -241,12 +242,18 @@ export default defineNuxtConfig({
     }
   },
 
+
   nitro: {
     compressPublicAssets: {
       gzip: true,
       brotli: true,
     },
     minify: true,
+    experimental: {
+      // Eliminar cabecera X-Powered-By por seguridad
+      // Esto oculta información sobre la tecnología del servidor
+      asyncContext: false
+    },
     routeRules: {
       // Proxy para luxury homes (mantener)
       '/luxury-homes/**': {
@@ -358,7 +365,8 @@ export default defineNuxtConfig({
           'X-Robots-Tag': 'index, follow',
           'X-Content-Type-Options': 'nosniff',
           'X-Frame-Options': 'SAMEORIGIN',
-          'Referrer-Policy': 'strict-origin-when-cross-origin'
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+          'X-Powered-By': '' // Ocultar información del servidor por seguridad
         }
       }
     }

@@ -13,10 +13,10 @@
           </p>
           <div class="flex flex-wrap justify-center gap-4 mt-8">
             <NuxtLink to="/propiedades/venta" class="inline-flex boton-optima text-white bg-black border-0 py-4 px-8 hover:bg-gray-700 rounded-lg text-lg transition-colors">
-              Ver Propiedades en Venta
+              Casas y Apartamentos en Venta
             </NuxtLink>
             <NuxtLink to="/propiedades/renta" class="inline-flex boton-optima text-gray-900 bg-white border-2 border-gray-900 py-4 px-8 hover:bg-gray-100 rounded-lg text-lg transition-colors">
-              Ver Propiedades en Renta
+              Casas y Apartamentos en Renta
             </NuxtLink>
           </div>
         </div>
@@ -125,7 +125,7 @@
           </Swiper>
         </div>
         <div class="text-center mt-8">
-          <NuxtLink to="/propiedades/venta" class="text-gray-900 font-bold border-b-2 border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-all">Ver todas las ventas</NuxtLink>
+          <NuxtLink to="/propiedades/venta" class="text-gray-900 font-bold border-b-2 border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-all">Explorar todas las propiedades en venta</NuxtLink>
         </div>
       </div>
     </section>
@@ -166,7 +166,7 @@
           </Swiper>
         </div>
         <div class="text-center mt-8">
-          <NuxtLink to="/propiedades/renta" class="text-gray-900 font-bold border-b-2 border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-all">Ver todas las rentas</NuxtLink>
+          <NuxtLink to="/propiedades/renta" class="text-gray-900 font-bold border-b-2 border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-all">Explorar todas las propiedades en renta</NuxtLink>
         </div>
       </div>
     </section>

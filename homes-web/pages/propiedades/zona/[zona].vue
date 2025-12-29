@@ -56,7 +56,7 @@
         to="/propiedades" 
         class="inline-block px-6 py-3 bg-black text-white rounded hover:bg-gray-800 transition-colors"
       >
-        Ver todas las propiedades
+        Explorar propiedades en otras zonas
       </NuxtLink>
     </div>
 
