@@ -11,7 +11,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'es'
       },
-      title: 'Homes Guatemala | Venta y Renta de Casas y Apartamentos Zona 10-16',
+      title: 'Venta y Renta de Propiedades | Homes Guatemala',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },

@@ -223,7 +223,7 @@ const faqs = [
 ];
 
 useSeoMeta({
-  title: 'Homes Guatemala | Venta y Renta de Casas y Apartamentos Zona 10-16',
+  title: 'Venta y Renta de Propiedades | Homes Guatemala',
   description: 'Casas y apartamentos de lujo en venta y renta en Guatemala. Propiedades exclusivas en Zona 10, 14, 15, 16. Asesoría personalizada premium.',
   ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp'
 });
