@@ -7,6 +7,7 @@ param(
     [string]$WebsitePath = "C:\inetpub\wwwroot\homes-api"
 )
 
+
 # Configurar log
 $LogFile = "C:\DeployScripts\logs\deploy-api-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
 New-Item -ItemType Directory -Force -Path "C:\DeployScripts\logs" | Out-Null
