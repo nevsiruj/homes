@@ -398,6 +398,23 @@
                   <li>
                     <div class="flex items-center">
                       <input
+                        id="checkbox-Atitlan"
+                        type="checkbox"
+                        value="Atitlan"
+                        v-model="filters.ubicaciones"
+                        class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
+                      />
+                      <label
+                        for="checkbox-Atitlan"
+                        class="ms-2 text-xs text-gray-900 font-roboto"
+                      >
+                        Atitlan ({{ displayCount(propertyCounts.ubicaciones.Atitlan) }})
+                      </label>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="flex items-center">
+                      <input
                         id="checkbox-muxbal"
                         type="checkbox"
                         value="Muxbal"

@@ -234,6 +234,7 @@
 >
   <option value="Amatitlán">Amatitlán</option>
   <option value="Antigua">Antigua</option>
+  <option value="Atitlan">Atitlan</option>
   <option value="CAES Abajo KM 14">CAES Abajo KM 14</option>
   <option value="CAES Arriba KM 14">CAES Arriba KM 14</option>
   <option value="Carr. Salvador">Carr. Salvador</option>

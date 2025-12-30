@@ -179,7 +179,7 @@
                     Selecciona una ubicación
                   </option>
                   <option value="Antigua">Antigua</option>
-                  <option value="Atitlán">Atitlán</option>
+                  <option value="Atitlan">Atitlan</option>
                   <option value="CAES Arriba KM 14">CAES Arriba KM 14</option>
                   <option value="El Naranjo">El Naranjo</option>
                   <option value="Escuintla">Escuintla</option>

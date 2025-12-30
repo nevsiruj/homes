@@ -121,6 +121,7 @@
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
             >
               <option value="Antigua">Antigua</option>
+              <option value="Atitlan">Atitlan</option>
               <option value="CAES Arriba KM 14">CAES Arriba KM 14</option>
               <option value="Muxbal">Muxbal</option>
               <option value="San José Pinula">San José Pinula</option>
