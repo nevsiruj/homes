@@ -37,16 +37,18 @@ try {
     # 4. Build de produccion (genera SPA en .output/public)
     Write-Log "Building Nuxt SPA"
     $env:NODE_ENV = "production"
-    npm run generate 2>&1 | ForEach-Object { 
-        $line = $_.ToString()
-        if ($line -notmatch '^\[warn\]') {
-            Write-Log $line
-        }
+    
+    # Ejecutar build y capturar solo errores reales
+    $ErrorActionPreference = "Continue"
+    npm run generate *>&1 | Out-Null
+    $buildExitCode = $LASTEXITCODE
+    $ErrorActionPreference = "Stop"
+    
+    if ($buildExitCode -ne 0) {
+        throw "Build failed with exit code $buildExitCode"
     }
     
-    if ($LASTEXITCODE -ne 0) {
-        throw "Build failed with exit code $LASTEXITCODE"
-    }
+    Write-Log "Build completed successfully"
     
     # Verificar que el build fue exitoso
     if (-not (Test-Path ".output\public\index.html")) {
