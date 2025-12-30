@@ -171,7 +171,58 @@
       </div>
     </section>
 
-    <!-- 6. FAQ SECTION -->
+    <!-- 6. SECCIÓN BLOGS DESTACADOS (NUEVO) -->
+    <section class="py-16 bg-white overflow-hidden">
+      <div class="container mx-auto px-5">
+        <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-center uppercase">
+          Blog Inmobiliario
+        </h2>
+        <p class="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
+          Consejos, tendencias y guías para comprar, vender o invertir en bienes raíces en Guatemala
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          <NuxtLink 
+            v-for="blog in featuredBlogs" 
+            :key="blog.id" 
+            :to="`/${blog.category.toLowerCase()}/${blog.slug}`"
+            class="group bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100"
+          >
+            <div class="relative h-48 overflow-hidden">
+              <img 
+                :src="blog.previewImage" 
+                :alt="blog.title"
+                class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                loading="lazy"
+              />
+              <div class="absolute top-4 right-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase rounded">
+                {{ blog.category }}
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold mb-3 text-gray-900 group-hover:text-gray-600 transition-colors line-clamp-2">
+                {{ blog.title }}
+              </h3>
+              <div class="text-sm text-gray-600 line-clamp-3 mb-4" v-html="blog.intro"></div>
+              <span class="text-black font-semibold text-sm border-b-2 border-black group-hover:border-gray-600 transition-colors">
+                Leer más →
+              </span>
+            </div>
+          </NuxtLink>
+        </div>
+
+        <div class="text-center">
+          <NuxtLink 
+            to="/blog" 
+            class="inline-flex boton-optima text-white bg-black py-4 px-8 hover:bg-gray-700 rounded-lg text-lg transition-all duration-300"
+          >
+            Ver Todos los Artículos
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. FAQ SECTION -->
     <section class="bg-gray-50 py-16 px-5" itemscope itemtype="https://schema.org/FAQPage">
       <div class="container mx-auto max-w-4xl">
         <h2 class="title-alta-2 text-3xl md:text-4xl text-center font-bold text-gray-900 mb-10">
@@ -194,6 +245,7 @@
 <script setup>
 import { computed } from "vue";
 import inmuebleService from "~/services/inmuebleService";
+import { blogs as blogsData } from "~/data/blogs.js";
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -209,6 +261,13 @@ const [{ data: destacadasData }, { data: ventaData }, { data: rentaData }] = awa
 const destacadasProperties = computed(() => destacadasData.value?.items || []);
 const ventaProperties = computed(() => ventaData.value?.items || []);
 const rentaProperties = computed(() => rentaData.value?.items || []);
+
+// Blogs destacados - Mostrar los 3 más recientes
+const featuredBlogs = computed(() => {
+  // IDs de blogs destacados: 1 (Mejores Clubs), 3 (Mejores Proyectos), 4 (Mejores Zonas)
+  const featuredIds = [3, 4, 1]; // Orden: Proyectos, Zonas, Clubs
+  return blogsData.filter(blog => featuredIds.includes(blog.id));
+});
 
 const getPropertyUrl = (p) => {
   const slug = encodeURIComponent(String(p?.slugInmueble || p?.slug || '').trim());
@@ -234,4 +293,19 @@ useSeoMeta({
 .title-alta-2 { font-family: "Raleway", sans-serif; font-weight: 300; }
 .boton-optima { font-family: "Optima", serif; font-weight: 400; }
 .long-text-roboto { font-family: "Raleway", sans-serif; font-weight: 300; }
+
+/* Utilidades para truncar texto */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 </style>
