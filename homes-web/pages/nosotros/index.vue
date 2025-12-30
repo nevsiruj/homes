@@ -145,8 +145,9 @@
                 @click="toggleBio(miembro)"
                 v-if="miembro.bio && miembro.bio.length > 100"
                 class="mt-2 text-sm text-gray-500 hover:text-black focus:outline-none"
+                :aria-label="miembro.expanded ? `Ocultar biografía de ${miembro.nombre}` : `Leer biografía completa de ${miembro.nombre}`"
               >
-                {{ miembro.expanded ? "Ver menos" : "Ver más" }}
+                {{ miembro.expanded ? `Ocultar biografía de ${miembro.nombre}` : `Leer biografía de ${miembro.nombre}` }}
               </button>
             </div>
           </dl>

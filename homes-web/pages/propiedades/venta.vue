@@ -64,7 +64,7 @@
             aria-controls="venta-extra"
             @click="verMas = !verMas"
           >
-            {{ verMas ? "Ver menos" : "Ver más…" }}
+            {{ verMas ? "Ocultar descripción completa de venta" : "Leer descripción completa de venta…" }}
           </button>
         </div>
 

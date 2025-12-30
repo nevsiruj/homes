@@ -67,7 +67,7 @@
             aria-controls="venta-extra"
             @click="verMas = !verMas"
           >
-            {{ verMas ? "Ver menos" : "Ver más…" }}
+            {{ verMas ? "Ver menos información sobre propiedades en venta" : "Ver más sobre propiedades en venta…" }}
           </button>
         </div>
 
@@ -113,7 +113,7 @@
             aria-controls="renta-extra"
             @click="verMas = !verMas"
           >
-            {{ verMas ? "Ver menos" : "Ver más…" }}
+            {{ verMas ? "Ver menos información sobre propiedades en renta" : "Ver más sobre propiedades en renta…" }}
           </button>
         </div>
 

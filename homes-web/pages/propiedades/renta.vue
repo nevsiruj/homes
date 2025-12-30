@@ -55,7 +55,7 @@
             aria-controls="renta-extra"
             @click="verMas = !verMas"
           >
-            {{ verMas ? "Ver menos" : "Ver más…" }}
+            {{ verMas ? "Ocultar descripción completa de renta" : "Leer descripción completa de renta…" }}
           </button>
         </div>
 
