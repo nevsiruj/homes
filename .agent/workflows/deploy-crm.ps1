@@ -96,6 +96,17 @@ try {
     $BuildPath = "$RepoPath\crm\.output\public"
     Copy-Item -Path "$BuildPath\*" -Destination $WebsitePath -Recurse -Force
     
+    # 10. Crear archivo de version
+    Write-Log "Creating version file"
+    $versionInfo = @{
+        version    = Get-Date -Format "yyyy.MM.dd.HHmm"
+        deployDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        commit     = (git -C $RepoPath rev-parse --short HEAD 2>$null) ?? "unknown"
+        branch = (git -C $RepoPath rev-parse --abbrev-ref HEAD 2>$null) ?? "unknown"
+    }
+    $versionInfo | ConvertTo-Json | Out-File -FilePath "$WebsitePath\version.json" -Encoding UTF8 -Force
+    Write-Log "Version: $($versionInfo.version)"
+    
     # 10. Crear web.config para SPA (importante para Nuxt SPA)
     Write-Log "Creating web.config for SPA routing"
     $webConfig = @"
