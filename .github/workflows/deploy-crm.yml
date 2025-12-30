@@ -3,7 +3,7 @@ name: Deploy CRM to IIS
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'crm/**'
       - '.github/workflows/deploy-crm.yml'
