@@ -32,7 +32,7 @@ jobs:
         
     - name: Deploy CRM to IIS
       run: |
-        $scriptPath = "C:\repos\others\homes\.agent\workflows\deploy-crm.ps1"
+        $scriptPath = "C:\DeployScripts\deploy-crm.ps1"
         & $scriptPath -RepoPath "$env:GITHUB_WORKSPACE" -WebsiteName "HomesCRM" -WebsitePath "C:\inetpub\wwwroot\homes-crm"
       shell: powershell
       

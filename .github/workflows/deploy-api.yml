@@ -29,7 +29,7 @@ jobs:
         
     - name: Deploy API to IIS
       run: |
-        $scriptPath = "C:\repos\others\homes\.agent\workflows\deploy-api.ps1"
+        $scriptPath = "C:\DeployScripts\deploy-api.ps1"
         & $scriptPath -RepoPath "$env:GITHUB_WORKSPACE" -WebsiteName "HomesAPI" -WebsitePath "C:\inetpub\wwwroot\homes-api"
       shell: powershell
       
