@@ -59,6 +59,11 @@
         </form>
       </div>
     </div>
+    
+    <!-- Version number -->
+    <div class="absolute bottom-4 right-4 text-xs text-gray-400">
+      <span v-if="version">v{{ version }}</span>
+    </div>
   </div>
 </template>
 
@@ -75,10 +80,23 @@ export default {
     const password = ref("");
     const errorMessage = ref("");
     const loading = ref(false);
+    const version = ref("");
 
     const router = useRouter();
     const route = useRoute();
     const auth = useAuthStore();                     
+
+    const loadVersion = async () => {
+      try {
+        const response = await fetch('/version.json');
+        if (response.ok) {
+          const data = await response.json();
+          version.value = data.version;
+        }
+      } catch (error) {
+        console.log('Version file not found');
+      }
+    };
 
     const handleLogin = async () => {
       errorMessage.value = "";
@@ -117,9 +135,10 @@ export default {
 
     onMounted(() => {
       initFlowbite();
+      loadVersion();
     });
 
-    return { email, password, errorMessage, loading, handleLogin };
+    return { email, password, errorMessage, loading, version, handleLogin };
   },
 };
 </script>

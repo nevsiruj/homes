@@ -35,7 +35,7 @@
         aria-controls="intro-extra"
         @click="verMas = !verMas"
       >
-        {{ verMas ? 'Ver menos' : 'Ver más…' }}
+        {{ verMas ? 'Ocultar información adicional de proyectos' : 'Leer más sobre nuestros proyectos…' }}
       </button>
 
       <!-- Resto de párrafos: visibles siempre en desktop; en móvil solo si verMas=true -->

@@ -8,15 +8,15 @@
                 :observeParents="true" :spaceBetween="30" :centeredSlides="true" :autoplay="{
                 delay: 2500,
             }" :loop="true" :pagination="{ clickable: true }" :modules="modules" :speed="800" :grabCursor="true"
-                :lazy="true" @swiper="onSwiperInit" class="mySwiper">
+                :lazy="true" @swiper="onSwiperInit" @click.prevent class="mySwiper">
 
                 <swiper-slide v-if="inmueble.imagenPrincipal">
                     <img :data-src="getOptimizedImageUrl(inmueble.imagenPrincipal, 400)"
                         :srcset="getSrcset(inmueble.imagenPrincipal)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
                         loading="lazy"
-                        decoding="async"
-                        class="swiper-lazy w-sm h-64 object-cover" alt="Imagen principal del inmueble" />
+                        class="swiper-lazy w-sm h-64 object-cover" 
+                        :alt="`Imagen de ${inmueble.titulo || 'propiedad en Guatemala'}`" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
                 </swiper-slide>
 
@@ -26,8 +26,8 @@
                     <img :data-src="getOptimizedImageUrl(imagen.url, 400)" :srcset="getSrcset(imagen.url)"
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 300px"
                         loading="lazy"
-                        decoding="async"
-                        class="swiper-lazy w-sm h-64 object-cover" :alt="`Imagen de referencia ${index + 1}`" />
+                        class="swiper-lazy w-sm h-64 object-cover" 
+                        :alt="`Vista de ${inmueble.titulo || 'propiedad'} - Foto ${index + 1}`" />
                     <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>
                 </swiper-slide>
 
@@ -44,9 +44,9 @@
                     <ul v-once class="flex flex-wrap items-center justify-center text-gray-900 mt-2 mb-4">
                     </ul>
 
-                    <h5 class="text-xl max-w-xl subtitle-optima font-bold tracking-tight text-gray-900">
+                    <p class="text-xl max-w-xl subtitle-optima font-bold tracking-tight text-gray-900">
                         {{ inmueble.titulo || "Propiedad sin título" }}
-                    </h5>
+                    </p>
                     <p class="text-gray-600">
                         {{ inmueble.tipos }} en {{ inmueble.operaciones }}
                     </p>
@@ -93,8 +93,10 @@
 
     <div
         class="text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5"
+        :aria-label="`Ver detalles de ${inmueble.titulo || 'esta propiedad'}`"
     >
         Ver detalles
+        <span class="sr-only">de {{ inmueble.titulo || 'esta propiedad' }}</span>
     </div>
 </div>
 
@@ -142,7 +144,7 @@ watch(isHovering, (newValue) => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;700&display=swap');
+/* Fuente Raleway cargada globalmente en assets/css/main.css */
 
 .fuente-raleway {
   font-family: 'Raleway', sans-serif;

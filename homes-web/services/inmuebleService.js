@@ -21,89 +21,89 @@ const setCache = (key, value, ttl = defaultTTL) => {
 export default {
 
 
-/**
- * Obtiene inmuebles paginados y filtrados.
- * @param {number} pageNumber - El número de página solicitado.
- * @param {number} pageSize - El tamaño de la página solicitado.
- * @param {object} filters - Un objeto con los filtros a aplicar (ej. { Operaciones: 'Renta', Tipos: ['Casa'] }).
- * @returns {Promise<object>} Un objeto con la lista de items, totalCount, etc., ya procesado.
- */
-async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
-  try {
-    const params = new URLSearchParams();
+  /**
+   * Obtiene inmuebles paginados y filtrados.
+   * @param {number} pageNumber - El número de página solicitado.
+   * @param {number} pageSize - El tamaño de la página solicitado.
+   * @param {object} filters - Un objeto con los filtros a aplicar (ej. { Operaciones: 'Renta', Tipos: ['Casa'] }).
+   * @returns {Promise<object>} Un objeto con la lista de items, totalCount, etc., ya procesado.
+   */
+  async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
+    try {
+      const params = new URLSearchParams();
 
-    // Mapear los nombres de los parámetros del frontend a los del backend (DTO)
-    // Se usa un objeto para mapear las claves del frontend a las del backend
-    const backendParamNames = {
-      operaciones: 'Operaciones',
-      tipos: 'Tipos',
-      ubicaciones: 'Ubicaciones',
-      habitaciones: 'Habitaciones',
-      caracteristicasPropiedad: 'Amenidades',
-      precioMinimo: 'PrecioMinimo',
-      precioMaximo: 'PrecioMaximo',
-      titulo: 'Titulo',
-      codigoPropiedad: 'CodigoPropiedad',
-      orden: 'Orden', 
-      luxury: 'Luxury',
-    };
+      // Mapear los nombres de los parámetros del frontend a los del backend (DTO)
+      // Se usa un objeto para mapear las claves del frontend a las del backend
+      const backendParamNames = {
+        operaciones: 'Operaciones',
+        tipos: 'Tipos',
+        ubicaciones: 'Ubicaciones',
+        habitaciones: 'Habitaciones',
+        caracteristicasPropiedad: 'Amenidades',
+        precioMinimo: 'PrecioMinimo',
+        precioMaximo: 'PrecioMaximo',
+        titulo: 'Titulo',
+        codigoPropiedad: 'CodigoPropiedad',
+        orden: 'Orden',
+        luxury: 'Luxury',
+      };
 
-    params.append('PageNumber', pageNumber.toString());
-    params.append('PageSize', pageSize.toString());
+      params.append('PageNumber', pageNumber.toString());
+      params.append('PageSize', pageSize.toString());
 
-    // Añadir los filtros dinámicamente. Ignorar `pageNumber`/`pageSize` si vienen en `filters`.
-    const cleanedFilters = { ...filters };
-    // Eliminar duplicados de la query que pueden venir en camelCase o PascalCase
-    delete cleanedFilters.pageNumber;
-    delete cleanedFilters.PageNumber;
-    delete cleanedFilters.pageSize;
-    delete cleanedFilters.PageSize;
+      // Añadir los filtros dinámicamente. Ignorar `pageNumber`/`pageSize` si vienen en `filters`.
+      const cleanedFilters = { ...filters };
+      // Eliminar duplicados de la query que pueden venir en camelCase o PascalCase
+      delete cleanedFilters.pageNumber;
+      delete cleanedFilters.PageNumber;
+      delete cleanedFilters.pageSize;
+      delete cleanedFilters.PageSize;
 
-    for (const key in cleanedFilters) {
-      if (Object.prototype.hasOwnProperty.call(cleanedFilters, key)) {
-        const value = cleanedFilters[key];
-        const backendKey = backendParamNames[key.toLowerCase()] || key; // Usa el nombre mapeado
-        
-        if (Array.isArray(value)) {
-          value.forEach(item => params.append(backendKey, item.toString()));
-        } else if (value !== null && value !== undefined && value !== '') {
-          params.append(backendKey, value.toString());
+      for (const key in cleanedFilters) {
+        if (Object.prototype.hasOwnProperty.call(cleanedFilters, key)) {
+          const value = cleanedFilters[key];
+          const backendKey = backendParamNames[key.toLowerCase()] || key; // Usa el nombre mapeado
+
+          if (Array.isArray(value)) {
+            value.forEach(item => params.append(backendKey, item.toString()));
+          } else if (value !== null && value !== undefined && value !== '') {
+            params.append(backendKey, value.toString());
+          }
         }
       }
+
+      const url = `${API_BASE_URL}/Inmueble?${params.toString()}`;
+      // console.log("API URL:", url); // Deshabilitado para producción
+
+      const cacheKey = `getInmuebles:${url}`;
+      const cached = getFromCache(cacheKey);
+      if (cached) return cached;
+      const response = await fetch(url);
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Error al obtener inmuebles paginados: ${response.statusText} (Status: ${response.status}). Detalles: ${errorBody}`);
+      }
+
+      const rawData = await response.json();
+      const pagedResult = {
+        items: rawData.items?.$values || [],
+        totalCount: rawData.totalCount,
+        pageNumber: rawData.pageNumber,
+        pageSize: rawData.pageSize,
+        totalPages: rawData.totalPages,
+        hasNextPage: rawData.hasNextPage,
+        hasPreviousPage: rawData.hasPreviousPage,
+      };
+
+      setCache(cacheKey, pagedResult);
+      return pagedResult;
+    } catch (error) {
+      // console.error("Error in inmuebleService.getInmueblesPaginados:", error); // Deshabilitado para producción
+      throw error;
     }
+  },
 
-    const url = `${API_BASE_URL}/Inmueble?${params.toString()}`;
-    console.log("API URL:", url); // Log the API URL being called
 
-    const cacheKey = `getInmuebles:${url}`;
-    const cached = getFromCache(cacheKey);
-    if (cached) return cached;
-    const response = await fetch(url);
-    if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(`Error al obtener inmuebles paginados: ${response.statusText} (Status: ${response.status}). Detalles: ${errorBody}`);
-    }
-
-    const rawData = await response.json();
-    const pagedResult = {
-      items: rawData.items?.$values || [],
-      totalCount: rawData.totalCount,
-      pageNumber: rawData.pageNumber,
-      pageSize: rawData.pageSize,
-      totalPages: rawData.totalPages,
-      hasNextPage: rawData.hasNextPage,
-      hasPreviousPage: rawData.hasPreviousPage,
-    };
-
-    setCache(cacheKey, pagedResult);
-    return pagedResult;
-  } catch (error) {
-    console.error("Error in inmuebleService.getInmueblesPaginados:", error); // Log any errors
-    throw error;
-  }
-},
-
-  
   async getInmueble() {
     try {
       const cacheKey = `${API_BASE_URL}/Inmueble:list`;
@@ -141,26 +141,26 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
   async getInmuebleBySlug(slug) {
     try {
       const safeSlug = encodeURIComponent(String(slug || '').trim());
-  
+
       const cacheKey = `${API_BASE_URL}/Inmueble:slug:${safeSlug}`;
       const cached = getFromCache(cacheKey);
       if (cached) return cached;
       const response = await fetch(`${API_BASE_URL}/Inmueble/by-slug/${safeSlug}`, {
         headers: { 'Accept': 'application/json' }
       });
-  
+
       if (!response.ok) {
         const body = await response.text().catch(() => '');
         throw new Error(`Error al buscar el inmueble: ${response.status} ${response.statusText}. ${body}`);
       }
-  
+
       const data = await response.json();
-  
+
       // (Opcional) asegurar el campo por si llega con otra capitalización
       if (!data.slugInmueble && data.SlugInmueble) {
         data.slugInmueble = data.SlugInmueble;
       }
-  
+
       setCache(cacheKey, data);
       return data;
     } catch (error) {
@@ -168,8 +168,8 @@ async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
       throw error;
     }
   }
-  
- 
 
-  
+
+
+
 }

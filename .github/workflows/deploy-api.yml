@@ -1,0 +1,54 @@
+name: Deploy API to IIS
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'api/**'
+      - '.github/workflows/deploy-api.yml'
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+        
+    - name: Verify environment
+      run: |
+        Write-Host "Dotnet version: $(dotnet --version)"
+        Write-Host "Current directory: $PWD"
+      shell: powershell
+        
+    - name: Deploy API to IIS
+      run: |
+        $scriptPath = "$env:GITHUB_WORKSPACE\.agent\workflows\deploy-api.ps1"
+        & $scriptPath -RepoPath "$env:GITHUB_WORKSPACE" -WebsiteName "HomesAPI" -WebsitePath "C:\inetpub\wwwroot\homes-api"
+      shell: powershell
+      
+    - name: Show deployment logs
+      if: always()
+      run: |
+        $latestLog = Get-ChildItem "C:\DeployScripts\logs\deploy-api-*.log" | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+        if ($latestLog) {
+          Write-Host "=== Deployment Log ==="
+          Get-Content $latestLog.FullName
+        }
+      shell: powershell
+      
+    - name: Deployment Success
+      if: success()
+      run: Write-Host "API deployed successfully to IIS!"
+      shell: powershell
+      
+    - name: Deployment Failed
+      if: failure()
+      run: Write-Host "API deployment failed! Check logs above."
+      shell: powershell

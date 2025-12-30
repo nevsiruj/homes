@@ -8,9 +8,10 @@
   // Define a base title and a template for all pages
   useHead({
     titleTemplate: (titleChunk) => {
-      return titleChunk
-        ? `${titleChunk} | Homes Guatemala`
-        : 'Homes Guatemala - Venta y Alquiler de Propiedades';
+      if (!titleChunk) return 'Homes Guatemala - Bienes Raíces de Lujo';
+      return titleChunk.includes('Homes Guatemala') 
+        ? titleChunk 
+        : `${titleChunk} | Homes Guatemala`;
     },
     meta: [
       {

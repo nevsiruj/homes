@@ -209,7 +209,7 @@ const fetchInmuebles = async () => {
   loading.value = true;
   error.value = null;
   try {
-    console.log("Enviando filtros al backend:", currentAppliedFilters.value); // Log para verificar los filtros enviados
+    // console.log("Enviando filtros al backend:", currentAppliedFilters.value); // Deshabilitado para producción
 
     const result = await inmuebleService.getInmueblesPaginados(
       currentPage.value,
@@ -218,7 +218,7 @@ const fetchInmuebles = async () => {
     );
 
     if (result && Array.isArray(result.items)) {
-      console.log("Resultados recibidos del backend:", result.items); // Log para verificar los resultados recibidos
+      // console.log("Resultados recibidos del backend:", result.items); // Deshabilitado para producción
       inmuebles.value = result.items.map(normalizeInmuebleData);
       totalPages.value = result.totalPages || 1;
       totalCount.value = result.totalCount || 0;
@@ -229,7 +229,7 @@ const fetchInmuebles = async () => {
       totalCount.value = 0;
     }
   } catch (err) {
-    console.error("Error al cargar inmuebles en busqueda.vue:", err); // Log de error
+    // console.error("Error al cargar inmuebles en busqueda.vue:", err); // Deshabilitado para producción
     error.value = "Hubo un problema al cargar las propiedades.";
     inmuebles.value = [];
     totalPages.value = 0;

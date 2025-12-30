@@ -56,7 +56,7 @@
         to="/propiedades" 
         class="inline-block px-6 py-3 bg-black text-white rounded hover:bg-gray-800 transition-colors"
       >
-        Ver todas las propiedades
+        Explorar propiedades en otras zonas
       </NuxtLink>
     </div>
 
@@ -102,7 +102,8 @@ const { data: propiedades, pending: isLoading } = await useAsyncData(
   `zona-${zona}`,
   async () => {
     try {
-      const response = await inmuebleService.getInmueblesPaginados(1, 200);
+      // Optimización: Reducido de 200 a 50 para mejor rendimiento inicial
+      const response = await inmuebleService.getInmueblesPaginados(1, 50);
       const allProps = response?.items || [];
       
       // Filtrar por zona (buscar en zona, ubicaciones, o ubicacion)

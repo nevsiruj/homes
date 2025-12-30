@@ -109,8 +109,7 @@
                 v-show="openDropdown === 'saleRent'"
                 @click.stop
                 id="saleRentDropdownMenu"
-                class="absolute z-[9999] w-56 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 rounded-lg mt-1"
-                style="top: 100%; left: 0;"
+                class="absolute z-[9999] w-56 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 rounded-lg mt-1 top-full left-0"
               >
               <ul
                 class="p-3 space-y-3 text-xs text-gray-800"
@@ -183,8 +182,7 @@
               v-show="openDropdown === 'propiedades'"
               @click.stop
               id="dropdownDefaultCheckbox1"
-              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-              style="top: 100%; left: 0;"
+              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
             >
             <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -323,8 +321,7 @@
               v-show="openDropdown === 'ubicaciones'"
               @click.stop
               id="dropdownDefaultCheckbox2"
-              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-              style="top: 100%; left: 0;"
+              class="absolute z-[9999] w-64 md:w-48 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
             >
             <ul
                   class="p-3 space-y-3 text-xs text-gray-800"
@@ -395,6 +392,23 @@
                         class="ms-2 text-xs text-gray-900 font-roboto"
                       >
                         Antigua ({{ displayCount(propertyCounts.ubicaciones.Antigua) }})
+                      </label>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="flex items-center">
+                      <input
+                        id="checkbox-Atitlan"
+                        type="checkbox"
+                        value="Atitlan"
+                        v-model="filters.ubicaciones"
+                        class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
+                      />
+                      <label
+                        for="checkbox-Atitlan"
+                        class="ms-2 text-xs text-gray-900 font-roboto"
+                      >
+                        Atitlan ({{ displayCount(propertyCounts.ubicaciones.Atitlan) }})
                       </label>
                     </div>
                   </li>
@@ -617,8 +631,7 @@
               v-show="openDropdown === 'habitaciones'"
               @click.stop
               id="dropdownDefaultCheckbox3"
-              class="absolute z-[9999] w-48 md:w-40 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1"
-              style="top: 100%; left: 0;"
+              class="absolute z-[9999] w-48 md:w-40 bg-white divide-y divide-gray-100 shadow-xl border border-gray-200 max-h-[60vh] overflow-y-auto rounded-lg mt-1 top-full left-0"
             >
               <ul
                 class="p-3 space-y-3 text-xs text-gray-800"
@@ -882,9 +895,9 @@ if (Array.isArray(amenidadesArray)) {
 const loadAllInmueblesForCounts = async () => {
   try {
     countsLoading.value = true;
-    // Mejor approach: solicitar pocas páginas en paralelo y sumarizar conteos
-    const pagesToFetch = 3; // Ajustable según la carga
-    const pageSize = 200; // 200 * 3 = 600 elementos max (mucho menos que 1000)
+    // OPTIMIZACIÓN: Reducido de 3x200 a 2x100 para mejorar rendimiento inicial
+    const pagesToFetch = 2; // Reducido de 3 a 2
+    const pageSize = 100; // Reducido de 200 a 100 (total: 200 en lugar de 600)
     const fetches = [];
     for (let i = 1; i <= pagesToFetch; i++) {
       fetches.push(inmuebleService.getInmueblesPaginados(i, pageSize));

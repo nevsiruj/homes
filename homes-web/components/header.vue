@@ -2,17 +2,18 @@
   <div class="relative">
     <div class="relative h-[550px] w-full">
       <img
-        src="https://app-pool.vylaris.online/dcmigserver/homes/0b304e4c-ed40-4c7e-8e44-2fe821bc5301.webp"
-        alt="Imagen de fondo"
+        src="https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp"
+        alt="Casas y apartamentos de lujo en Guatemala"
         class="absolute inset-0 object-cover w-full h-full"
-        loading="lazy"
+        loading="eager"
+        fetchpriority="high"
       />
       <div
         class="flex items-end lg:pb-8 pb-18 justify-center h-full bg-[#00000060]"
       >
         <div class="grid grid-rows-2 gap-2 w-3xl">
           <div class="flex items-end"></div>
-          <Filtro v-if="!isBusquedaRoute" />
+          <Filtro v-if="shouldShowFilter" />
         </div>
       </div>
     </div>
@@ -29,7 +30,7 @@
               src="https://app-pool.vylaris.online/dcmigserver/homes/684980eb-ab75-41e5-8c2a-045abba3b954.webp"
               class="mr-3 xl:ml-24 xl:-mb-6 h-16 xl:-mt-6 xl:h-20"
               alt="Homesguatemala Logo"
-              loading="lazy"
+              loading="eager"
             />
           </NuxtLink>
           <div class="flex items-center lg:order-2">
@@ -121,19 +122,19 @@
                 >
                   <ul class="py-2 text-sm text-gray-700">
                     <li>
-                      <a
-                        href="#"
-                        @click.prevent="handlePropertyFilter('Venta')"
+                      <NuxtLink
+                        to="/propiedades/venta"
+                        @click="isPropertiesDropdownOpen = false"
                         class="block px-4 py-2 hover:bg-gray-100"
-                        >Venta</a
+                        >Venta</NuxtLink
                       >
                     </li>
                     <li>
-                      <a
-                        href="#"
-                        @click.prevent="handlePropertyFilter('Renta')"
+                      <NuxtLink
+                        to="/propiedades/renta"
+                        @click="isPropertiesDropdownOpen = false"
                         class="block px-4 py-2 hover:bg-gray-100"
-                        >Renta</a
+                        >Renta</NuxtLink
                       >
                     </li>
                   </ul>
@@ -250,8 +251,16 @@ import Filtro from "@/components/filtro.vue";
 const route = useRoute();
 const router = useRouter();
 
-const isBusquedaRoute = computed(() => {
-  return route.path === "/busqueda";
+// Evitar cargar el filtro en páginas que ya tienen sus propios filtros o no lo necesitan
+const shouldShowFilter = computed(() => {
+  const path = route.path;
+  // No mostrar filtro en:
+  // - /busqueda (tiene su propio filtro avanzado)
+  // - /propiedades (tiene su propio filtro)
+  // - /inmueble/* (páginas de detalle no necesitan filtro)
+  return path !== "/busqueda" && 
+         path !== "/propiedades" && 
+         !path.startsWith("/inmueble/");
 });
 
 const isMobileMenuOpen = ref(false);
