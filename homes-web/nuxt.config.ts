@@ -60,7 +60,10 @@ export default defineNuxtConfig({
 
         // Hreflang para SEO internacional
         { rel: "alternate", hreflang: "es-GT", href: "https://homesguatemala.com" },
-        { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" }
+        { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" },
+
+        // Preload CSS crítico para mejorar rendimiento
+        { rel: "preload", href: "/assets/css/main.css", as: "style" }
       ],
       script: [
         // ===================================================================
@@ -180,6 +183,13 @@ export default defineNuxtConfig({
       cssCodeSplit: false, // Genera un solo archivo CSS en lugar de múltiples
       target: 'esnext',
       minify: 'terser', // Terser suele comprimir mejor que esbuild para JS complejo
+      terserOptions: {
+        compress: {
+          drop_console: true, // Eliminar console.log en producción
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug']
+        }
+      },
       rollupOptions: {
         output: {
           // Agrupar chunks de manera más eficiente
@@ -187,18 +197,27 @@ export default defineNuxtConfig({
             'vendor': ['vue', 'vue-router'],
             'swiper': ['swiper'],
           },
+          // Optimizar nombres de chunks para mejor caching
+          chunkFileNames: '_nuxt/[name]-[hash].js',
+          entryFileNames: '_nuxt/[name]-[hash].js',
+          assetFileNames: '_nuxt/[name]-[hash].[ext]'
         },
       },
       // Inline CSS pequeños (menos de 4kb)
       assetsInlineLimit: 4096,
       // Minificar CSS
       cssMinify: true,
+      // Reportar tamaño de chunks comprimidos
+      reportCompressedSize: true,
+      // Chunk size warnings
+      chunkSizeWarningLimit: 1000,
     },
   },
 
   experimental: {
     payloadExtraction: true, // Mejora la carga de datos en navegación SPA
-    renderJsonPayloads: true
+    renderJsonPayloads: true,
+    viewTransition: false, // Desactivar si no se usa
   },
 
   image: {
@@ -250,8 +269,6 @@ export default defineNuxtConfig({
     },
     minify: true,
     experimental: {
-      // Eliminar cabecera X-Powered-By por seguridad
-      // Esto oculta información sobre la tecnología del servidor
       asyncContext: false
     },
     routeRules: {
@@ -359,14 +376,27 @@ export default defineNuxtConfig({
       '/feed/**': { redirect: { to: '/', statusCode: 301 } },
       '/author/**': { redirect: { to: '/nosotros', statusCode: 301 } },
 
-      // Headers de seguridad y SEO
+      // Cache para assets estáticos (mejorar rendimiento)
+      '/_nuxt/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable'
+        }
+      },
+      '/images/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable'
+        }
+      },
+
+      // Headers de seguridad y SEO para todas las páginas
       '/**': {
         headers: {
           'X-Robots-Tag': 'index, follow',
           'X-Content-Type-Options': 'nosniff',
           'X-Frame-Options': 'SAMEORIGIN',
           'Referrer-Policy': 'strict-origin-when-cross-origin',
-          'X-Powered-By': '' // Ocultar información del servidor por seguridad
+          'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
         }
       }
     }
