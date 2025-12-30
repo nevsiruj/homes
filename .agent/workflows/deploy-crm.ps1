@@ -116,29 +116,28 @@ try {
     $webConfig = @"
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <system.webServer>
-        <rewrite>
-            <rules>
-                <rule name="SPA Routes" stopProcessing="true">
-                    <match url=".*" />
-                    <conditions logicalGrouping="MatchAll">
-                        <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
-                        <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
-                    </conditions>
-                    <action type="Rewrite" url="/200.html" />
-                </rule>
-            </rules>
-        </rewrite>
-        <staticContent>
-            <mimeMap fileExtension=".json" mimeType="application/json" />
-            <mimeMap fileExtension=".webp" mimeType="image/webp" />
-        </staticContent>
-        <httpProtocol>
-            <customHeaders>
-                <add name="Cache-Control" value="public, max-age=31536000" />
-            </customHeaders>
-        </httpProtocol>
-    </system.webServer>
+  <system.webServer>
+    <!-- Rewrite rules para SPA -->
+    <rewrite>
+      <rules>
+        <rule name="SPA Fallback" stopProcessing="true">
+          <match url=".*" />
+          <conditions logicalGrouping="MatchAll">
+            <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+            <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+            <add input="{REQUEST_URI}" pattern="^/api/" negate="true" />
+          </conditions>
+          <action type="Rewrite" url="/200.html" />
+        </rule>
+      </rules>
+    </rewrite>
+    
+    <!-- Deshabilitar validacion de configuracion que puede causar 500 -->
+    <validation validateIntegratedModeConfiguration="false" />
+    
+    <!-- Compresion estatica -->
+    <urlCompression doStaticCompression="true" doDynamicCompression="false" />
+  </system.webServer>
 </configuration>
 "@
     $webConfig | Out-File -FilePath "$WebsitePath\web.config" -Encoding UTF8 -Force
