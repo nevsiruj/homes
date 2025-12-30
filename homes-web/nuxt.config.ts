@@ -264,7 +264,7 @@ export default defineNuxtConfig({
       '/': { prerender: true },
       '/propiedades': { prerender: true },
       '/proyectos-inmobiliarios': { prerender: true },
-      '/blog': { prerender: true },
+      '/blog-inmobiliario': { prerender: true },
       '/nosotros': { prerender: true }
     },
   },

@@ -3,22 +3,14 @@
         <Header />
         <div class="max-w-3xl mx-auto pt-8 pb-16 px-4 lg:px-0">
             <h1 class="text-3xl md:text-4xl lg:text-5xl title-alta mb-4 text-gray-900 font-light text-center">
-                {{ blog.title }}
+                {{ blog.Title }}
             </h1>
             <hr class="w-48 h-1 mx-auto my-2 mb-6 bg-gray-100 border-0 rounded-sm" />
-            <div v-if="blog.mainImage" class="overflow-hidden rounded-lg shadow-lg mb-6">
-                <img :src="blog.mainImage" :alt="`${blog.title} - Homes Guatemala`"
+            <div v-if="blog['Image URL']" class="overflow-hidden rounded-lg shadow-lg mb-6">
+                <img :src="blog['Image URL']" :alt="`${blog.Title} - Homes Guatemala`"
                     class="w-full h-auto max-h-[400px] object-cover object-center rounded-lg" />
             </div>
-            <div class="prose max-w-none text-lg mb-8" v-html="blog.intro"></div>
-            <template v-for="(section, idx) in blog.sections" :key="idx">
-                <h2 class="text-xl font-semibold mb-2">{{ section.heading }}</h2>
-                <div class="prose max-w-none mb-8" v-html="section.content"></div>
-                <div v-if="section.image" class="overflow-hidden rounded-lg shadow mb-10">
-                    <img :src="section.image" :alt="`${section.heading} - ${blog.title}`"
-                        class="w-full h-auto max-h-[400px] object-cover object-center rounded-lg" />
-                </div>
-            </template>
+            <div class="prose max-w-none text-lg mb-8" v-html="blog.Content"></div>
         </div>
         <Footer />
     </div>
@@ -32,7 +24,7 @@ import { blogs } from "~/data/blogs.js";
 import { computed } from 'vue';
 
 const route = useRoute();
-const blog = blogs.find((b) => b.slug === route.params.slug && b.category.toLowerCase() === route.params.category);
+const blog = blogs.find((b) => b.Slug === route.params.slug && b['Categorías'].toLowerCase() === route.params.category);
 
 if (!blog) {
     throw createError({ statusCode: 404, statusMessage: 'Página No Encontrada', fatal: true });
@@ -42,15 +34,15 @@ const DOMINIO_BASE = 'https://webhomes.vylaris.online'; // <-- REEMPLAZAR ESTO C
 const FALLBACK_IMAGE_URL = `${DOMINIO_BASE}/default-social-image.jpg`;
 
 const metaDescription = computed(() => {
-    if (!blog?.intro) {
+    if (!blog?.Content) {
         return 'Un artículo interesante de nuestro blog.';
     }
-    const cleanText = blog.intro.replace(/<[^>]*>/g, '').trim();
+    const cleanText = blog.Content.replace(/<[^>]*>/g, '').trim();
     return cleanText.substring(0, 155) + (cleanText.length > 155 ? '...' : '');
 });
 
 const metaImage = computed(() => {
-    const imageUrl = blog?.mainImage;
+    const imageUrl = blog?.['Image URL'];
     if (!imageUrl) {
         return FALLBACK_IMAGE_URL;
     }
@@ -61,13 +53,13 @@ const metaImage = computed(() => {
 });
 
 useHead({
-    title: () => blog?.title || 'Nuestro Blog',
+    title: () => blog?.Title || 'Nuestro Blog',
     meta: [
         // Metas estándar
         { name: 'description', content: () => metaDescription.value },
 
         // Open Graph (para Facebook, LinkedIn, etc.)
-        { property: 'og:title', content: () => blog?.title },
+        { property: 'og:title', content: () => blog?.Title },
         { property: 'og:description', content: () => metaDescription.value },
         { property: 'og:image', content: () => metaImage.value },           
         { property: 'og:url', content: () => `${DOMINIO_BASE}${route.path}` },
@@ -75,7 +67,7 @@ useHead({
 
         // Twitter Cards (para Twitter)
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: () => blog?.title },
+        { name: 'twitter:title', content: () => blog?.Title },
         { name: 'twitter:description', content: () => metaDescription.value },
         { name: 'twitter:image', content: () => metaImage.value },       
     ],
@@ -88,7 +80,7 @@ useHead({
             children: JSON.stringify({
                 '@context': 'https://schema.org',
                 '@type': 'Article',
-                headline: blog?.title || 'Artículo de blog',
+                headline: blog?.Title || 'Artículo de blog',
                 description: metaDescription.value,
                 image: metaImage.value,
                 author: {
