@@ -7,10 +7,10 @@
   import Index from "./home/index.vue";
   
   useSeoMeta({
-    title: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
-    description: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala. Ofrecemos asesoría personalizada y propiedades premium.',
-    ogTitle: 'Homes Guatemala | Bienes Raíces de Lujo en Guatemala',
-    ogDescription: 'Encuentra las mejores casas y apartamentos en venta y alquiler en las zonas más exclusivas de Guatemala.',
+    title: 'Casas y Apartamentos en Venta y Renta Guatemala | Homes Guatemala',
+    description: 'Bienes raíces de lujo en Guatemala. Casas y apartamentos en venta y renta en Zona 10, 14, 15, 16, Cayalá, Carretera El Salvador. Proyectos inmobiliarios exclusivos. +18 años de experiencia.',
+    ogTitle: 'Casas y Apartamentos en Venta y Renta Guatemala | Homes Guatemala',
+    ogDescription: 'Encuentra propiedades de lujo en las mejores zonas de Guatemala. Venta, renta y proyectos inmobiliarios exclusivos.',
     ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp',
     ogUrl: 'https://homesguatemala.com',
     twitterCard: 'summary_large_image',

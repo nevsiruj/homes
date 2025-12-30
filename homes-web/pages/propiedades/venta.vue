@@ -183,10 +183,10 @@ import Skeleton from "~/components/skeleton.vue";
 
 // SEO Meta Tags optimizados para propiedades en venta
 useSeoMeta({
-  title: 'Propiedades en Venta Guatemala | Casas y Apartamentos de Lujo',
-  description: 'Descubre las mejores propiedades en venta en Guatemala. Casas de lujo, apartamentos exclusivos y terrenos en Zona 10, 14, 15, 16 y Carretera a El Salvador.',
-  ogTitle: 'Propiedades en Venta Guatemala | Homes Guatemala',
-  ogDescription: 'Encuentra tu próximo hogar o inversión inmobiliaria en las zonas más exclusivas de Guatemala.',
+  title: 'Casas en Venta Guatemala - Zona 10, 14, 15, 16, Cayalá | Homes',
+  description: 'Casas y apartamentos en venta en Guatemala. Propiedades de lujo en Zona 10, 14, 15, 16, Cayalá, Carretera El Salvador. Inversión inmobiliaria segura. Financiamiento disponible.',
+  ogTitle: 'Casas y Apartamentos en Venta Guatemala | Homes Guatemala',
+  ogDescription: 'Encuentra tu próximo hogar. Propiedades exclusivas en las mejores zonas de Guatemala. Asesoría personalizada.',
   ogImage: 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp',
   twitterCard: 'summary_large_image',
 });
