@@ -98,11 +98,15 @@ try {
     
     # 10. Crear archivo de version
     Write-Log "Creating version file"
+    
+    $gitCommit = try { git -C $RepoPath rev-parse --short HEAD 2>$null } catch { "unknown" }
+    $gitBranch = try { git -C $RepoPath rev-parse --abbrev-ref HEAD 2>$null } catch { "unknown" }
+    
     $versionInfo = @{
         version    = Get-Date -Format "yyyy.MM.dd.HHmm"
         deployDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        commit     = (git -C $RepoPath rev-parse --short HEAD 2>$null) ?? "unknown"
-        branch = (git -C $RepoPath rev-parse --abbrev-ref HEAD 2>$null) ?? "unknown"
+        commit     = if ($gitCommit) { $gitCommit } else { "unknown" }
+        branch     = if ($gitBranch) { $gitBranch } else { "unknown" }
     }
     $versionInfo | ConvertTo-Json | Out-File -FilePath "$WebsitePath\version.json" -Encoding UTF8 -Force
     Write-Log "Version: $($versionInfo.version)"
