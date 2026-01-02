@@ -303,13 +303,8 @@ export default defineNuxtConfig({
       // REDIRECCIONES LEGACY WORDPRESS - Fix 404 errors Google Search Console
       // ===================================================================
 
-      // Redirecciones de /tops/ (páginas de contenido antiguo)
-      '/tops/**': { redirect: { to: '/blog', statusCode: 301 } },
-      '/tops': { redirect: { to: '/blog', statusCode: 301 } },
-
-      // Redirecciones de /informativo/ (blog antiguo)
-      '/informativo/**': { redirect: { to: '/blog', statusCode: 301 } },
-      '/informativo': { redirect: { to: '/blog', statusCode: 301 } },
+      // NOTA: Ya no redirigimos /informativo/**, /tops/**, /consejos/** 
+      // porque ahora usamos esas rutas para el blog con estructura [category]/[slug]
 
       // Redirecciones de /propiedades-en-venta/ -> /propiedades?Operaciones=Venta
       '/propiedades-en-venta/casas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Casa', statusCode: 301 } },
@@ -366,8 +361,8 @@ export default defineNuxtConfig({
       '/propiedades-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
 
       // Otras URLs legacy comunes
-      '/category/**': { redirect: { to: '/blog', statusCode: 301 } },
-      '/tag/**': { redirect: { to: '/blog', statusCode: 301 } },
+      '/category/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
+      '/tag/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
       '/page/**': { redirect: { to: '/', statusCode: 301 } },
       '/wp-content/**': { redirect: { to: '/', statusCode: 301 } },
       '/wp-admin/**': { redirect: { to: '/', statusCode: 301 } },

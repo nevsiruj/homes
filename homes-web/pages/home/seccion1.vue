@@ -213,7 +213,7 @@
 
         <div class="text-center">
           <NuxtLink 
-            to="/blog" 
+            to="/blog-inmobiliario" 
             class="inline-flex boton-optima text-white bg-black py-4 px-8 hover:bg-gray-700 rounded-lg text-lg transition-all duration-300"
           >
             Ver Todos los Artículos

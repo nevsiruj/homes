@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
             { loc: 'https://homesguatemala.com/propiedades/renta', priority: 0.9, changefreq: 'daily' },
             { loc: 'https://homesguatemala.com/proyectos-inmobiliarios', priority: 0.8, changefreq: 'weekly' },
             { loc: 'https://homesguatemala.com/nosotros', priority: 0.7, changefreq: 'monthly' },
-            { loc: 'https://homesguatemala.com/blog', priority: 0.7, changefreq: 'weekly' },
+            { loc: 'https://homesguatemala.com/blog-inmobiliario', priority: 0.7, changefreq: 'weekly' },
         ];
 
         // Zonas para páginas dinámicas

@@ -28,7 +28,24 @@ import { blogs } from "~/data/blogs.js";
 import { computed } from 'vue';
 
 const route = useRoute();
-const blog = blogs.find((b) => b.Slug === route.params.slug && b['Categorías'].toLowerCase() === route.params.category);
+
+// Función para normalizar categorías (igual que en index.vue)
+function normalizeCategory(category) {
+    if (!category) return 'blog'
+    return category
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+        .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+        .trim()
+}
+
+// Buscar el blog comparando slug y categoría normalizada
+const blog = blogs.find((b) => {
+    const blogCategory = normalizeCategory(b['Categorías'])
+    const routeCategory = route.params.category
+    return b.Slug === route.params.slug && blogCategory === routeCategory
+});
 
 if (!blog) {
     throw createError({ statusCode: 404, statusMessage: 'Página No Encontrada', fatal: true });

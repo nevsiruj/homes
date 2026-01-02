@@ -43,7 +43,7 @@
               Nosotros
             </NuxtLink>
             <NuxtLink
-              to="/blog"
+              to="/blog-inmobiliario"
               class="text-sm text-gray-600 hover:text-black underline"
             >
               Blog
