@@ -109,6 +109,8 @@ const editor = useEditor({
       heading: {
         levels: [1, 2, 3],
       },
+      codeBlock: false, // Deshabilitamos para usar nuestra versión
+      hardBreak: false, // Deshabilitamos para usar nuestra versión
     }),
     CodeBlock,
     Highlight.configure({
