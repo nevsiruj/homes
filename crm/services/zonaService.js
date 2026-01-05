@@ -1,11 +1,10 @@
-import config from '../config';
-
-const API_URL = `${config.apiBaseUrl}/Zona`;
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 export default {
   async getAllZonas() {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${getApiBaseUrl()}/Zona`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -26,7 +25,7 @@ export default {
 
   async getAllZonasActivas() {
     try {
-      const response = await fetch(`${API_URL}/activas`, {
+      const response = await fetch(`${getApiBaseUrl()}/Zona/activas`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +46,7 @@ export default {
 
   async getZonaById(id) {
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Zona/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +67,7 @@ export default {
 
   async createZona(zonaData) {
     try {
-      const response = await fetch(API_URL, {
+      const response = await fetch(`${getApiBaseUrl()}/Zona`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +93,7 @@ export default {
 
   async updateZona(id, zonaData) {
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Zona/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +120,7 @@ export default {
 
   async deleteZona(id) {
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
+      const response = await fetch(`${getApiBaseUrl()}/Zona/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -142,7 +141,7 @@ export default {
 
   async reorderZonas(zonaIds) {
     try {
-      const response = await fetch(`${API_URL}/reorder`, {
+      const response = await fetch(`${getApiBaseUrl()}/Zona/reorder`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
