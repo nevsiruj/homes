@@ -1185,15 +1185,8 @@ function eliminarTodasImagenes() {
   });
 }
 
-// Base del sitio (elige el orden de prioridad que prefieras)
-const siteOrigin = ref(
-  // 1) variable de entorno si la tenés definida
-  import.meta.env.VITE_PUBLIC_SITE_ORIGIN ||
-    // 2) si corrés en navegador, usa el origin actual
-    (typeof window !== "undefined" ? window.location.origin : "") ||
-    // 3) fallback por si acaso
-    "https://homesguatemala.com"
-);
+// Base del sitio
+const siteOrigin = ref("https://homesguatemala.com");
 
 // Util para evitar dobles slashes
 function stripTrailingSlash(u) {

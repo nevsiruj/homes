@@ -731,11 +731,7 @@ const fetchProyectoById = async (id) => {
 };
 
 // ====== Base del sitio ======
-const siteOrigin = ref(
-  import.meta.env.VITE_PUBLIC_SITE_ORIGIN ||
-    (typeof window !== "undefined" ? window.location.origin : "") ||
-    "https://homesguatemala.com"
-);
+const siteOrigin = ref("https://homesguatemala.com");
 const stripTrailingSlash = (u) => (u || "").replace(/\/+$/, "");
 
 // Guarda la última URL copiada (por si querés mostrarla en algún lugar)
