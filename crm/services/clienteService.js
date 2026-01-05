@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 const redirectToLogin = (message = "La sesión ha caducado. Por favor, inicie sesión de nuevo.") => {
   Swal.fire({
@@ -45,7 +45,7 @@ export default {
         page: page.toString(),
         pageSize: pageSize.toString()
       });
-      
+
       if (agenteId) {
         params.append('agenteId', agenteId.toString());
       }
@@ -65,17 +65,17 @@ export default {
       }
 
       const data = await response.json();
-      
+
       // Guardar en cache
       clientesCache = data;
       cacheTimestamp = now;
-      
+
       return data;
     } catch (error) {
       throw error;
     }
   },
-  
+
   // Método para limpiar el cache cuando se modifica un cliente
   clearCache() {
     clientesCache = null;
@@ -141,7 +141,7 @@ export default {
       if (!response.ok) {
         throw new Error(`Error al eliminar el cliente (ID: ${id})`);
       }
-      
+
       // Limpiar cache después de eliminar
       this.clearCache();
     } catch (error) {
@@ -170,7 +170,7 @@ export default {
 
       // Limpiar cache después de crear
       this.clearCache();
-      
+
       return await response.json(); // Devuelve el cliente creado
 
     } catch (error) {
@@ -245,10 +245,10 @@ export default {
   async obtenerAmenidadesCliente(clienteId) {
     try {
       const cliente = await clienteService.getClienteById(clienteId);
-  
+
       // Acceder a las amenidades dentro de preferencias
       const amenidades = cliente?.preferencias?.preferenciaAmenidades;
-  
+
       if (Array.isArray(amenidades)) {
         //console.log("Amenidades del cliente:", amenidades);
         return amenidades;
@@ -260,5 +260,5 @@ export default {
       //console.error("Error al obtener las amenidades:", error.message);
       return [];
     }
-  } 
+  }
 };

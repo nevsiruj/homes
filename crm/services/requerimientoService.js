@@ -1,5 +1,5 @@
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 // Obtiene los encabezados con token de autenticación
 const getAuthHeaders = () => {
@@ -86,7 +86,7 @@ const requerimientoService = {
   // Crear una nueva preferencia para un cliente existente
   async addPreferencia(nuevaPreferencia) {
     // console.log(" Enviando nueva preferencia:", nuevaPreferencia);
-    
+
     // CORRECCIÓN: El payload ya viene correctamente formateado desde modalRequerimiento.vue.
     // No es necesario normalizarlo aquí. Se envía directamente.
     const payload = {

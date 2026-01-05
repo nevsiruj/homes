@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 let isAuthModalShown = false; // Global flag to track if the modal is already shown
 
@@ -129,7 +129,7 @@ const interaccionService = {
       const clienteService = (await import('./clienteService')).default;
       const clienteData = await clienteService.getClienteById(clienteId);
       const cliente = clienteData?.$values ? clienteData.$values[0] : clienteData;
-      
+
       // Extract interactions from client data
       let interaccionesData = null;
       if (cliente?.interacciones) {
@@ -139,13 +139,13 @@ const interaccionService = {
       } else if (cliente?.seguimientos) {
         interaccionesData = cliente.seguimientos;
       }
-      
+
       if (interaccionesData?.$values) {
         return interaccionesData.$values;
       } else if (Array.isArray(interaccionesData)) {
         return interaccionesData;
       }
-      
+
       return [];
     } catch (e) {
       console.warn('Error getting interactions from client data:', e);

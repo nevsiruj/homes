@@ -1,5 +1,5 @@
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 const usuarioService = (() => {
   const axios = require('axios');
@@ -31,7 +31,7 @@ const usuarioService = (() => {
       return null;
     }
   };
-   
+
   const getAllUsuarios = async () => {
     try {
       const response = await instance.get('/api/Usuarios');

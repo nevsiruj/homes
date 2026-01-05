@@ -2,7 +2,7 @@ import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2';
 
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 // Evita modales duplicados
 let isAuthModalShown = false;
@@ -84,7 +84,7 @@ const userService = (() => {
         } catch {
           try {
             errorMsg = await response.text();
-          } catch {}
+          } catch { }
         }
         throw new Error(errorMsg);
       }

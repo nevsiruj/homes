@@ -2,7 +2,11 @@ import Swal from "sweetalert2";
 
 // Función para obtener la URL base de la API
 const getApiBaseUrl = () => {
-  // Usar la configuración global inyectada por el plugin
+  // 1. Prioridad: Configuración externa dinámica (config.js)
+  if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) {
+    return window.$config.apiBaseUrl;
+  }
+  // 2. Fallback: Configuración de Nuxt
   return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234';
 };
 
@@ -31,22 +35,22 @@ const authService = (() => {
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
-        
+
         const response = await fetch(url, {
           ...options,
           signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
         return response;
-        
+
       } catch (error) {
         const isLastAttempt = attempt === maxRetries - 1;
-        const isNetworkError = error.name === 'AbortError' || 
-                               error.name === 'TypeError' ||
-                               error.message.includes('fetch') ||
-                               error.message.includes('network');
-        
+        const isNetworkError = error.name === 'AbortError' ||
+          error.name === 'TypeError' ||
+          error.message.includes('fetch') ||
+          error.message.includes('network');
+
         // Si es error de red y no es el último intento, reintentar
         if (isNetworkError && !isLastAttempt) {
           const delay = Math.min(1000 * Math.pow(2, attempt), 5000); // Max 5s
@@ -54,7 +58,7 @@ const authService = (() => {
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
-        
+
         // En el último intento o si no es error de red, lanzar error mejorado
         if (error.name === 'AbortError') {
           throw new Error('La petición tardó demasiado. Verifica tu conexión a internet.');

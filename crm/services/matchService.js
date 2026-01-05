@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 let isAuthModalShown = false; // Global flag to track if the modal is already shown
 
@@ -36,116 +36,116 @@ async function fetchWithTokenCheck(url, options = {}) {
 const matchService = {
   // 📥 Obtener todos los matches pendientes de un cliente
   async getPendientesByCliente(clienteId) {
-  if (!clienteId) throw new Error("clienteId requerido");
+    if (!clienteId) throw new Error("clienteId requerido");
 
-  try {
-    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/clientes/${clienteId}/matches-sugeridos`, {
-      method: "GET",
-    });
+    try {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/clientes/${clienteId}/matches-sugeridos`, {
+        method: "GET",
+      });
 
-    if (response?.status === 404) {
-      console.log(`📭 No hay matches pendientes para cliente ${clienteId}`);
-      return [];
-    }
-    if (!response?.ok) {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener matches pendientes:", error);
-    throw error;
-  }
-},
-
-async getSugeridos(clienteId) {
-  if (!clienteId) throw new Error("clienteId requerido");
-
-  try {
-    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/clientes/${clienteId}/matches-sugeridos`, {
-      method: "GET",
-    });
-
-    if (response?.status === 404) {
-      console.log(`📭 No hay matches pendientes para cliente ${clienteId}`);
-      return [];
-    }
-    if (!response?.ok) {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener matches pendientes:", error);
-    throw error;
-  }
-},
-
-// 📥 Obtener todos los matches enviados de un cliente
-async getEnviadosByCliente(clienteId) {
-  if (!clienteId) throw new Error("clienteId requerido");
-
-  try {
-    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/cliente/${clienteId}/enviados`, {
-      method: "GET",
-    });
-
-    if (response?.status === 404) {
-      console.log(`📭 No hay matches enviados para cliente ${clienteId}`);
-      return [];
-    }
-    if (!response?.ok) {
-      const errorData = await response.json().catch(() => null);
-      const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener matches enviados:", error);
-    throw error;
-  }
-},
-
-// 🖋️ Marcar un match como enviado
-async marcarComoEnviado(matchId) {
-  if (!matchId) throw new Error("matchId requerido");
-  try {
-    const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/${matchId}/enviar`, {
-      method: "PUT",
-    });
-
-    if (!response?.ok) {
-      let errJson = null;
-      try {
-        errJson = await response.json();
-      } catch {}
-      const errorMessage = errJson?.title || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    let updated = null;
-    if (response.status !== 204) {
-      try {
-        updated = await response.json();
-      } catch {
-        updated = null;
+      if (response?.status === 404) {
+        console.log(`📭 No hay matches pendientes para cliente ${clienteId}`);
+        return [];
       }
-      if (updated?.$values && Array.isArray(updated.$values)) {
-        updated = updated.$values[0] || null;
+      if (!response?.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error al obtener matches pendientes:", error);
+      throw error;
     }
-    console.log("Match marcado como enviado", updated || "");
-    return { ok: true, match: updated || null };
-  } catch (error) {
-    console.error("Error al marcar el match como enviado:", error);
-    return { ok: false, error };
-  }
-},
+  },
+
+  async getSugeridos(clienteId) {
+    if (!clienteId) throw new Error("clienteId requerido");
+
+    try {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/clientes/${clienteId}/matches-sugeridos`, {
+        method: "GET",
+      });
+
+      if (response?.status === 404) {
+        console.log(`📭 No hay matches pendientes para cliente ${clienteId}`);
+        return [];
+      }
+      if (!response?.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error al obtener matches pendientes:", error);
+      throw error;
+    }
+  },
+
+  // 📥 Obtener todos los matches enviados de un cliente
+  async getEnviadosByCliente(clienteId) {
+    if (!clienteId) throw new Error("clienteId requerido");
+
+    try {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/cliente/${clienteId}/enviados`, {
+        method: "GET",
+      });
+
+      if (response?.status === 404) {
+        console.log(`📭 No hay matches enviados para cliente ${clienteId}`);
+        return [];
+      }
+      if (!response?.ok) {
+        const errorData = await response.json().catch(() => null);
+        const errorMessage = errorData?.title || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error al obtener matches enviados:", error);
+      throw error;
+    }
+  },
+
+  // 🖋️ Marcar un match como enviado
+  async marcarComoEnviado(matchId) {
+    if (!matchId) throw new Error("matchId requerido");
+    try {
+      const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Match/${matchId}/enviar`, {
+        method: "PUT",
+      });
+
+      if (!response?.ok) {
+        let errJson = null;
+        try {
+          errJson = await response.json();
+        } catch { }
+        const errorMessage = errJson?.title || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      let updated = null;
+      if (response.status !== 204) {
+        try {
+          updated = await response.json();
+        } catch {
+          updated = null;
+        }
+        if (updated?.$values && Array.isArray(updated.$values)) {
+          updated = updated.$values[0] || null;
+        }
+      }
+      console.log("Match marcado como enviado", updated || "");
+      return { ok: true, match: updated || null };
+    } catch (error) {
+      console.error("Error al marcar el match como enviado:", error);
+      return { ok: false, error };
+    }
+  },
 
   // 📤 Crear un nuevo match
   async createMatch(payload) {

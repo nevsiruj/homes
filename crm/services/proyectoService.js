@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 let isAuthModalShown = false; // Global flag to track if the modal is already shown
 
@@ -38,17 +38,17 @@ export default {
     try {
       console.log('🔍 Llamando a API:', `${getApiBaseUrl()}/Proyecto`);
       const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Proyecto`);
-      
+
       if (!response) {
         console.error('❌ No response from fetchWithTokenCheck');
         return null;
       }
-      
+
       if (!response.ok) {
         console.error('❌ Response not OK:', response.status, response.statusText);
         throw new Error('Error fetching proyectos');
       }
-      
+
       const data = await response.json();
       console.log('✅ Data recibida del API:', data);
       return data;

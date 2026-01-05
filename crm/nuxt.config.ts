@@ -5,23 +5,23 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: false },
   ssr: false,
-  
+
   // Deshabilitar app manifest para evitar errores 404 en producción
   app: {
     buildAssetsDir: '/_nuxt/',
   },
-  
+
   experimental: {
     appManifest: false, // Desactiva los manifests que causan 404 en producción estática
     payloadExtraction: false // Desactiva la extracción de payloads en SPA
   },
-  
+
   // Configuración específica para SPA
-  generate: { 
+  generate: {
     fallback: '200.html', // Usar 200.html en lugar de 404.html para SPAs
     routes: ['/'] // Solo generar la ruta raíz
   },
-  
+
   hooks: {
     // Desactivar generación de payloads completamente
     'nitro:build:before': (nitro) => {
@@ -29,34 +29,32 @@ export default defineNuxtConfig({
       nitro.options.prerender.crawlLinks = false
     }
   },
-  
+
   // Variables de entorno disponibles en runtime
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://app-pool.vylaris.online/homes/api'
     }
   },
-  
+
   app: {
     // baseURL: '/homes/crm',
-    
+
     head: {
       link: [
         { rel: 'icon', type: 'image/x-icon', href: 'https://app-pool.vylaris.online/dcmigserver/homes/5369ffc1-5e81-4be1-a01e-617c564b7eed.webp' }
       ],
- 
+
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
       ],
-      
+
       script: [
-        {
-          children: `window.$config = { apiBaseUrl: '${process.env.VITE_API_BASE_URL || process.env.NUXT_PUBLIC_API_BASE_URL || 'https://app-pool.vylaris.online/homes/api'}' };`
-        }
+        { src: '/config.js' } // Cargar configuración externa
       ]
-    }    
-  }, 
+    }
+  },
 
   modules: [
 
@@ -73,7 +71,7 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  
+
 
   vite: {
     plugins: [tailwindcss()],

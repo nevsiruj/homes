@@ -2,7 +2,7 @@
 import Swal from "sweetalert2";
 
 // Función para obtener la URL base de la API
-const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+const getApiBaseUrl = () => { if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl; return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
 
 function normalizeNumber(n, fallback = 1) {
   // Cubre casos: number, string numérica, { value: ... }, ref/computed-like, null/undefined
@@ -78,11 +78,11 @@ export default {
   async getInmueblesPaginados(pageNumber = 1, pageSize = 9, filters = {}) {
     try {
       const PageNumber = normalizeNumber(pageNumber, 1)
-      const PageSize   = normalizeNumber(pageSize, 9)
+      const PageSize = normalizeNumber(pageSize, 9)
 
       const params = new URLSearchParams()
       params.set('PageNumber', String(PageNumber))
-      params.set('PageSize',   String(PageSize))
+      params.set('PageSize', String(PageSize))
 
       // Serializa los filtros sin riesgo de "[object Object]"
       for (const key in filters) {
@@ -194,35 +194,35 @@ export default {
   async getInmuebleById(id) {
     try {
       console.log(`🔍 [inmuebleService] Buscando inmueble con ID/código: ${id}`);
-      
+
       // Verificar si es un número (ID) o string alfanumérico (código)
       const isNumericId = /^\d+$/.test(String(id).trim());
-      
+
       if (isNumericId) {
         console.log(`📡 [inmuebleService] Buscando por ID numérico: ${id}`);
         // Búsqueda por ID numérico (método original)
         const response = await fetchWithTokenCheck(`${getApiBaseUrl()}/Inmueble/${id}`);
-        
+
         if (!response) {
           console.error(`❌ [inmuebleService] No se recibió respuesta (token expirado?)`);
           return null;
         }
-        
+
         console.log(`📡 [inmuebleService] Response status: ${response.status}`);
-        
+
         if (!response.ok) {
           console.error(`❌ [inmuebleService] Error HTTP: ${response.status} ${response.statusText}`);
           throw new Error(`Error fetching inmueble: ${response.status} - ${response.statusText}`);
         }
-        
+
         const data = await response.json();
         console.log(`📊 [inmuebleService] Raw response (by ID):`, data);
-        
+
         // IMPORTANTE: Normalizar los datos antes de retornar
         const normalized = this.normalizeInmuebleData(data);
         console.log(`✅ [inmuebleService] Datos normalizados retornados:`, normalized);
         console.log(`🖼️ [inmuebleService] Array de imágenes en normalized:`, normalized.imagenesReferencia);
-        
+
         return normalized;
       } else {
         console.log(`🔤 [inmuebleService] Buscando por código alfanumérico: ${id}`);
@@ -238,44 +238,44 @@ export default {
   async getInmuebleByCodigoPropiedad(codigo) {
     try {
       console.log(`🔤 [inmuebleService] Buscando por código de propiedad: ${codigo}`);
-      
+
       // Usar el endpoint paginado con filtro de búsqueda
       const filters = {
         searchTerm: codigo,
         // Otros filtros si es necesario
       };
-      
+
       const result = await this.getInmueblesPaginados(1, 50, filters);
-      
+
       console.log(`📊 [inmuebleService] Resultados de búsqueda por código:`, result);
-      
+
       if (!result.items || result.items.length === 0) {
         console.warn(`❌ [inmuebleService] No se encontró inmueble con código: ${codigo}`);
         return null;
       }
-      
+
       // Buscar coincidencia exacta del código
       const codigoUpper = codigo.toUpperCase();
-      let inmuebleEncontrado = result.items.find(item => 
+      let inmuebleEncontrado = result.items.find(item =>
         (item.codigoPropiedad || '').toUpperCase() === codigoUpper
       );
-      
+
       // Si no hay coincidencia exacta, tomar el primero (búsqueda aproximada)
       if (!inmuebleEncontrado && result.items.length > 0) {
         console.warn(`⚠️ [inmuebleService] No hay coincidencia exacta, tomando el primero de ${result.items.length} resultados`);
         inmuebleEncontrado = result.items[0];
       }
-      
+
       if (!inmuebleEncontrado) {
         console.warn(`❌ [inmuebleService] No se encontró inmueble con código: ${codigo}`);
         return null;
       }
-      
+
       console.log(`✅ [inmuebleService] Inmueble encontrado por código:`, inmuebleEncontrado);
-      
+
       // El resultado de getInmueblesPaginados ya está normalizado
       return inmuebleEncontrado;
-      
+
     } catch (error) {
       console.error(`❌ [inmuebleService] Error buscando por código ${codigo}:`, error);
       throw error;
@@ -285,7 +285,7 @@ export default {
   normalizeInmuebleData(data) {
     console.log(`🔧 [inmuebleService] Normalizando inmueble: ${data?.codigoPropiedad || data?.id}`);
     console.log(`🖼️ [inmuebleService] Imágenes raw:`, data.imagenesReferencia?.length || 0);
-    
+
     // Normalizar las imágenes de referencia
     let imagenesNormalizadas = [];
     if (Array.isArray(data.imagenesReferencia?.$values)) {
@@ -309,21 +309,21 @@ export default {
         })
         .filter(Boolean);
     }
-    
+
     console.log(`✅ [inmuebleService] Imágenes normalizadas: ${imagenesNormalizadas.length}`);
-    
+
     // Normalizar la respuesta para uso consistente
     const normalizedData = {
       ...data,
       imagenesReferencia: imagenesNormalizadas,
       // Normalizar amenidades a array simple de strings
-      amenidades: Array.isArray(data.amenidades?.$values) 
+      amenidades: Array.isArray(data.amenidades?.$values)
         ? data.amenidades.$values.map(a => a.nombre || a.Nombre || a)
-        : (Array.isArray(data.amenidades) 
+        : (Array.isArray(data.amenidades)
           ? data.amenidades.map(a => typeof a === 'string' ? a : (a?.nombre || a?.Nombre || ''))
           : [])
     };
-    
+
     return normalizedData;
   },
 
