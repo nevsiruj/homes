@@ -1192,7 +1192,7 @@ const siteOrigin = ref(
     // 2) si corrés en navegador, usa el origin actual
     (typeof window !== "undefined" ? window.location.origin : "") ||
     // 3) fallback por si acaso
-    "https://tu-dominio.com"
+    "https://homesguatemala.com"
 );
 
 // Util para evitar dobles slashes

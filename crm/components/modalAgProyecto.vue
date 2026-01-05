@@ -746,7 +746,7 @@ function regenerateSlug() {
 const siteOrigin = ref(
   import.meta.env.VITE_PUBLIC_SITE_ORIGIN ||
     (typeof window !== "undefined" ? window.location.origin : "") ||
-    "https://tu-dominio.com"
+    "https://homesguatemala.com"
 );
 
 const fullSlugUrl = ref("");

@@ -734,7 +734,7 @@ const fetchProyectoById = async (id) => {
 const siteOrigin = ref(
   import.meta.env.VITE_PUBLIC_SITE_ORIGIN ||
     (typeof window !== "undefined" ? window.location.origin : "") ||
-    "https://tu-dominio.com"
+    "https://homesguatemala.com"
 );
 const stripTrailingSlash = (u) => (u || "").replace(/\/+$/, "");
 
