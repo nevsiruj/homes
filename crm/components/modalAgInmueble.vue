@@ -183,35 +183,9 @@
                   <option value="" disabled selected>
                     Selecciona una ubicación
                   </option>
-                  <option value="Amatitlán">Amatitlán</option>
-                  <option value="Antigua">Antigua</option>
-                  <option value="Atitlan">Atitlan</option>
-                  <option value="CAES Abajo KM 14">CAES Abajo KM 14</option>
-                  <option value="CAES Arriba KM 14">CAES Arriba KM 14</option>
-                  <option value="Carr. Salvador">Carr. Salvador</option>
-                  <option value="Fraijanes">Fraijanes</option>
-                  <option value="Mixco">Mixco</option>
-                  <option value="Monterrico">Monterrico</option>
-                  <option value="Muxbal">Muxbal</option>
-                  <option value="Playa">Playa</option>
-                  <option value="Puerto San José">Puerto San José</option>
-                  <option value="San Cristóbal">San Cristóbal</option>
-                  <option value="San José Pinula">San José Pinula</option>
-                  <option value="Santa Catarina Pinula">
-                    Santa Catarina Pinula
+                  <option v-for="zona in zonasActivas" :key="zona.id" :value="zona.nombre">
+                    {{ zona.nombre }}
                   </option>
-                  <option value="Zona 1">Zona 1</option>
-                  <option value="Zona 2">Zona 2</option>
-                  <option value="Zona 4">Zona 4</option>
-                  <option value="Zona 7">Zona 7</option>
-                  <option value="Zona 9">Zona 9</option>
-                  <option value="Zona 10">Zona 10</option>
-                  <option value="Zona 11">Zona 11</option>
-                  <option value="Zona 12">Zona 12</option>
-                  <option value="Zona 13">Zona 13</option>
-                  <option value="Zona 14">Zona 14</option>
-                  <option value="Zona 15">Zona 15</option>
-                  <option value="Zona 16">Zona 16</option>
                 </select>
               </div>
             </div>
@@ -536,8 +510,9 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onBeforeUnmount } from "vue";
+import { ref, watch, computed, onBeforeUnmount, onMounted } from "vue";
 import inmuebleService from "../services/inmuebleService.js";
+import zonaService from "../services/zonaService.js";
 import Swal from "sweetalert2"; // Asegúrate de que SweetAlert2 está importado
 import RichTextEditor from "./RichTextEditor.vue";
 import draggable from "vuedraggable";
@@ -585,6 +560,8 @@ const amenidadesDisponibles = ref([
   { id: 19, nombre: "Sala familiar" },
   { id: 20, nombre: "Canchas deportivas" },
 ]);
+
+const zonasActivas = ref([]);
 
 // === Datos reactivos ===
 const isEditing = ref(false);
@@ -1274,4 +1251,16 @@ async function copySlugUrl() {
     Swal.fire("Error", "No se pudo copiar la URL al portapapeles.", "error");
   }
 }
+
+// === Cargar zonas activas al montar el componente ===
+onMounted(async () => {
+  try {
+    const response = await zonaService.getAllZonasActivas();
+    if (response.success) {
+      zonasActivas.value = response.data;
+    }
+  } catch (error) {
+    console.error("Error loading zonas activas:", error);
+  }
+});
 </script>

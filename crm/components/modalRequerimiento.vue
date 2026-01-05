@@ -120,21 +120,9 @@
               size="5"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
             >
-              <option value="Antigua">Antigua</option>
-              <option value="Atitlan">Atitlan</option>
-              <option value="CAES Arriba KM 14">CAES Arriba KM 14</option>
-              <option value="Muxbal">Muxbal</option>
-              <option value="San José Pinula">San José Pinula</option>
-              <option value="Santa Catarina Pinula">
-                Santa Catarina Pinula
+              <option v-for="zona in zonasActivas" :key="zona.id" :value="zona.nombre">
+                {{ zona.nombre }}
               </option>
-              <option value="Zona 4">Zona 4</option>
-              <option value="Zona 9">Zona 9</option>
-              <option value="Zona 10">Zona 10</option>
-              <option value="Zona 13">Zona 13</option>
-              <option value="Zona 14">Zona 14</option>
-              <option value="Zona 15">Zona 15</option>
-              <option value="Zona 16">Zona 16</option>
             </select>
           </div>
           <div>
@@ -273,6 +261,7 @@ import Swal from "sweetalert2";
 import clienteService from "@/services/clienteService";
 import requerimientoService from "@/services/requerimientoService";
 import agenteService from "@/services/agenteService";
+import zonaService from "@/services/zonaService";
 import { codPais } from "../api/codigoPais";
 import { useAuthStore } from "@/stores/auth";
 
@@ -328,6 +317,7 @@ const formData = ref({
 });
 
 const clienteAmenidades = ref([]);
+const zonasActivas = ref([]);
 
 const amenidadesDisponibles = ref([
   { id: 1, nombre: "Airbnb" },
@@ -484,21 +474,36 @@ watch(
   { immediate: false }
 );
 
-// === Cargar agentes solo cuando se abre el modal ===
+// === Cargar agentes y zonas activas solo cuando se abre el modal ===
 watch(
   () => props.isOpen,
   async (isOpen) => {
-    if (isOpen && agentes.value.length === 0) {
-      try {
-        const data = await agenteService.getUsers();
-        agentes.value =
-          data.$values?.map((agente) => ({
-            id: agente.id,
-            nombreCompleto: `${agente.nombre} ${agente.apellido}`,
-          })) || [];
-      } catch (error) {
-        // console técnico comentado:
-        // console.error("Error al cargar agentes:", error);
+    if (isOpen) {
+      // Cargar agentes
+      if (agentes.value.length === 0) {
+        try {
+          const data = await agenteService.getUsers();
+          agentes.value =
+            data.$values?.map((agente) => ({
+              id: agente.id,
+              nombreCompleto: `${agente.nombre} ${agente.apellido}`,
+            })) || [];
+        } catch (error) {
+          // console técnico comentado:
+          // console.error("Error al cargar agentes:", error);
+        }
+      }
+      
+      // Cargar zonas activas
+      if (zonasActivas.value.length === 0) {
+        try {
+          const response = await zonaService.getAllZonasActivas();
+          if (response.success) {
+            zonasActivas.value = response.data;
+          }
+        } catch (error) {
+          console.error("Error loading zonas activas:", error);
+        }
       }
     }
   }
