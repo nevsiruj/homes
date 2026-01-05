@@ -1,15 +1,44 @@
+import Swal from "sweetalert2";
+
 // Función para obtener la URL base de la API
 const getApiBaseUrl = () => { return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234'; };
+
+const redirectToLogin = (message = "La sesión ha caducado. Por favor, inicie sesión de nuevo.") => {
+  Swal.fire({
+    icon: "warning",
+    title: "Sesión caducada",
+    text: message,
+    confirmButtonText: "Aceptar"
+  }).then(() => {
+    window.location.href = "/";
+  });
+};
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("jwt-token");
+  if (!token) {
+    redirectToLogin("No se encontró una autenticación valida. Por favor, inicie sesión.");
+    throw new Error("No se encontró una autenticación valida. Por favor, inicie sesión.");
+  }
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
+};
 
 export default {
   async getAllZonas() {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Zona`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
       });
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error("Error 401: No autorizado");
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -27,10 +56,13 @@ export default {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Zona/activas`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
       });
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error("Error 401: No autorizado");
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -48,10 +80,13 @@ export default {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Zona/${id}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
       });
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error("Error 401: No autorizado");
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -69,15 +104,18 @@ export default {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Zona`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           nombre: zonaData.nombre,
           activo: zonaData.activo ?? true,
           orden: zonaData.orden ?? 0
         }),
       });
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error("Error 401: No autorizado");
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -95,9 +133,7 @@ export default {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Zona/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           id: id,
           nombre: zonaData.nombre,
@@ -105,6 +141,11 @@ export default {
           orden: zonaData.orden ?? 0
         }),
       });
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error("Error 401: No autorizado");
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -122,10 +163,13 @@ export default {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Zona/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
       });
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error("Error 401: No autorizado");
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -143,11 +187,14 @@ export default {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Zona/reorder`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(zonaIds),
       });
+
+      if (response.status === 401) {
+        redirectToLogin();
+        throw new Error("Error 401: No autorizado");
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
