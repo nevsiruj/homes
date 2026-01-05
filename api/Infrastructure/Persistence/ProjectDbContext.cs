@@ -1,5 +1,4 @@
-﻿
-using Astuc.Domain.DTOs;
+﻿using Astuc.Domain.DTOs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -46,6 +45,8 @@ public class ProjectDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Domain.Entities.PreferenciaAmenidad> PreferenciaAmenidades { get; set; }
 
     public DbSet<Amenidad> Amenidades { get; set; }
+
+    public DbSet<Zona> Zonas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -109,6 +110,9 @@ public class ProjectDbContext : IdentityDbContext<ApplicationUser>
 
     }
     }
+
+
+
 
 
 

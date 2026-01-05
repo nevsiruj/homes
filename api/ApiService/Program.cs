@@ -1,5 +1,4 @@
-﻿
-using AlmacenSystem.Infrastructure.Repositories.Common;
+﻿using AlmacenSystem.Infrastructure.Repositories.Common;
 using Application.Modules.ClienteModule.Services;
 using Application.Modules.InmuebleModule.Services;
 using Application.Modules.InteraccionModule.Service;
@@ -8,7 +7,9 @@ using Application.Modules.ProyectoModule.Services;
 using Application.Modules.RolesModule.Services;
 //using Application.Modules.ProductosModule.Services;
 using Application.Modules.UsersModule.Services;
+using Application.Modules.ZonaModule.Services;
 using Astuc.Domain.DTOs;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -71,8 +72,7 @@ builder.Services.AddScoped<IProyectoService, ProyectoService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IPreferenciaService, PreferenciaService>();
 builder.Services.AddScoped<IInteraccionService, Application.Modules.InteraccionModule.Service.InteraccionService>();
-
-
+builder.Services.AddScoped<IZonaService, ZonaService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

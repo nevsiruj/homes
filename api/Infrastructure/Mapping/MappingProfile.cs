@@ -85,6 +85,9 @@ public class MappingProfile : Profile
         CreateMap<AmenidadProyecto, AmenidadProyectoDTO>();
         CreateMap<AmenidadProyectoDTO, AmenidadProyecto>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+        CreateMap<Zona, ZonaDto>().ReverseMap();
+        CreateMap<CreateZonaDto, Zona>();
     }
 
 }
