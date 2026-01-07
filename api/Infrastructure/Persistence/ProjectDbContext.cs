@@ -48,6 +48,8 @@ public class ProjectDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Zona> Zonas { get; set; }
 
+    public DbSet<Articulo> Articulos { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

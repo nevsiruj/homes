@@ -7,7 +7,7 @@ using Application.Modules.BlogModule.Services;
 using Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Application.Modules.BlogModule.Controllers
+namespace Application.Modules.BlogModule.Controller
 {
     [ApiController]
     [Route("[controller]")]

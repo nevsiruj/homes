@@ -88,6 +88,10 @@ public class MappingProfile : Profile
 
         CreateMap<Zona, ZonaDto>().ReverseMap();
         CreateMap<CreateZonaDto, Zona>();
+
+        // Mapeo de Articulo
+        CreateMap<Articulo, ArticuloDto>().ReverseMap();
+        CreateMap<CreateArticuloDto, Articulo>();
     }
 
 }

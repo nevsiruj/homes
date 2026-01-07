@@ -73,6 +73,7 @@ builder.Services.AddScoped<IClienteService, ClienteService>();
 builder.Services.AddScoped<IPreferenciaService, PreferenciaService>();
 builder.Services.AddScoped<IInteraccionService, Application.Modules.InteraccionModule.Service.InteraccionService>();
 builder.Services.AddScoped<IZonaService, ZonaService>();
+builder.Services.AddScoped<Application.Modules.BlogModule.Services.IArticuloService, Application.Modules.BlogModule.Services.ArticuloService>();
 
 builder.Services.AddSwaggerGen(c =>
 {
