@@ -413,8 +413,13 @@ const loadAllProyectos = async () => {
     loading.value = true;
     error.value = null;
     const responseData = await proyectoService.getProyecto();
-    if (responseData && Array.isArray(responseData.$values)) {
-      const normalizedData = responseData.$values.map((proyecto) => ({
+    // Soportar nueva estructura (array directo) y antigua ($values)
+    const proyectosArray = Array.isArray(responseData) 
+      ? responseData 
+      : (Array.isArray(responseData.$values) ? responseData.$values : []);
+    
+    if (proyectosArray.length > 0) {
+      const normalizedData = proyectosArray.map((proyecto) => ({
         id: proyecto.id,
         codigoProyecto: proyecto.codigoProyecto,
         title: proyecto.titulo,
@@ -423,18 +428,23 @@ const loadAllProyectos = async () => {
         image: proyecto.imagenPrincipal?.trim(),
         imagenesReferencia:
           proyecto.imagenesReferenciaProyecto &&
-          Array.isArray(proyecto.imagenesReferenciaProyecto.$values)
-            ? proyecto.imagenesReferenciaProyecto.$values.map((img) => ({
-                url: img.url?.trim(),
-              }))
-            : [],
+          (Array.isArray(proyecto.imagenesReferenciaProyecto)
+            ? proyecto.imagenesReferenciaProyecto
+            : Array.isArray(proyecto.imagenesReferenciaProyecto.$values)
+            ? proyecto.imagenesReferenciaProyecto.$values
+            : []
+          ).map((img) => ({
+            url: img.url?.trim(),
+          })),
         fechaCreacion: proyecto.fechaCreacion,
         descripcion: proyecto.contenido,
         tipos: proyecto.tipos?.trim(),
         ubicacion: proyecto.ubicaciones?.trim(),
-        amenidades: Array.isArray(proyecto.amenidades?.$values)
-          ? proyecto.amenidades.$values
-          : [],
+        amenidades: Array.isArray(proyecto.amenidades)
+          ? proyecto.amenidades
+          : (Array.isArray(proyecto.amenidades?.$values)
+            ? proyecto.amenidades.$values
+            : []),
         video: proyecto.video?.trim(),
         slugProyecto: proyecto.slugProyecto,
       }));
