@@ -88,7 +88,7 @@
 import Headerb from '~/components/headerb.vue'
 import Footer from '~/components/footer.vue'
 import { ref, computed, onMounted } from 'vue'
-import { blogs as blogsData } from '~/data/blogs.js'
+import blogService from '~/services/blogService.js'
 import Skeleton from "~/components/skeleton.vue";
 
 const blogs = ref([])
@@ -98,17 +98,15 @@ const error = ref(null)
 const itemsPerPage = 9
 const currentPage = ref(1)
 
-// Modificación para simular un tiempo de carga
-onMounted(() => {
-    setTimeout(() => {
-        try {
-            blogs.value = blogsData
-        } catch (e) {
-            error.value = e.message
-        } finally {
-            loading.value = false
-        }
-    }, 500) // Retraso de 500 milisegundos
+// Modificación para cargar desde la API
+onMounted(async () => {
+    try {
+        blogs.value = await blogService.getAllBlogs()
+    } catch (e) {
+        error.value = e.message
+    } finally {
+        loading.value = false
+    }
 })
 
 // ... El resto de tu lógica computada y funciones permanece igual

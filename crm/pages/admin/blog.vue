@@ -135,7 +135,7 @@
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-center gap-2">
                                 <button @click="verVistaPrevia(articulo)" type="button"
-                                    class="flex items-center font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                                    class="flex items-center font-medium text-gray-600 hover:text-gray-800 hover:underline"
                                     title="Vista Previa">
                                     <svg class="w-5 h-5 me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -153,7 +153,7 @@
                                     </svg>
                                 </button>
                                 <button @click="eliminarArticulo(articulo.id)" type="button"
-                                    class="flex items-center font-medium text-red-600 hover:text-red-800 hover:underline"
+                                    class="flex items-center font-medium text-gray-600 hover:text-gray-800 hover:underline"
                                     title="Eliminar">
                                     <svg class="w-5 h-5 me-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -305,9 +305,15 @@ const guardarArticulo = async (datosArticulo) => {
         let response;
         if (articuloSeleccionado.value && articuloSeleccionado.value.id) {
             // Editar
+            const datosCompletos = {
+                ...datosArticulo,
+                fechaCreacion: articuloSeleccionado.value.fechaCreacion,
+                orden: articuloSeleccionado.value.orden || 0,
+                permalink: articuloSeleccionado.value.permalink
+            };
             response = await blogService.updateArticulo(
                 articuloSeleccionado.value.id,
-                datosArticulo
+                datosCompletos
             );
         } else {
             // Crear nuevo

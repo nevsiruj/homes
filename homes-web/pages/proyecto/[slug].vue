@@ -428,13 +428,13 @@ const {
       throw createError({ statusCode: 404, statusMessage: "Proyecto no encontrado", fatal: true });
     }
     // Normaliza los datos de la API para amenidades e imágenes
-    if (data.amenidades && data.amenidades.$values) {
-      data.amenidades = data.amenidades.$values;
+    if (Array.isArray(data.amenidades)) {
+      // ya es array
     } else {
       data.amenidades = [];
     }
-    if (data.imagenesReferenciaProyecto && data.imagenesReferenciaProyecto.$values) {
-      data.imagenesReferenciaProyecto = data.imagenesReferenciaProyecto.$values;
+    if (Array.isArray(data.imagenesReferenciaProyecto)) {
+      // ya es array
     } else {
       data.imagenesReferenciaProyecto = [];
     }
@@ -691,7 +691,7 @@ watch(
 const loadSuggestedProperties = async () => {
   try {
     const data = await proyectoService.getProyecto();
-    const items = Array.isArray(data?.$values) ? data.$values : (Array.isArray(data) ? data : []);
+    const items = Array.isArray(data) ? data : [];
     if (!items.length) {
       suggestedProperties.value = [];
       return;

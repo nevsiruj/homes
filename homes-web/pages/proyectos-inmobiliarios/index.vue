@@ -413,8 +413,8 @@ const loadAllProyectos = async () => {
     loading.value = true;
     error.value = null;
     const responseData = await proyectoService.getProyecto();
-    if (responseData && Array.isArray(responseData.$values)) {
-      const normalizedData = responseData.$values.map((proyecto) => ({
+    if (Array.isArray(responseData)) {
+      const normalizedData = responseData.map((proyecto) => ({
         id: proyecto.id,
         codigoProyecto: proyecto.codigoProyecto,
         title: proyecto.titulo,
@@ -423,8 +423,8 @@ const loadAllProyectos = async () => {
         image: proyecto.imagenPrincipal?.trim(),
         imagenesReferencia:
           proyecto.imagenesReferenciaProyecto &&
-          Array.isArray(proyecto.imagenesReferenciaProyecto.$values)
-            ? proyecto.imagenesReferenciaProyecto.$values.map((img) => ({
+          Array.isArray(proyecto.imagenesReferenciaProyecto)
+            ? proyecto.imagenesReferenciaProyecto.map((img) => ({
                 url: img.url?.trim(),
               }))
             : [],
@@ -432,8 +432,8 @@ const loadAllProyectos = async () => {
         descripcion: proyecto.contenido,
         tipos: proyecto.tipos?.trim(),
         ubicacion: proyecto.ubicaciones?.trim(),
-        amenidades: Array.isArray(proyecto.amenidades?.$values)
-          ? proyecto.amenidades.$values
+        amenidades: Array.isArray(proyecto.amenidades)
+          ? proyecto.amenidades
           : [],
         video: proyecto.video?.trim(),
         slugProyecto: proyecto.slugProyecto,

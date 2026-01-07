@@ -1,147 +1,218 @@
-const articulos = [
-  {
-    id: "1",
-    title: "¿Cómo calcular el Retorno de Inversión?",
-    content: `<h2>¿QUÉ ES EL RETORNO DE INVERSIÓN?</h2>
-<p>Para entender el retorno de inversión, debemos conocer que la mayoría de los bancos en Guatemala ofrecen plazos fijos entre 2-3%, una propiedad en venta o renta en una zona de alta demanda puede rendir un retorno de 4-6% y algunas propiedades comerciales aún más.</p>
-<h2>CÓMO CALCULAR EL RETORNO DE INVERSIÓN ANUAL</h2>
-<p>Para calcular el retorno de inversión es necesario multiplicar la renta mensual por 12. Descontar mantenimiento y IUSI anual. Luego dividir por precio del apartamento.</p>
-<blockquote>
-<p><i>Ejemplo</i>:<br /><br /><em>Apartamento en Venta en $175,000 rentado en $1,000</em></p>
-<p>Renta Mensual $1000 x 12 =$12,000 - Mantenimiento Anual $1400 - IUSI Anual $600. Ingreso Anual $10,000 / Precio total de $175,000 = 5.7% retorno anual.</p>
-</blockquote>
-<h2>PLUSVALÍA</h2>
-<p>Mientras en el banco tu dinero solo genera intereses, una propiedad inmobiliaria ofrece intereses mensuales y además la posibilidad de plusvalía. Según nuestra experiencia en zonas de alta demanda como zona 10, 13, 14, 15 en los últimos 10 años el promedio del valor por metro² ha subido un aproximado del 50%.</p>`,
-    slug: "calcular-retorno-de-inversion",
-    permalink: "https://homesguatemala.com/informativo/calcular-retorno-de-inversion/",
-    imageUrl: "https://old-web.homesguatemala.com/wp-content/uploads/2019/06/calcular-retorno-de-inversion.jpg",
-    categorias: "Informativo",
-    fechaCreacion: "2024-06-15",
-    activo: true
-  },
-  {
-    id: "2",
-    title: "Guía para comprar tu primera casa",
-    content: `<h2>INTRODUCCIÓN</h2>
-<p>Comprar tu primera casa es una de las decisiones más importantes de tu vida. En esta guía te explicaremos los pasos principales.</p>
-<h2>PASOS PARA COMPRAR</h2>
-<ul>
-<li>Evalúa tu presupuesto</li>
-<li>Busca financiamiento</li>
-<li>Encuentra la propiedad ideal</li>
-<li>Realiza la oferta</li>
-<li>Cierra la negociación</li>
-</ul>`,
-    slug: "guia-primera-casa",
-    permalink: "https://homesguatemala.com/informativo/guia-primera-casa/",
-    imageUrl: "https://images.unsplash.com/photo-1560518883-ce09059eeffa",
-    categorias: "Guías",
-    fechaCreacion: "2024-08-10",
-    activo: true
-  },
-  {
-    id: "3",
-    title: "Tendencias del mercado inmobiliario 2025",
-    content: `<h2>EL MERCADO EN 2025</h2>
-<p>El mercado inmobiliario guatemalteco continúa en crecimiento con nuevas oportunidades de inversión.</p>
-<h2>ZONAS DE MAYOR DEMANDA</h2>
-<p>Las zonas 10, 14, 15 y 16 siguen siendo las más cotizadas para inversión residencial.</p>`,
-    slug: "tendencias-mercado-2025",
-    permalink: "https://homesguatemala.com/informativo/tendencias-mercado-2025/",
-    imageUrl: "https://images.unsplash.com/photo-1560520653-9e0e4c89eb11",
-    categorias: "Mercado",
-    fechaCreacion: "2025-01-01",
-    activo: true
+import Swal from "sweetalert2";
+
+// Función para obtener la URL base de la API
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.$config?.apiBaseUrl) return window.$config.apiBaseUrl;
+  return window.__NUXT__?.config?.public?.apiBaseUrl || 'https://localhost:7234';
+};
+
+const redirectToLogin = (message = "La sesión ha caducado. Por favor, inicie sesión de nuevo.") => {
+  Swal.fire({
+    icon: "warning",
+    title: "Sesión caducada",
+    text: message,
+    confirmButtonText: "Aceptar"
+  }).then(() => {
+    window.location.href = "/";
+  });
+};
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("jwt-token");
+  if (!token) {
+    redirectToLogin("No se encontró una autenticación valida. Por favor, inicie sesión.");
+    throw new Error("No se encontró una autenticación valida. Por favor, inicie sesión.");
   }
-];
 
-export const getAllArticulos = () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        data: articulos,
-        total: articulos.length
-      });
-    }, 300);
-  });
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
+  };
 };
 
-export const getArticuloById = (id) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const articulo = articulos.find(a => a.id === id);
-      if (articulo) {
-        resolve({
-          success: true,
-          data: articulo
-        });
-      } else {
-        reject({
-          success: false,
-          message: "Artículo no encontrado"
-        });
-      }
-    }, 300);
-  });
+// Función para mapear del backend al frontend
+const mapArticuloFromBackend = (articulo) => {
+  return {
+    id: articulo.Id,
+    title: articulo.Titulo,
+    content: articulo.Contenido,
+    slug: articulo.Slug,
+    permalink: articulo.Permalink,
+    imageUrl: articulo.ImagenUrl,
+    categorias: articulo.Categoria,
+    fechaCreacion: articulo.FechaCreacion,
+    fechaActualizacion: articulo.FechaActualizacion,
+    activo: articulo.Activo,
+    orden: articulo.Orden
+  };
 };
 
-export const createArticulo = (articuloData) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newArticulo = {
-        id: (articulos.length + 1).toString(),
-        ...articuloData,
-        fechaCreacion: new Date().toISOString().split('T')[0],
-        activo: true
-      };
-      articulos.push(newArticulo);
-      resolve({
-        success: true,
-        data: newArticulo,
-        message: "Artículo creado exitosamente"
-      });
-    }, 300);
-  });
+export const getAllArticulos = async () => {
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/api/Articulo`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      throw new Error("Error 401: No autorizado");
+    }
+
+    if (!response.ok) {
+      throw new Error(`HTTP status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    // Mapear cada artículo
+    const mappedData = data.data.map(mapArticuloFromBackend);
+    return {
+      ...data,
+      data: mappedData
+    };
+  } catch (error) {
+    console.error("Error al obtener artículos:", error);
+    throw error;
+  }
 };
 
-export const updateArticulo = (id, articuloData) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const index = articulos.findIndex(a => a.id === id);
-      if (index !== -1) {
-        articulos[index] = { ...articulos[index], ...articuloData };
-        resolve({
-          success: true,
-          data: articulos[index],
-          message: "Artículo actualizado exitosamente"
-        });
-      } else {
-        reject({
-          success: false,
-          message: "Artículo no encontrado"
-        });
-      }
-    }, 300);
-  });
+export const getArticuloById = async (id) => {
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/api/Articulo/${id}`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      throw new Error("Error 401: No autorizado");
+    }
+
+    if (!response.ok) {
+      throw new Error(`Error al obtener artículo (ID: ${id})`);
+    }
+
+    const data = await response.json();
+    // Mapear el artículo
+    const mappedData = mapArticuloFromBackend(data.data);
+    return {
+      ...data,
+      data: mappedData
+    };
+  } catch (error) {
+    console.error("Error al obtener artículo:", error);
+    throw error;
+  }
 };
 
-export const deleteArticulo = (id) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      const index = articulos.findIndex(a => a.id === id);
-      if (index !== -1) {
-        articulos.splice(index, 1);
-        resolve({
-          success: true,
-          message: "Artículo eliminado exitosamente"
-        });
-      } else {
-        reject({
-          success: false,
-          message: "Artículo no encontrado"
-        });
-      }
-    }, 300);
-  });
+export const createArticulo = async (articuloData) => {
+  try {
+    // Mapear campos del frontend al backend
+    const payload = {
+      Titulo: articuloData.title,
+      Contenido: articuloData.content,
+      Slug: articuloData.slug,
+      ImagenUrl: articuloData.imageUrl,
+      Categoria: articuloData.categorias,
+      Activo: articuloData.activo !== undefined ? articuloData.activo : true,
+      Orden: articuloData.orden || 0
+    };
+
+    const response = await fetch(`${getApiBaseUrl()}/api/Articulo`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      throw new Error("Error 401: No autorizado");
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    // Mapear la respuesta
+    const mappedData = mapArticuloFromBackend(data.data);
+    return {
+      ...data,
+      data: mappedData
+    };
+  } catch (error) {
+    console.error("Error al crear artículo:", error);
+    throw error;
+  }
+};
+
+export const updateArticulo = async (id, articuloData) => {
+  try {
+    // Mapear campos del frontend al backend
+    const payload = {
+      Id: id,
+      Titulo: articuloData.title,
+      Contenido: articuloData.content,
+      Slug: articuloData.slug,
+      ImagenUrl: articuloData.imageUrl,
+      Categoria: articuloData.categorias,
+      FechaCreacion: articuloData.fechaCreacion,
+      FechaActualizacion: new Date().toISOString(),
+      Activo: articuloData.activo !== undefined ? articuloData.activo : true,
+      Orden: articuloData.orden || 0
+    };
+
+    const response = await fetch(`${getApiBaseUrl()}/api/Articulo/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload)
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      throw new Error("Error 401: No autorizado");
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    // Mapear la respuesta
+    const mappedData = mapArticuloFromBackend(data.data);
+    return {
+      ...data,
+      data: mappedData
+    };
+  } catch (error) {
+    console.error("Error al actualizar artículo:", error);
+    throw error;
+  }
+};
+
+export const deleteArticulo = async (id) => {
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/api/Articulo/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders()
+    });
+
+    if (response.status === 401) {
+      redirectToLogin();
+      throw new Error("Error 401: No autorizado");
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || `HTTP status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al eliminar artículo:", error);
+    throw error;
+  }
 };

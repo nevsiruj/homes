@@ -1,7 +1,15 @@
 <template>
     <div class="font-raleway">
         <Header />
-        <div class="max-w-4xl mx-auto pt-8 pb-16 px-4 lg:px-0">
+        <div v-if="loading" class="flex justify-center items-center py-20">
+            <div class="text-gray-600 text-xl">Cargando...</div>
+        </div>
+        <div v-else-if="error" class="flex justify-center items-center py-20">
+            <div class="text-red-600 text-xl font-semibold p-4 border border-red-300 rounded-md bg-red-50">
+                Error: {{ error }}
+            </div>
+        </div>
+        <div v-else class="max-w-4xl mx-auto pt-8 pb-16 px-4 lg:px-0">
             <h1 class="text-3xl md:text-4xl lg:text-5xl title-alta mb-4 text-gray-900 font-light text-center">
                 {{ blog.Title }}
             </h1>
@@ -24,8 +32,8 @@
 import Header from "~/components/headerb.vue";
 import Footer from "~/components/footer.vue";
 import { useRoute } from "vue-router";
-import { blogs } from "~/data/blogs.js";
-import { computed } from 'vue';
+import blogService from "~/services/blogService.js";
+import { computed, ref, onMounted } from 'vue';
 
 const route = useRoute();
 
@@ -40,36 +48,47 @@ function normalizeCategory(category) {
         .trim()
 }
 
-// Buscar el blog comparando slug y categoría normalizada
-const blog = blogs.find((b) => {
-    const blogCategory = normalizeCategory(b['Categorías'])
-    const routeCategory = route.params.category
-    return b.Slug === route.params.slug && blogCategory === routeCategory
-});
+// Buscar el blog usando el servicio
+const blog = ref(null)
+const loading = ref(true)
+const error = ref(null)
 
-if (!blog) {
-    throw createError({ statusCode: 404, statusMessage: 'Página No Encontrada', fatal: true });
-}
+onMounted(async () => {
+    try {
+        blog.value = await blogService.getBlogBySlug(route.params.slug)
+        // Verificar que la categoría coincida
+        const blogCategory = normalizeCategory(blog.value['Categorías'])
+        const routeCategory = route.params.category
+        if (blogCategory !== routeCategory) {
+            throw new Error('Categoría no coincide')
+        }
+    } catch (e) {
+        error.value = e.message
+        throw createError({ statusCode: 404, statusMessage: 'Página No Encontrada', fatal: true });
+    } finally {
+        loading.value = false
+    }
+})
 
 const DOMINIO_BASE = 'https://homesguatemala.com';
 const FALLBACK_IMAGE_URL = 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp';
 
 // Obtener la imagen principal (primera imagen del array)
 const mainImage = computed(() => {
-    if (!blog['Image URL']) {
+    if (!blog.value?.['Image URL']) {
         return FALLBACK_IMAGE_URL;
     }
-    const images = blog['Image URL'].split('|');
+    const images = blog.value['Image URL'].split('|');
     return images[0] || FALLBACK_IMAGE_URL;
 });
 
 // Generar descripción meta desde el contenido HTML
 const metaDescription = computed(() => {
-    if (!blog?.Content) {
+    if (!blog.value?.Content) {
         return 'Descubre los mejores consejos y tips sobre bienes raíces en Guatemala - Homes Guatemala';
     }
     // Limpiar HTML y obtener texto plano
-    const cleanText = blog.Content
+    const cleanText = blog.value.Content
         .replace(/<[^>]*>/g, ' ')
         .replace(/\s+/g, ' ')
         .replace(/&nbsp;/g, ' ')
@@ -82,13 +101,13 @@ const metaImage = computed(() => {
 });
 
 useHead({
-    title: () => blog?.Title || 'Blog - Homes Guatemala',
+    title: () => blog.value?.Title || 'Blog - Homes Guatemala',
     meta: [
         // Metas estándar
         { name: 'description', content: () => metaDescription.value },
 
         // Open Graph (para Facebook, LinkedIn, etc.)
-        { property: 'og:title', content: () => blog?.Title },
+        { property: 'og:title', content: () => blog.value?.Title },
         { property: 'og:description', content: () => metaDescription.value },
         { property: 'og:image', content: () => metaImage.value },           
         { property: 'og:url', content: () => `${DOMINIO_BASE}${route.path}` },
@@ -96,7 +115,7 @@ useHead({
 
         // Twitter Cards (para Twitter)
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: () => blog?.Title },
+        { name: 'twitter:title', content: () => blog.value?.Title },
         { name: 'twitter:description', content: () => metaDescription.value },
         { name: 'twitter:image', content: () => metaImage.value },       
     ],

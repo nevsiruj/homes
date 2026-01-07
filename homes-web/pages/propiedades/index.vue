@@ -390,12 +390,8 @@ const fetchInmuebles = async () => {
 
         return {
           ...plainItem,
-          imagenesReferencia:
-            plainItem.imagenesReferencia?.$values ||
-            plainItem.imagenesReferencia ||
-            [],
-          amenidades:
-            plainItem.amenidades?.$values || plainItem.amenidades || [],
+          imagenesReferencia: plainItem.imagenesReferencia || [],
+          amenidades: plainItem.amenidades || [],
         };
       });
       totalCount.value = response.totalCount || 0;

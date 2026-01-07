@@ -86,7 +86,7 @@ export default {
 
       const rawData = await response.json();
       const pagedResult = {
-        items: rawData.items?.$values || [],
+        items: rawData.items || [],
         totalCount: rawData.totalCount,
         pageNumber: rawData.pageNumber,
         pageSize: rawData.pageSize,

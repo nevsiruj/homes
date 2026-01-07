@@ -64,46 +64,8 @@
                     Imagen destacada
                   </label>
                   
-                  <!-- Tabs para elegir entre URL o Archivo -->
-                  <div class="flex gap-2 mb-3">
-                    <button
-                      type="button"
-                      @click="imagenTipo = 'url'"
-                      :class="[
-                        'px-4 py-2 text-sm rounded-lg border transition-colors',
-                        imagenTipo === 'url'
-                          ? 'bg-gray-700 text-white border-gray-700'
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                      ]"
-                    >
-                      URL de Imagen
-                    </button>
-                    <button
-                      type="button"
-                      @click="imagenTipo = 'archivo'"
-                      :class="[
-                        'px-4 py-2 text-sm rounded-lg border transition-colors',
-                        imagenTipo === 'archivo'
-                          ? 'bg-gray-700 text-white border-gray-700'
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                      ]"
-                    >
-                      Cargar Archivo
-                    </button>
-                  </div>
-
-                  <!-- Input URL -->
-                  <div v-if="imagenTipo === 'url'">
-                    <input
-                      v-model="formData.imageUrl"
-                      type="url"
-                      placeholder="https://ejemplo.com/imagen.jpg"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm p-2 border"
-                    />
-                  </div>
-
-                  <!-- Input File -->
-                  <div v-else>
+                  <!-- Subir Archivo -->
+                  <div>
                     <input
                       type="file"
                       accept="image/*"
@@ -114,9 +76,9 @@
                   </div>
 
                   <!-- Preview de imagen -->
-                  <div v-if="imagenPreview || formData.imageUrl" class="mt-3">
+                  <div v-if="imagenPreview" class="mt-3">
                     <img
-                      :src="imagenPreview || formData.imageUrl"
+                      :src="imagenPreview"
                       alt="Preview"
                       class="h-40 w-auto rounded-md object-cover shadow-md"
                       @error="imagenError"
@@ -156,6 +118,25 @@
                     />
                     <p class="mt-1 text-xs text-gray-500">Presiona Enter o haz clic fuera para agregar</p>
                   </div>
+                </div>
+
+                <!-- Estado del artículo -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Estado del artículo
+                  </label>
+                  <button
+                    type="button"
+                    @click="formData.activo = !formData.activo"
+                    :class="[
+                      'px-4 py-2 text-sm font-medium rounded-lg border transition-colors',
+                      formData.activo
+                        ? 'bg-green-100 text-green-800 border-green-300'
+                        : 'bg-red-100 text-red-800 border-red-300'
+                    ]"
+                  >
+                    {{ formData.activo ? 'Publicado' : 'Borrador' }}
+                  </button>
                 </div>
 
                 <!-- Contenido con RichTextEditor -->
@@ -230,7 +211,6 @@ const guardando = ref(false);
 const categoriaSeleccionada = ref('Informativo');
 const mostrarInputCategoria = ref(false);
 const nuevaCategoria = ref('');
-const imagenTipo = ref('url');
 const imagenPreview = ref(null);
 const imagenArchivo = ref(null);
 const imageInputRef = ref(null);
@@ -241,14 +221,16 @@ const formData = ref({
   content: '',
   imageUrl: '',
   categorias: 'Informativo',
-  permalink: ''
+  permalink: '',
+  activo: true
 });
 
 const modoEdicion = computed(() => !!props.articulo);
 
 const generarPermalink = computed(() => {
   if (formData.value.slug) {
-    return `https://homesguatemala.com/informativo/${formData.value.slug}/`;
+    const categoriaNormalizada = formData.value.categorias.toLowerCase().replace(/\s+/g, '-');
+    return `https://homesguatemala.com/${categoriaNormalizada}/${formData.value.slug}/`;
   }
   return '';
 });
@@ -261,12 +243,12 @@ const resetearFormulario = () => {
     content: '',
     imageUrl: '',
     categorias: 'Informativo',
-    permalink: ''
+    permalink: '',
+    activo: true
   };
   categoriaSeleccionada.value = 'Informativo';
   mostrarInputCategoria.value = false;
   nuevaCategoria.value = '';
-  imagenTipo.value = 'url';
   imagenPreview.value = null;
   imagenArchivo.value = null;
   if (imageInputRef.value) {
@@ -391,12 +373,12 @@ watch(() => props.articulo, (nuevoArticulo) => {
       content: nuevoArticulo.content || '',
       imageUrl: nuevoArticulo.imageUrl || '',
       categorias: nuevoArticulo.categorias || 'Informativo',
-      permalink: nuevoArticulo.permalink || ''
+      permalink: nuevoArticulo.permalink || '',
+      activo: nuevoArticulo.activo !== undefined ? nuevoArticulo.activo : true
     };
     categoriaSeleccionada.value = nuevoArticulo.categorias || 'Informativo';
     mostrarInputCategoria.value = false;
-    imagenTipo.value = 'url';
-    imagenPreview.value = null;
+    imagenPreview.value = nuevoArticulo.imageUrl || null;
     imagenArchivo.value = null;
     if (imageInputRef.value) {
       imageInputRef.value.value = '';
@@ -408,7 +390,7 @@ watch(() => props.articulo, (nuevoArticulo) => {
 
 // Auto-generar slug desde el título
 watch(() => formData.value.title, (nuevoTitulo) => {
-  if (nuevoTitulo && !modoEdicion.value) {
+  if (nuevoTitulo) {
     formData.value.slug = nuevoTitulo
       .toLowerCase()
       .normalize('NFD')
