@@ -22,14 +22,38 @@ export default {
     try {
       const cacheKey = `${API_BASE_URL}/Proyecto:list`;
       const cached = getFromCache(cacheKey);
-      if (cached) return cached;
-      const response = await fetch(`${API_BASE_URL}/Proyecto`)
+      if (cached) {
+        console.log("Returning cached proyectos");
+        return cached;
+      }
+      const url = `${API_BASE_URL}/Proyecto`;
+      console.log("Fetching proyectos from:", url);
+      
+      const response = await fetch(url)
       if (!response.ok) throw new Error('Error fetching Proyectos')
       const data = await response.json();
-      setCache(cacheKey, data);
-      return data;
+      
+      console.log("Raw proyectos response:", data);
+      console.log("Data type:", typeof data, "Is Array:", Array.isArray(data));
+      
+      // Manejar respuesta que puede ser array directo o {$values: [...]}
+      let proyectos = data;
+      if (!Array.isArray(data)) {
+        if (data && data.$values && Array.isArray(data.$values)) {
+          proyectos = data.$values;
+          console.log("Extracted proyectos from $values property");
+        } else {
+          proyectos = [];
+          console.log("Data is not an array and doesn't have $values");
+        }
+      }
+      
+      console.log("Processed proyectos count:", Array.isArray(proyectos) ? proyectos.length : 0);
+      
+      setCache(cacheKey, proyectos);
+      return proyectos;
     } catch (error) {
-      //console.error('Error in ProyectoService.getProyecto:', error)
+      console.error('Error in ProyectoService.getProyecto:', error)
       throw error
     }
   },

@@ -384,7 +384,10 @@ const fetchInmuebles = async () => {
       cleanedFilters
     );
 
+    console.log("Response received:", response);
+    
     if (response && Array.isArray(response.items)) {
+      console.log("Items count:", response.items.length);
       inmuebles.value = response.items.map((item) => {
         const plainItem = JSON.parse(JSON.stringify(item));
 
@@ -397,14 +400,15 @@ const fetchInmuebles = async () => {
       totalCount.value = response.totalCount || 0;
       totalPages.value = response.totalPages || 0;
 
-      // console.log("Fetched inmuebles:", inmuebles.value); // Deshabilitado para producción
+      console.log("Inmuebles set. Count:", inmuebles.value.length);
     } else {
+      console.log("Response items is not an array or response is empty");
       inmuebles.value = [];
       totalCount.value = 0;
       totalPages.value = 0;
     }
   } catch (err) {
-    // console.error("Error fetching inmuebles:", err); // Deshabilitado para producción
+    console.error("Error fetching inmuebles:", err);
     error.value =
       "No se pudieron cargar los inmuebles. Intenta de nuevo más tarde.";
   } finally {

@@ -73,11 +73,14 @@ export default {
       }
 
       const url = `${API_BASE_URL}/Inmueble?${params.toString()}`;
-      // console.log("API URL:", url); // Deshabilitado para producción
+      console.log("API URL:", url);
 
       const cacheKey = `getInmuebles:${url}`;
       const cached = getFromCache(cacheKey);
-      if (cached) return cached;
+      if (cached) {
+        console.log("Returning cached result");
+        return cached;
+      }
       const response = await fetch(url);
       if (!response.ok) {
         const errorBody = await response.text();
@@ -85,8 +88,21 @@ export default {
       }
 
       const rawData = await response.json();
+      console.log("Raw API Response:", rawData);
+      console.log("Items type:", typeof rawData.items, "Is Array:", Array.isArray(rawData.items));
+      
+      // Manejar items que pueden venir como array directo o como {$values: [...]}
+      let items = [];
+      if (Array.isArray(rawData.items)) {
+        items = rawData.items;
+      } else if (rawData.items && rawData.items.$values && Array.isArray(rawData.items.$values)) {
+        items = rawData.items.$values;
+      }
+      
+      console.log("Processed items count:", items.length);
+      
       const pagedResult = {
-        items: rawData.items?.$values || [],
+        items: items,
         totalCount: rawData.totalCount,
         pageNumber: rawData.pageNumber,
         pageSize: rawData.pageSize,

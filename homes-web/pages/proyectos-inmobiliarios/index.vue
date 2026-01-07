@@ -412,11 +412,16 @@ const loadAllProyectos = async () => {
   try {
     loading.value = true;
     error.value = null;
+    console.log("Starting to load all proyectos...");
     const responseData = await proyectoService.getProyecto();
+    console.log("Response data received:", responseData);
+    
     // Soportar nueva estructura (array directo) y antigua ($values)
     const proyectosArray = Array.isArray(responseData) 
       ? responseData 
       : (Array.isArray(responseData.$values) ? responseData.$values : []);
+    
+    console.log("Proyectos array length:", proyectosArray.length);
     
     if (proyectosArray.length > 0) {
       const normalizedData = proyectosArray.map((proyecto) => ({
@@ -450,14 +455,16 @@ const loadAllProyectos = async () => {
       }));
       allProyectos.value = normalizedData;
       proyectosForHeaderCounts.value = normalizedData;
+      console.log("Normalized proyectos count:", normalizedData.length);
     } else {
+      console.log("No proyectos found in response");
       allProyectos.value = [];
       proyectosForHeaderCounts.value = [];
     }
   } catch (err) {
+    console.error("Error al cargar los proyectos:", err);
     error.value =
       "No se pudieron cargar los proyectos iniciales. Intenta de nuevo más tarde.";
-    //console.error("Error al cargar los proyectos:", err);
   } finally {
     loading.value = false;
     // Ejecutar scroll después de que loading sea false y el DOM se actualice
