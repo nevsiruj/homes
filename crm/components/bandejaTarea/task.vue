@@ -1,10 +1,10 @@
 <template>
-  <div class="p-4">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-800">
+  <div class="p-2 sm:p-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+      <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 truncate max-w-full">
         Bienvenido, {{ nombreAgente }}
       </h1>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 flex-shrink-0">
         <label class="relative inline-flex items-center cursor-pointer">
           <input 
             type="checkbox" 
@@ -18,7 +18,7 @@
     </div>
 
     <div
-      class="flex flex-wrap md:flex-nowrap items-center justify-between gap-4 mt-6 mb-6 w-full"
+      class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 sm:gap-4 mt-4 sm:mt-6 mb-4 sm:mb-6 w-full"
     >
       <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
         <select
@@ -59,23 +59,50 @@
         />
       </div>
 
-      <div class="flex justify-center w-full md:w-auto md:justify-end">
+      <div class="flex items-center gap-2 w-full md:w-auto md:justify-end">
         <button
           @click="openAddModal"
-          class="px-4 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium w-full sm:w-auto"
+          class="px-4 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium flex-shrink-0"
         >
           Agregar Cliente
         </button>
+        
+        <!-- Botones de navegación horizontal -->
+        <div class="flex items-center gap-1 ml-2">
+          <button
+            @click="scrollColumns('left')"
+            class="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors border border-gray-300 flex-shrink-0"
+            title="Desplazar izquierda"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            @click="scrollColumns('right')"
+            class="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors border border-gray-300 flex-shrink-0"
+            title="Desplazar derecha"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
     <Loader v-if="isLoading" class="my-8" />
 
-    <div v-else class="flex overflow-x-auto gap-4 pb-4">
+    <div 
+      v-else 
+      ref="columnsContainer"
+      class="flex overflow-x-auto gap-3 sm:gap-4 pb-4 scroll-smooth snap-x snap-mandatory"
+      @scroll="updateScrollIndicators"
+    >
       <div
         v-for="column in columns"
         :key="column.estado"
-        class="min-w-[300px] bg-gray-50 rounded-lg p-3 border-t-4"
+        class="min-w-[260px] sm:min-w-[280px] md:min-w-[300px] lg:min-w-[320px] bg-gray-50 rounded-lg p-2 sm:p-3 border-t-4 snap-start flex-shrink-0"
         :class="column.border"
       >
         <h3 class="font-semibold">{{ column.title }}</h3>
@@ -600,6 +627,8 @@ export default {
       redirectCountdown: 10,
       isCompactMode: false, // Modo compacto para el dashboard
       autoRedirectTimer: null,
+      canScrollLeft: false,
+      canScrollRight: true,
     };
     
   },
@@ -787,6 +816,36 @@ export default {
     closeInmuebleModal() {
       this.showInmuebleModal = false;
       this.selectedInmuebleData = null;
+    },
+
+    // Métodos de navegación horizontal
+    scrollColumns(direction) {
+      const container = this.$refs.columnsContainer;
+      if (!container) return;
+      
+      // Calcular el ancho de scroll (aproximadamente el ancho de una columna + gap)
+      const scrollAmount = 300;
+      const currentScroll = container.scrollLeft;
+      
+      if (direction === 'left') {
+        container.scrollTo({
+          left: Math.max(0, currentScroll - scrollAmount),
+          behavior: 'smooth'
+        });
+      } else {
+        container.scrollTo({
+          left: currentScroll + scrollAmount,
+          behavior: 'smooth'
+        });
+      }
+    },
+    
+    updateScrollIndicators() {
+      const container = this.$refs.columnsContainer;
+      if (!container) return;
+      
+      this.canScrollLeft = container.scrollLeft > 0;
+      this.canScrollRight = container.scrollLeft < (container.scrollWidth - container.clientWidth - 10);
     },
 
     // Métodos de paginación
@@ -1187,11 +1246,39 @@ export default {
     async cargarTodosLosClientes() {
       this.isLoading = true;
       try {
-        // Solicitar 100 clientes para tener más datos en el dashboard
-        const response = await clienteService.getAllClientes(1, 100);
+        // Limpiar cache para obtener datos frescos
+        clienteService.clearCache?.();
         
-        // La API ahora devuelve { data: [...], page, pageSize, totalCount, totalPages }
-        const clientes = response?.data || response?.$values || response || [];
+        // Cargar todos los clientes (aumentar pageSize para obtener más)
+        // Primero obtenemos la primera página para saber el total
+        const firstResponse = await clienteService.getAllClientes(1, 200, null, false);
+        
+        let clientes = [];
+        
+        // La API puede devolver { data: [...], totalCount, totalPages } o directamente un array
+        if (firstResponse?.data) {
+          clientes = firstResponse.data;
+          const totalPages = firstResponse.totalPages || 1;
+          const totalCount = firstResponse.totalCount || clientes.length;
+          
+          console.log(`📊 Cargando clientes: ${clientes.length} de ${totalCount} (${totalPages} páginas)`);
+          
+          // Si hay más páginas, cargarlas todas
+          if (totalPages > 1) {
+            for (let page = 2; page <= totalPages; page++) {
+              const pageResponse = await clienteService.getAllClientes(page, 200, null, false);
+              if (pageResponse?.data) {
+                clientes = [...clientes, ...pageResponse.data];
+              }
+            }
+          }
+        } else if (firstResponse?.$values) {
+          clientes = firstResponse.$values;
+        } else if (Array.isArray(firstResponse)) {
+          clientes = firstResponse;
+        }
+        
+        console.log(`✅ Total clientes cargados: ${clientes.length}`);
 
         // Cargar agentes para mapear nombres (usar this.agentesMap para compartir con TaskCard)
         this.agentesMap = new Map();
@@ -1218,6 +1305,8 @@ export default {
                 c.agente?.id;
               return cid === this.agenteId;
             });
+
+        console.log(`👤 Clientes filtrados para mostrar: ${filtrados.length} (isAdmin: ${this.isAdmin}, agenteId: ${this.agenteId})`);
 
         // Reiniciar tasks antes de llenar
         this.tasks = [];
@@ -1254,6 +1343,8 @@ export default {
           };
           this.tasks.push(task);
         });
+
+        console.log(`📋 Total tareas en el tablero: ${this.tasks.length}`);
 
         // Cargar todos los agentes (solo si es admin)
         if (this.isAdmin) {
@@ -1521,5 +1612,35 @@ export default {
 <style scoped>
 .modal-overlay {
   backdrop-filter: blur(2px);
+}
+
+/* Ocultar scrollbar pero mantener funcionalidad */
+.scroll-smooth {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.scroll-smooth::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroll-smooth::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-smooth::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
+}
+
+.scroll-smooth::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* Responsive ajustes adicionales */
+@media (max-width: 640px) {
+  .snap-x > div {
+    scroll-snap-align: start;
+  }
 }
 </style>
