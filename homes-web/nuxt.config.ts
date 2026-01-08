@@ -280,96 +280,96 @@ export default defineNuxtConfig({
         proxy: 'https://old-web.homesguatemala.com/luxury-homes'
       },
 
-      // Redirecciones para URLs antiguas de propiedades (301 para SEO)
-      '/propiedad/**': { redirect: { to: '/propiedades', statusCode: 301 } },
-      '/property/**': { redirect: { to: '/propiedades', statusCode: 301 } },
-      // '/inmueble/**': { redirect: '/propiedades' }, // REMOVIDO: Esta regla impedía ver detalles de inmuebles
-      '/listing/**': { redirect: { to: '/propiedades', statusCode: 301 } },
+      // // Redirecciones para URLs antiguas de propiedades (301 para SEO)
+      // '/propiedad/**': { redirect: { to: '/propiedades', statusCode: 301 } },
+      // '/property/**': { redirect: { to: '/propiedades', statusCode: 301 } },
+      // // '/inmueble/**': { redirect: '/propiedades' }, // REMOVIDO: Esta regla impedía ver detalles de inmuebles
+      // '/listing/**': { redirect: { to: '/propiedades', statusCode: 301 } },
 
-      // Redirecciones de URLs comunes mal escritas (301 para SEO)
-      // '/home': { redirect: { to: '/', statusCode: 301 } },
-      '/inicio': { redirect: { to: '/', statusCode: 301 } },
-      '/index': { redirect: { to: '/', statusCode: 301 } },
-      '/index.html': { redirect: { to: '/', statusCode: 301 } },
-      '/index.php': { redirect: { to: '/', statusCode: 301 } },
+      // // Redirecciones de URLs comunes mal escritas (301 para SEO)
+      // // '/home': { redirect: { to: '/', statusCode: 301 } },
+      // '/inicio': { redirect: { to: '/', statusCode: 301 } },
+      // '/index': { redirect: { to: '/', statusCode: 301 } },
+      // '/index.html': { redirect: { to: '/', statusCode: 301 } },
+      // '/index.php': { redirect: { to: '/', statusCode: 301 } },
 
-      // Redirecciones de secciones antiguas (301 para SEO)
-      '/contacto': { redirect: { to: '/nosotros', statusCode: 301 } },
-      '/contact': { redirect: { to: '/nosotros', statusCode: 301 } },
-      '/about': { redirect: { to: '/nosotros', statusCode: 301 } },
-      '/acerca-de': { redirect: { to: '/nosotros', statusCode: 301 } },
+      // // Redirecciones de secciones antiguas (301 para SEO)
+      // '/contacto': { redirect: { to: '/nosotros', statusCode: 301 } },
+      // '/contact': { redirect: { to: '/nosotros', statusCode: 301 } },
+      // '/about': { redirect: { to: '/nosotros', statusCode: 301 } },
+      // '/acerca-de': { redirect: { to: '/nosotros', statusCode: 301 } },
 
-      // ===================================================================
-      // REDIRECCIONES LEGACY WORDPRESS - Fix 404 errors Google Search Console
-      // ===================================================================
+      // // ===================================================================
+      // // REDIRECCIONES LEGACY WORDPRESS - Fix 404 errors Google Search Console
+      // // ===================================================================
 
-      // NOTA: Ya no redirigimos /informativo/**, /tops/**, /consejos/** 
-      // porque ahora usamos esas rutas para el blog con estructura [category]/[slug]
+      // // NOTA: Ya no redirigimos /informativo/**, /tops/**, /consejos/** 
+      // // porque ahora usamos esas rutas para el blog con estructura [category]/[slug]
 
-      // Redirecciones de /propiedades-en-venta/ -> /propiedades?Operaciones=Venta
-      '/propiedades-en-venta/casas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Casa', statusCode: 301 } },
-      '/propiedades-en-venta/casas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Casa', statusCode: 301 } },
-      '/propiedades-en-venta/apartamentos-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Apartamento', statusCode: 301 } },
-      '/propiedades-en-venta/apartamentos-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Apartamento', statusCode: 301 } },
-      '/propiedades-en-venta/terrenos-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Terreno', statusCode: 301 } },
-      '/propiedades-en-venta/terrenos-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Terreno', statusCode: 301 } },
-      '/propiedades-en-venta/oficinas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Oficina', statusCode: 301 } },
-      '/propiedades-en-venta/oficinas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Oficina', statusCode: 301 } },
-      '/propiedades-en-venta/bodegas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Bodega', statusCode: 301 } },
-      '/propiedades-en-venta/bodegas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Bodega', statusCode: 301 } },
-      '/propiedades-en-venta/locales-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Local', statusCode: 301 } },
-      '/propiedades-en-venta/locales-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Local', statusCode: 301 } },
-      '/propiedades-en-venta/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
-      '/propiedades-en-venta/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
-      '/propiedades-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
-      '/propiedades-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
+      // // Redirecciones de /propiedades-en-venta/ -> /propiedades?Operaciones=Venta
+      // '/propiedades-en-venta/casas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Casa', statusCode: 301 } },
+      // '/propiedades-en-venta/casas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Casa', statusCode: 301 } },
+      // '/propiedades-en-venta/apartamentos-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Apartamento', statusCode: 301 } },
+      // '/propiedades-en-venta/apartamentos-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Apartamento', statusCode: 301 } },
+      // '/propiedades-en-venta/terrenos-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Terreno', statusCode: 301 } },
+      // '/propiedades-en-venta/terrenos-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Terreno', statusCode: 301 } },
+      // '/propiedades-en-venta/oficinas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Oficina', statusCode: 301 } },
+      // '/propiedades-en-venta/oficinas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Oficina', statusCode: 301 } },
+      // '/propiedades-en-venta/bodegas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Bodega', statusCode: 301 } },
+      // '/propiedades-en-venta/bodegas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Bodega', statusCode: 301 } },
+      // '/propiedades-en-venta/locales-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Local', statusCode: 301 } },
+      // '/propiedades-en-venta/locales-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Local', statusCode: 301 } },
+      // '/propiedades-en-venta/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
+      // '/propiedades-en-venta/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
+      // '/propiedades-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
+      // '/propiedades-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
 
-      // Redirecciones de /propiedades-en-renta/ -> /propiedades?Operaciones=Renta
-      '/propiedades-en-renta/casas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      '/propiedades-en-renta/casas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      '/propiedades-en-renta/apartamentos-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      '/propiedades-en-renta/apartamentos-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      '/propiedades-en-renta/terrenos-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      '/propiedades-en-renta/terrenos-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      '/propiedades-en-renta/oficinas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      '/propiedades-en-renta/oficinas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      '/propiedades-en-renta/bodegas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      '/propiedades-en-renta/bodegas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      '/propiedades-en-renta/locales-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      '/propiedades-en-renta/locales-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      '/propiedades-en-renta/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      '/propiedades-en-renta/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      '/propiedades-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      '/propiedades-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // // Redirecciones de /propiedades-en-renta/ -> /propiedades?Operaciones=Renta
+      // '/propiedades-en-renta/casas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
+      // '/propiedades-en-renta/casas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
+      // '/propiedades-en-renta/apartamentos-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
+      // '/propiedades-en-renta/apartamentos-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
+      // '/propiedades-en-renta/terrenos-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
+      // '/propiedades-en-renta/terrenos-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
+      // '/propiedades-en-renta/oficinas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
+      // '/propiedades-en-renta/oficinas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
+      // '/propiedades-en-renta/bodegas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
+      // '/propiedades-en-renta/bodegas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
+      // '/propiedades-en-renta/locales-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
+      // '/propiedades-en-renta/locales-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
+      // '/propiedades-en-renta/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // '/propiedades-en-renta/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // '/propiedades-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // '/propiedades-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
 
-      // Redirecciones de /propiedades-en-alquiler/ -> /propiedades?Operaciones=Renta
-      '/propiedades-en-alquiler/casas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      '/propiedades-en-alquiler/casas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      '/propiedades-en-alquiler/apartamentos-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      '/propiedades-en-alquiler/apartamentos-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      '/propiedades-en-alquiler/terrenos-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      '/propiedades-en-alquiler/terrenos-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      '/propiedades-en-alquiler/oficinas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      '/propiedades-en-alquiler/oficinas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      '/propiedades-en-alquiler/bodegas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      '/propiedades-en-alquiler/bodegas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      '/propiedades-en-alquiler/locales-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      '/propiedades-en-alquiler/locales-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      '/propiedades-en-alquiler/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      '/propiedades-en-alquiler/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      '/propiedades-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      '/propiedades-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // // Redirecciones de /propiedades-en-alquiler/ -> /propiedades?Operaciones=Renta
+      // '/propiedades-en-alquiler/casas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
+      // '/propiedades-en-alquiler/casas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
+      // '/propiedades-en-alquiler/apartamentos-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
+      // '/propiedades-en-alquiler/apartamentos-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
+      // '/propiedades-en-alquiler/terrenos-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
+      // '/propiedades-en-alquiler/terrenos-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
+      // '/propiedades-en-alquiler/oficinas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
+      // '/propiedades-en-alquiler/oficinas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
+      // '/propiedades-en-alquiler/bodegas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
+      // '/propiedades-en-alquiler/bodegas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
+      // '/propiedades-en-alquiler/locales-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
+      // '/propiedades-en-alquiler/locales-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
+      // '/propiedades-en-alquiler/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // '/propiedades-en-alquiler/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // '/propiedades-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
+      // '/propiedades-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
 
-      // Otras URLs legacy comunes
-      '/category/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
-      '/tag/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
-      '/page/**': { redirect: { to: '/', statusCode: 301 } },
-      '/wp-content/**': { redirect: { to: '/', statusCode: 301 } },
-      '/wp-admin/**': { redirect: { to: '/', statusCode: 301 } },
-      '/wp-includes/**': { redirect: { to: '/', statusCode: 301 } },
-      '/feed': { redirect: { to: '/', statusCode: 301 } },
-      '/feed/**': { redirect: { to: '/', statusCode: 301 } },
-      '/author/**': { redirect: { to: '/nosotros', statusCode: 301 } },
+      // // Otras URLs legacy comunes
+      // '/category/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
+      // '/tag/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
+      // '/page/**': { redirect: { to: '/', statusCode: 301 } },
+      // '/wp-content/**': { redirect: { to: '/', statusCode: 301 } },
+      // '/wp-admin/**': { redirect: { to: '/', statusCode: 301 } },
+      // '/wp-includes/**': { redirect: { to: '/', statusCode: 301 } },
+      // '/feed': { redirect: { to: '/', statusCode: 301 } },
+      // '/feed/**': { redirect: { to: '/', statusCode: 301 } },
+      // '/author/**': { redirect: { to: '/nosotros', statusCode: 301 } },
 
       // Cache para assets estáticos (mejorar rendimiento)
       '/_nuxt/**': {
@@ -384,16 +384,16 @@ export default defineNuxtConfig({
       },
 
       // Headers de seguridad y SEO para todas las páginas
-      '/**': {
-        headers: {
-          'X-Robots-Tag': 'index, follow',
-          'X-Content-Type-Options': 'nosniff',
-          'X-Frame-Options': 'SAMEORIGIN',
-          'Referrer-Policy': 'strict-origin-when-cross-origin',
-          'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
-          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
-        }
-      }
+      // '/**': {
+      //   headers: {
+      //     'X-Robots-Tag': 'index, follow',
+      //     'X-Content-Type-Options': 'nosniff',
+      //     'X-Frame-Options': 'SAMEORIGIN',
+      //     'Referrer-Policy': 'strict-origin-when-cross-origin',
+      //     'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+      //     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+      //   }
+      // }
     }
   }
 });
