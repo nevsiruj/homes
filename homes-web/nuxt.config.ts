@@ -287,7 +287,7 @@ export default defineNuxtConfig({
       '/listing/**': { redirect: { to: '/propiedades', statusCode: 301 } },
 
       // Redirecciones de URLs comunes mal escritas (301 para SEO)
-      '/home': { redirect: { to: '/', statusCode: 301 } },
+      // '/home': { redirect: { to: '/', statusCode: 301 } },
       '/inicio': { redirect: { to: '/', statusCode: 301 } },
       '/index': { redirect: { to: '/', statusCode: 301 } },
       '/index.html': { redirect: { to: '/', statusCode: 301 } },
