@@ -332,10 +332,20 @@ const guardarArticulo = async (datosArticulo) => {
             await cargarArticulos();
         }
     } catch (error) {
+        // Mostrar el mensaje de error del backend si existe
+        let mensajeError = "No se pudo guardar el artículo";
+        if (error.message) {
+            // Hacer el mensaje más amigable para el usuario
+            if (error.message.includes("slug")) {
+                mensajeError = "Ya existe un artículo con esta URL (slug). Por favor, utiliza un slug diferente.";
+            } else {
+                mensajeError = error.message;
+            }
+        }
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: "No se pudo guardar el artículo",
+            text: mensajeError,
         });
     }
 };

@@ -37,10 +37,16 @@
                     v-model="formData.title"
                     type="text"
                     id="title"
-                    required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm p-2 border"
+                    @input="limpiarError('title')"
+                    :class="[
+                      'mt-1 block w-full rounded-md shadow-sm focus:ring-gray-500 sm:text-sm p-2 border',
+                      errores.title ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-gray-500'
+                    ]"
                     placeholder="Título del artículo"
                   />
+                  <p v-if="errores.title" class="mt-1 text-sm text-red-500">
+                    {{ errores.title }}
+                  </p>
                 </div>
 
                 <!-- Slug -->
@@ -52,10 +58,19 @@
                     v-model="formData.slug"
                     type="text"
                     id="slug"
-                    required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm p-2 border"
+                    @input="limpiarError('slug')"
+                    :class="[
+                      'mt-1 block w-full rounded-md shadow-sm focus:ring-gray-500 sm:text-sm p-2 border',
+                      errores.slug ? 'border-red-400 focus:border-red-500' : 'border-gray-300 focus:border-gray-500'
+                    ]"
                     placeholder="ejemplo-articulo-url"
                   />
+                  <p class="mt-1 text-xs text-gray-500">
+                    El slug debe ser único. Se genera automáticamente desde el título.
+                  </p>
+                  <p v-if="errores.slug" class="mt-1 text-sm text-red-500">
+                    {{ errores.slug }}
+                  </p>
                 </div>
 
                 <!-- Imagen URL -->
@@ -144,7 +159,12 @@
                   <label class="block text-sm font-medium text-gray-700 mb-2">
                     Contenido *
                   </label>
-                  <RichTextEditor v-model="formData.content" />
+                  <div :class="errores.content ? 'ring-1 ring-red-400 rounded-md' : ''">
+                    <RichTextEditor v-model="formData.content" @update:modelValue="limpiarError('content')" />
+                  </div>
+                  <p v-if="errores.content" class="mt-1 text-sm text-red-500">
+                    {{ errores.content }}
+                  </p>
                 </div>
 
                 <!-- Permalink (solo lectura) -->
@@ -215,6 +235,14 @@ const imagenPreview = ref(null);
 const imagenArchivo = ref(null);
 const imageInputRef = ref(null);
 
+// Estado de validaciones
+const errores = ref({
+  title: '',
+  slug: '',
+  content: ''
+});
+const intentoGuardar = ref(false);
+
 const formData = ref({
   title: '',
   slug: '',
@@ -236,6 +264,46 @@ const generarPermalink = computed(() => {
 });
 
 // Declarar funciones antes de usarlas
+const validarFormulario = () => {
+  let esValido = true;
+  errores.value = { title: '', slug: '', content: '' };
+  
+  // Validar título
+  if (!formData.value.title || formData.value.title.trim() === '') {
+    errores.value.title = 'Por favor, ingresa un título para el artículo';
+    esValido = false;
+  } else if (formData.value.title.trim().length < 5) {
+    errores.value.title = 'El título debe tener al menos 5 caracteres';
+    esValido = false;
+  }
+  
+  // Validar slug
+  if (!formData.value.slug || formData.value.slug.trim() === '') {
+    errores.value.slug = 'El slug es necesario para generar la URL del artículo';
+    esValido = false;
+  } else if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(formData.value.slug)) {
+    errores.value.slug = 'El slug solo puede contener letras minúsculas, números y guiones';
+    esValido = false;
+  }
+  
+  // Validar contenido
+  if (!formData.value.content || formData.value.content.trim() === '' || formData.value.content === '<p></p>') {
+    errores.value.content = 'El artículo necesita contenido. Escribe algo interesante para tus lectores';
+    esValido = false;
+  } else if (formData.value.content.replace(/<[^>]*>/g, '').trim().length < 50) {
+    errores.value.content = 'El contenido es muy corto. Agrega más información (mínimo 50 caracteres)';
+    esValido = false;
+  }
+  
+  return esValido;
+};
+
+const limpiarError = (campo) => {
+  if (errores.value[campo]) {
+    errores.value[campo] = '';
+  }
+};
+
 const resetearFormulario = () => {
   formData.value = {
     title: '',
@@ -251,6 +319,8 @@ const resetearFormulario = () => {
   nuevaCategoria.value = '';
   imagenPreview.value = null;
   imagenArchivo.value = null;
+  errores.value = { title: '', slug: '', content: '' };
+  intentoGuardar.value = false;
   if (imageInputRef.value) {
     imageInputRef.value.value = '';
   }
@@ -324,7 +394,9 @@ const agregarCategoria = () => {
 };
 
 const guardarArticulo = async () => {
-  if (!formData.value.title || !formData.value.slug || !formData.value.content) {
+  intentoGuardar.value = true;
+  
+  if (!validarFormulario()) {
     return;
   }
 
