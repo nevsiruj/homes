@@ -112,12 +112,14 @@
                     id="categorias"
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm p-2 border"
                   >
-                    <option value="Informativo">Informativo</option>
-                    <option value="Guías">Guías</option>
-                    <option value="Mercado">Mercado</option>
-                    <option value="Inversión">Inversión</option>
-                    <option value="Tendencias">Tendencias</option>
-                    <option value="Noticias">Noticias</option>
+                    <option v-for="cat in categoriasPredefinidas" :key="cat" :value="cat">{{ cat }}</option>
+                    <!-- Mostrar categoría personalizada si existe y no está en las predefinidas -->
+                    <option 
+                      v-if="esCategoriaPersonalizada(formData.categorias) && !mostrarInputCategoria" 
+                      :value="formData.categorias"
+                    >
+                      {{ formData.categorias }}
+                    </option>
                     <option value="__otra__">+ Agregar nueva categoría</option>
                   </select>
                   
@@ -234,6 +236,14 @@ const nuevaCategoria = ref('');
 const imagenPreview = ref(null);
 const imagenArchivo = ref(null);
 const imageInputRef = ref(null);
+
+// Categorías predefinidas
+const categoriasPredefinidas = ['Informativo', 'Guías', 'Mercado', 'Inversión', 'Tendencias', 'Noticias'];
+
+// Verificar si una categoría es predefinida
+const esCategoriaPersonalizada = (categoria) => {
+  return categoria && !categoriasPredefinidas.includes(categoria);
+};
 
 // Estado de validaciones
 const errores = ref({
@@ -448,7 +458,14 @@ watch(() => props.articulo, (nuevoArticulo) => {
       permalink: nuevoArticulo.permalink || '',
       activo: nuevoArticulo.activo !== undefined ? nuevoArticulo.activo : true
     };
-    categoriaSeleccionada.value = nuevoArticulo.categorias || 'Informativo';
+    // Si la categoría no está en las predefinidas, es personalizada
+    const categoria = nuevoArticulo.categorias || 'Informativo';
+    if (esCategoriaPersonalizada(categoria)) {
+      // Asignar la categoría personalizada directamente
+      categoriaSeleccionada.value = categoria;
+    } else {
+      categoriaSeleccionada.value = categoria;
+    }
     mostrarInputCategoria.value = false;
     imagenPreview.value = nuevoArticulo.imageUrl || null;
     imagenArchivo.value = null;
