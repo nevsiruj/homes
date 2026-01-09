@@ -97,9 +97,14 @@ try {
             New-Item -ItemType Directory -Path $crmPath -Force | Out-Null
         }
         
-        # Limpiar directorio actual
-        Write-Log "Cleaning CRM directory"
-        Get-ChildItem -Path $crmPath -Recurse | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        # Limpiar directorio actual (excepto api y web.config de la raíz)
+        Write-Log "Cleaning CRM directory (preserving api folder and root web.config)"
+        Get-ChildItem -Path $crmPath -Recurse -Exclude "api", "web.config" | Where-Object { 
+            # Excluir la carpeta api y todo su contenido
+            $_.FullName -notmatch '\\api($|\\)' -and 
+            # Excluir el web.config de la raíz (no los de subdirectorios)
+            -not ($_.Name -eq "web.config" -and $_.DirectoryName -eq $crmPath)
+        } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
         
         # Copiar archivos del build
         Write-Log "Copying CRM build files"
