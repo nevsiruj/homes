@@ -210,8 +210,8 @@ const cargarZonas = async () => {
         // console.error('Error al cargar zonas:', error);
         Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'No se pudieron cargar las zonas',
+            title: '¡Ups! Algo salió mal',
+            text: 'No pudimos cargar las zonas en este momento. Por favor, intenta nuevamente o contacta al administrador si el problema persiste.',
         });
     } finally {
         loading.value = false;
@@ -288,8 +288,8 @@ const onDragEnd = async () => {
         // console.error('❌ Error al reordenar zonas:', error);
         Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'No se pudo actualizar el orden',
+            title: '¡Ups! No pudimos guardar el orden',
+            text: 'Hubo un problema al actualizar el orden de las zonas. Por favor, intenta nuevamente.',
         });
         await cargarZonas(); // Recargar para restaurar el orden original
     }
@@ -339,8 +339,8 @@ const agregarZona = async () => {
             if (listaZonas.length === 0) {
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Atención',
-                    text: 'No se encontraron nombres válidos de zonas',
+                    title: 'Información incompleta',
+                    text: 'Por favor, ingresa al menos un nombre de zona válido para continuar.',
                 });
                 return;
             }
@@ -367,11 +367,22 @@ const agregarZona = async () => {
                         exitosas++;
                     } else {
                         fallidas++;
-                        errores.push(`${nombre}: ${response.message || 'Error desconocido'}`);
+                        // Detectar si es error de duplicado
+                        const mensaje = response.message?.toLowerCase() || '';
+                        if (mensaje.includes('duplica') || mensaje.includes('existe') || mensaje.includes('already')) {
+                            errores.push(`${nombre}: Ya existe una zona con este nombre`);
+                        } else {
+                            errores.push(`${nombre}: ${response.message || 'No se pudo crear'}`);
+                        }
                     }
                 } catch (error) {
                     fallidas++;
-                    errores.push(`${nombre}: Error al crear`);
+                    const errorMsg = error?.response?.data?.message?.toLowerCase() || error?.message?.toLowerCase() || '';
+                    if (errorMsg.includes('duplica') || errorMsg.includes('existe') || errorMsg.includes('already')) {
+                        errores.push(`${nombre}: Ya existe una zona con este nombre`);
+                    } else {
+                        errores.push(`${nombre}: No se pudo crear`);
+                    }
                 }
             }
 
@@ -389,8 +400,8 @@ const agregarZona = async () => {
             } else if (exitosas === 0) {
                 await Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    html: `No se pudo agregar ninguna zona:<br><br>${errores.join('<br>')}`,
+                    title: '¡Ups! No pudimos crear las zonas',
+                    html: `Ocurrió un problema al agregar las zonas. Por favor, verifica la información e intenta nuevamente.<br><br><small style="color: #6b7280;">${errores.join('<br>')}</small>`,
                 });
             } else {
                 await Swal.fire({
@@ -409,8 +420,8 @@ const agregarZona = async () => {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Error',
-                text: 'Ocurrió un error al procesar las zonas',
+                title: '¡Ups! Algo salió mal',
+                text: 'No pudimos procesar las zonas en este momento. Por favor, intenta nuevamente.',
             });
         }
     }
@@ -475,8 +486,8 @@ const editarZona = async (zona) => {
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudo actualizar la zona',
+                    title: '¡Ups! No pudimos actualizar',
+                    text: 'Hubo un problema al guardar los cambios de la zona. Por favor, intenta nuevamente.',
                 });
             }
         }
@@ -511,8 +522,8 @@ const eliminarZona = async (id) => {
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Error',
-                text: 'No se pudo eliminar la zona',
+                title: '¡Ups! No pudimos eliminar',
+                text: 'Hubo un problema al eliminar la zona. Por favor, intenta nuevamente o verifica que no esté siendo utilizada.',
             });
         }
     }
