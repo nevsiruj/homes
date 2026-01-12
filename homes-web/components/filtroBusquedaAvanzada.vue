@@ -503,7 +503,7 @@
                       <input
                         id="checkbox-Zona 9"
                         type="checkbox"
-                        value="<Zona 9>"
+                        value="Zona 9"
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
@@ -1105,11 +1105,25 @@ const handleClickOutside = (event) => {
   }
 };
 
-// Cerrar dropdowns al hacer scroll
-const handleScroll = () => {
-  if (openDropdown.value) {
-    openDropdown.value = null;
+// Cerrar dropdowns al hacer scroll (solo si el scroll es fuera del dropdown)
+const handleScroll = (event) => {
+  if (!openDropdown.value) return;
+  
+  // Obtener el elemento del dropdown activo
+  const dropdownId = openDropdown.value === 'saleRent' ? 'saleRentDropdownMenu' 
+    : openDropdown.value === 'propiedades' ? 'dropdownDefaultCheckbox1'
+    : openDropdown.value === 'ubicaciones' ? 'dropdownDefaultCheckbox2'
+    : 'dropdownDefaultCheckbox3';
+  
+  const dropdownElement = document.getElementById(dropdownId);
+  
+  // Si el scroll ocurre dentro del dropdown, no cerrarlo
+  if (dropdownElement && dropdownElement.contains(event.target)) {
+    return;
   }
+  
+  // Si el scroll es fuera del dropdown, cerrarlo
+  openDropdown.value = null;
 };
 
 watch(activeTab, (newTab, oldTab) => {
