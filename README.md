@@ -12,6 +12,29 @@ homes/
 └── 📄 README.md         # Este archivo
 ```
 
+## 🌐 Ambientes y Deployment
+
+### 🧪 QA / Media Naranja
+Ambiente de pruebas principal.
+- **API (Media Naranja)**: `https://medianaranja.vylaris.online/api`
+  - *Path*: `\\vm06\shared\medianaranja\api`
+- **CRM (Media Naranja)**: `https://medianaranja.vylaris.online`
+  - *Path*: `\\vm06\shared\medianaranja`
+- **Web Frontend (QA)**: `\\vm06\shared\qa\homes\web`
+  - *Script*: `.agent/workflows/deploy-medianaranja.ps1 -DeployWeb`
+
+### 🚀 Producción (App-Pool)
+- **API**: `https://app-pool.vylaris.online/homes/api`
+  - *Path*: `\\vm06\shared\app-pool\homes\api`
+- **CRM**: `https://app-pool.vylaris.online/homes/crm`
+  - *Path*: `\\vm06\shared\app-pool\homes\crm`
+- **Script**: `.agent/workflows/deploy-production.ps1`
+
+### 🛠️ Documentación de Ambientes
+Para más detalles sobre servidores, IPs y configuraciones de IIS, consultar:
+- [Guía de Verificación de Deploy](.agent/workflows/COMO-VERIFICAR-DEPLOY.md)
+- [Resumen Media Naranja](.agent/workflows/DEPLOYMENT-MEDIANARANJA-SUMMARY.md)
+
 ## 🛠️ Tecnologías Utilizadas
 
 ### Backend API
