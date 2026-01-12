@@ -537,7 +537,7 @@
                       <input
                         id="checkbox-Zona 13"
                         type="checkbox"
-                        value=">Zona 13"
+                        value="Zona 13"
                         v-model="filters.ubicaciones"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded-sm focus:ring-black accent-black"
                       />
