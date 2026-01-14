@@ -123,6 +123,16 @@ const imagenError = (e) => {
 </script>
 
 <style scoped>
+/* Contenedor principal del contenido */
+.article-content {
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
 /* Estilos para el contenido HTML del artículo */
 .article-content :deep(h2) {
   font-size: 1.5rem;
@@ -130,6 +140,8 @@ const imagenError = (e) => {
   color: #111827;
   margin-top: 2rem;
   margin-bottom: 1rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .article-content :deep(h3) {
@@ -138,12 +150,16 @@ const imagenError = (e) => {
   color: #111827;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .article-content :deep(p) {
   color: #374151;
   margin-bottom: 1rem;
   line-height: 1.75;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .article-content :deep(ul) {
@@ -153,6 +169,7 @@ const imagenError = (e) => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding-left: 0;
 }
 
 .article-content :deep(ol) {
@@ -162,6 +179,12 @@ const imagenError = (e) => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding-left: 0;
+}
+
+.article-content :deep(li) {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .article-content :deep(blockquote) {
@@ -170,11 +193,15 @@ const imagenError = (e) => {
   font-style: italic;
   color: #4b5563;
   margin: 1rem 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .article-content :deep(a) {
   color: #2563eb;
   text-decoration: underline;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .article-content :deep(a:hover) {
@@ -186,6 +213,23 @@ const imagenError = (e) => {
   margin: 1rem 0;
   max-width: 100%;
   height: auto;
+  display: block;
+}
+
+/* Estilos para alineación de imágenes */
+.article-content :deep(img[data-alignment="left"]) {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.article-content :deep(img[data-alignment="center"]) {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.article-content :deep(img[data-alignment="right"]) {
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .article-content :deep(code) {
@@ -194,6 +238,8 @@ const imagenError = (e) => {
   padding: 0.125rem 0.5rem;
   font-size: 0.875rem;
   font-family: monospace;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 
 .article-content :deep(pre) {
@@ -202,5 +248,50 @@ const imagenError = (e) => {
   padding: 1rem;
   overflow-x: auto;
   margin-bottom: 1rem;
+  max-width: 100%;
+}
+
+/* Estilos para videos de YouTube */
+.article-content :deep(div[data-youtube-video]) {
+  margin: 1rem 0;
+  max-width: 100%;
+  display: flex;
+}
+
+.article-content :deep(div[data-youtube-video] iframe) {
+  border-radius: 0.5rem;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+/* Estilos de alineación de videos de YouTube */
+.article-content :deep(div[data-youtube-video][data-alignment="left"]) {
+  justify-content: flex-start;
+}
+
+.article-content :deep(div[data-youtube-video][data-alignment="center"]) {
+  justify-content: center;
+}
+
+.article-content :deep(div[data-youtube-video][data-alignment="right"]) {
+  justify-content: flex-end;
+}
+
+/* Estilos para alineación de texto */
+.article-content :deep([style*="text-align: left"]) {
+  text-align: left;
+}
+
+.article-content :deep([style*="text-align: center"]) {
+  text-align: center;
+}
+
+.article-content :deep([style*="text-align: right"]) {
+  text-align: right;
+}
+
+.article-content :deep([style*="text-align: justify"]) {
+  text-align: justify;
 }
 </style>

@@ -430,6 +430,11 @@ const guardarArticulo = async () => {
     };
 
     emit('save', datosArticulo);
+    
+    // Solo limpiar el formulario si es un artículo nuevo (no en modo edición)
+    if (!modoEdicion.value) {
+      resetearFormulario();
+    }
   } catch (error) {
     console.error('Error al guardar artículo:', error);
   } finally {
