@@ -50,6 +50,11 @@
                     <span class="inline sm:hidden">+ Artículo</span>
                     <span class="hidden sm:inline">Agregar Artículo</span>
                 </button>
+                <button type="button" @click="mostrarModalImportar = true"
+                    class="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none whitespace-nowrap w-full sm:w-auto">
+                    <span class="inline sm:hidden">📥 Importar</span>
+                    <span class="hidden sm:inline">📥 Importar JSON</span>
+                </button>
             </div>
         </div>
 
@@ -61,6 +66,7 @@
                         <th scope="col" class="px-6 py-3">Imagen</th>
                         <th scope="col" class="px-6 py-3">Título</th>
                         <th scope="col" class="px-6 py-3">Categoría</th>
+                        <th scope="col" class="px-6 py-3">Etiquetas</th>
                         <th scope="col" class="px-6 py-3">Fecha</th>
                         <th scope="col" class="px-6 py-3">Estado</th>
                         <th scope="col" class="px-6 py-3 text-center">Acciones</th>
@@ -110,7 +116,7 @@
                                 <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2 2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                         </td>
@@ -122,6 +128,15 @@
                             <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
                                 {{ articulo.categorias }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div v-if="articulo.etiqueta" class="flex flex-wrap gap-1">
+                                <span v-for="tag in articulo.etiqueta.split(',').map(e=>e.trim()).filter(Boolean)" :key="tag"
+                                    class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded">
+                                    {{ tag }}
+                                </span>
+                            </div>
+                            <span v-else class="text-xs text-gray-400">—</span>
                         </td>
                         <td class="px-6 py-4">{{ formatearFecha(articulo.fechaCreacion) }}</td>
                         <td class="px-6 py-4">
@@ -198,6 +213,96 @@
             @save="guardarArticulo" />
 
         <vistaBlog v-if="articuloPreview" :isOpen="vistaPreviewOpen" :articulo="articuloPreview" @close="cerrarVistaPrevia" />
+
+        <!-- Modal de Importación Masiva JSON -->
+        <Teleport to="body">
+            <div v-if="mostrarModalImportar" class="fixed inset-0 z-50 overflow-y-auto">
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center">
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="cerrarModalImportar"></div>
+                    
+                    <div class="relative inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-2xl sm:w-full z-50">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">📥 Importar Artículos desde JSON</h3>
+                            
+                            <div v-if="!importando" class="space-y-4">
+                                <p class="text-sm text-gray-600">
+                                    Pega el contenido JSON con los artículos a importar. El formato debe ser un array de objetos.
+                                </p>
+                                
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                    <p class="text-xs text-gray-500 mb-2">Formato esperado:</p>
+                                    <pre class="text-xs text-gray-600 overflow-x-auto">[
+  {
+    "Title": "Título del artículo",
+    "Content": "&lt;p&gt;Contenido HTML&lt;/p&gt;",
+    "Slug": "titulo-del-articulo",
+    "Image URL": "https://...",
+    "Categorías": "Informativo"
+  }
+]</pre>
+                                </div>
+
+                                <!-- Input para subir archivo -->
+                                <div class="flex items-center gap-2">
+                                    <label class="flex-1">
+                                        <span class="text-sm font-medium text-gray-700">O sube un archivo .json:</span>
+                                        <input type="file" accept=".json" @change="cargarArchivoJSON" 
+                                            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200" />
+                                    </label>
+                                </div>
+
+                                <!-- Textarea para pegar JSON -->
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700">Pegar JSON:</label>
+                                    <textarea v-model="jsonImportar" rows="10" 
+                                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-gray-500 focus:ring-gray-500 text-sm font-mono"
+                                        placeholder='[{"Title": "...", "Content": "...", "Slug": "..."}]'></textarea>
+                                </div>
+
+                                <!-- Validación y preview -->
+                                <div v-if="jsonValidado" class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <p class="text-sm text-green-800">
+                                        ✅ JSON válido. Se encontraron <strong>{{ articulosParaImportar.length }}</strong> artículos.
+                                    </p>
+                                </div>
+                                <div v-else-if="errorJson" class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <p class="text-sm text-red-800">❌ {{ errorJson }}</p>
+                                </div>
+                            </div>
+
+                            <div v-else class="space-y-4">
+                                <p class="text-sm text-gray-600">Importando artículos... Por favor espera.</p>
+                                
+                                <div class="w-full bg-gray-200 rounded-full h-4">
+                                    <div class="bg-blue-600 h-4 rounded-full transition-all duration-300" 
+                                         :style="{ width: progresoImportacion.porcentaje + '%' }"></div>
+                                </div>
+                                
+                                <p class="text-sm text-center text-gray-600">
+                                    {{ progresoImportacion.actual }} / {{ progresoImportacion.total }} 
+                                    ({{ progresoImportacion.porcentaje }}%)
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+                            <button v-if="!importando && jsonValidado" type="button" @click="iniciarImportacion"
+                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                                Iniciar Importación ({{ articulosParaImportar.length }})
+                            </button>
+                            <button v-if="!importando" type="button" @click="validarJSON"
+                                class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:w-auto sm:text-sm">
+                                Validar JSON
+                            </button>
+                            <button v-if="!importando" type="button" @click="cerrarModalImportar"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm">
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Teleport>
     </div>
 </template>
 
@@ -223,6 +328,15 @@ const modalBlogOpen = ref(false);
 const vistaPreviewOpen = ref(false);
 const articuloSeleccionado = ref(null);
 const articuloPreview = ref(null);
+
+// Variables para importación masiva
+const mostrarModalImportar = ref(false);
+const importando = ref(false);
+const jsonImportar = ref("");
+const jsonValidado = ref(false);
+const errorJson = ref("");
+const articulosParaImportar = ref([]);
+const progresoImportacion = ref({ actual: 0, total: 0, porcentaje: 0 });
 
 const cargarArticulos = async () => {
     loading.value = true;
@@ -368,6 +482,141 @@ const verVistaPrevia = (articulo) => {
 const cerrarVistaPrevia = () => {
     vistaPreviewOpen.value = false;
     articuloPreview.value = null;
+};
+
+// Funciones para importación masiva
+const cerrarModalImportar = () => {
+    if (!importando.value) {
+        mostrarModalImportar.value = false;
+        jsonImportar.value = "";
+        jsonValidado.value = false;
+        errorJson.value = "";
+        articulosParaImportar.value = [];
+    }
+};
+
+const cargarArchivoJSON = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            jsonImportar.value = e.target.result;
+            validarJSON();
+        };
+        reader.readAsText(file);
+    }
+};
+
+const validarJSON = () => {
+    errorJson.value = "";
+    jsonValidado.value = false;
+    articulosParaImportar.value = [];
+
+    if (!jsonImportar.value.trim()) {
+        errorJson.value = "Por favor, ingresa el contenido JSON";
+        return;
+    }
+
+    try {
+        const datos = JSON.parse(jsonImportar.value);
+        
+        if (!Array.isArray(datos)) {
+            errorJson.value = "El JSON debe ser un array de artículos";
+            return;
+        }
+
+        if (datos.length === 0) {
+            errorJson.value = "El array está vacío";
+            return;
+        }
+
+        // Validar que al menos tengan título y contenido
+        const articulosValidos = datos.filter(art => {
+            const titulo = art.Title || art.title || art.titulo;
+            const contenido = art.Content || art.content || art.contenido;
+            return titulo && contenido;
+        });
+
+        if (articulosValidos.length === 0) {
+            errorJson.value = "No se encontraron artículos válidos. Cada artículo debe tener al menos 'Title' y 'Content'";
+            return;
+        }
+
+        articulosParaImportar.value = articulosValidos;
+        jsonValidado.value = true;
+    } catch (e) {
+        errorJson.value = `Error al parsear JSON: ${e.message}`;
+    }
+};
+
+const iniciarImportacion = async () => {
+    if (articulosParaImportar.value.length === 0) {
+        Swal.fire({
+            icon: "warning",
+            title: "Sin datos",
+            text: "No hay artículos para importar",
+        });
+        return;
+    }
+
+    const confirmacion = await Swal.fire({
+        title: "¿Iniciar importación?",
+        text: `Se importarán ${articulosParaImportar.value.length} artículos`,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3b82f6",
+        cancelButtonColor: "#6b7280",
+        confirmButtonText: "Sí, importar",
+        cancelButtonText: "Cancelar",
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
+    importando.value = true;
+    progresoImportacion.value = { actual: 0, total: articulosParaImportar.value.length, porcentaje: 0 };
+
+    try {
+        const resultados = await blogService.importarArticulosMasivo(
+            articulosParaImportar.value,
+            (progreso) => {
+                progresoImportacion.value = progreso;
+            }
+        );
+
+        mostrarModalImportar.value = false;
+        importando.value = false;
+        jsonImportar.value = "";
+        jsonValidado.value = false;
+        articulosParaImportar.value = [];
+
+        let mensajeResultado = `✅ Exitosos: ${resultados.exitosos}\n❌ Fallidos: ${resultados.fallidos}`;
+        
+        if (resultados.errores.length > 0) {
+            mensajeResultado += "\n\nErrores:";
+            resultados.errores.slice(0, 5).forEach(err => {
+                mensajeResultado += `\n- ${err.titulo}: ${err.error}`;
+            });
+            if (resultados.errores.length > 5) {
+                mensajeResultado += `\n... y ${resultados.errores.length - 5} más`;
+            }
+        }
+
+        await Swal.fire({
+            icon: resultados.fallidos === 0 ? "success" : "warning",
+            title: "Importación completada",
+            html: `<pre style="text-align: left; font-size: 12px; white-space: pre-wrap;">${mensajeResultado}</pre>`,
+            width: 500,
+        });
+
+        await cargarArticulos();
+    } catch (error) {
+        importando.value = false;
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Ocurrió un error durante la importación: " + error.message,
+        });
+    }
 };
 
 const eliminarArticulo = async (id) => {

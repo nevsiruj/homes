@@ -152,20 +152,26 @@
               class="block mb-2 text-sm font-medium text-gray-900"
               >Asignar a:</label
             >
-            <select
-              v-model="selectedAgenteId"
-              id="agente"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5"
-            >
-              <option value="">Selecciona un agente</option>
-              <option
-                v-for="agente in agentes"
-                :key="agente.id"
-                :value="agente.id"
+            <!-- <div style="font-size:11px;color:#b91c1c;word-break:break-all;max-width:100%;overflow-x:auto;">
+              {{ JSON.stringify(agentes, null, 2) }}
+            </div> -->
+              <select
+                v-model="selectedAgenteId"
+                id="agente"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5"
               >
-                {{ agente.nombreCompleto }}
-              </option>
-            </select>
+                <option value="">Selecciona un agente</option>
+                <option
+                  v-for="agente in agentes"
+                  :key="agente.id"
+                  :value="agente.id"
+                >
+                  {{ agente.nombreCompleto }}
+                </option>
+              </select>
+            <div v-if="agentes.length === 0" class="text-red-600 text-xs mt-1">
+              No hay agentes disponibles para asignar.
+            </div>
           </div>
         </div>
 
@@ -694,21 +700,25 @@ watch(
   () => props.isOpen,
   async (isOpen) => {
     if (isOpen) {
-      // Cargar agentes
-      if (agentes.value.length === 0) {
-        try {
-          const data = await agenteService.getUsers();
-          agentes.value =
-            data.$values?.map((agente) => ({
-              id: agente.id,
-              nombreCompleto: `${agente.nombre} ${agente.apellido}`,
-            })) || [];
-        } catch (error) {
-          //console.error("Error al cargar agentes:", error);
+      // Siempre recargar agentes al abrir el modal
+      try {
+        const data = await agenteService.getUsers();
+        let arr = [];
+        if (Array.isArray(data)) {
+          arr = data;
+        } else if (Array.isArray(data?.$values)) {
+          arr = data.$values;
         }
+        agentes.value = arr.map((agente) => ({
+          id: agente.id || agente.Id || agente.userId || agente.usuarioId,
+          nombreCompleto: `${agente.nombre || agente.Nombre || agente.userName || ''} ${agente.apellido || agente.Apellido || ''}`.trim(),
+        }));
+          agentes.value.sort((a, b) => a.nombreCompleto.localeCompare(b.nombreCompleto, 'es', { sensitivity: 'base' }));
+      } catch (error) {
+        //console.error("Error al cargar agentes:", error);
       }
-      
-      // Cargar zonas activas
+
+      // Cargar zonas activas solo si están vacías
       if (zonasActivas.value.length === 0) {
         try {
           const response = await zonaService.getAllZonasActivas();

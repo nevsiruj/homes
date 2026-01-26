@@ -28,6 +28,23 @@
               </h3>
 
               <form @submit.prevent="guardarArticulo" class="space-y-4">
+                                <!-- Etiquetas -->
+                                <div>
+                                  <label for="etiqueta" class="block text-sm font-medium text-gray-700">
+                                    Etiquetas (separadas por coma)
+                                  </label>
+                                  <input
+                                    v-model="formData.etiqueta"
+                                    type="text"
+                                    id="etiqueta"
+                                    @input="limpiarError('etiqueta')"
+                                    class="mt-1 block w-full rounded-md shadow-sm focus:ring-gray-500 sm:text-sm p-2 border border-gray-300 focus:border-gray-500"
+                                    placeholder="ej: lujo, inversión, tips"
+                                  />
+                                  <p v-if="errores.etiqueta" class="mt-1 text-sm text-red-500">
+                                    {{ errores.etiqueta }}
+                                  </p>
+                                </div>
                 <!-- Título -->
                 <div>
                   <label for="title" class="block text-sm font-medium text-gray-700">
@@ -249,7 +266,8 @@ const esCategoriaPersonalizada = (categoria) => {
 const errores = ref({
   title: '',
   slug: '',
-  content: ''
+  content: '',
+  etiqueta: ''
 });
 const intentoGuardar = ref(false);
 
@@ -260,7 +278,8 @@ const formData = ref({
   imageUrl: '',
   categorias: 'Informativo',
   permalink: '',
-  activo: true
+  activo: true,
+  etiqueta: ''
 });
 
 const modoEdicion = computed(() => !!props.articulo);
@@ -276,8 +295,13 @@ const generarPermalink = computed(() => {
 // Declarar funciones antes de usarlas
 const validarFormulario = () => {
   let esValido = true;
-  errores.value = { title: '', slug: '', content: '' };
+  errores.value = { title: '', slug: '', content: '', etiqueta: '' };
   
+    // Validar etiquetas (opcional, pero si existe debe tener formato correcto)
+    if (formData.value.etiqueta && /[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ,\s-]/.test(formData.value.etiqueta)) {
+      errores.value.etiqueta = 'Solo letras, números, comas y guiones';
+      esValido = false;
+    }
   // Validar título
   if (!formData.value.title || formData.value.title.trim() === '') {
     errores.value.title = 'Por favor, ingresa un título para el artículo';
@@ -322,7 +346,8 @@ const resetearFormulario = () => {
     imageUrl: '',
     categorias: 'Informativo',
     permalink: '',
-    activo: true
+    activo: true,
+    etiqueta: ''
   };
   categoriaSeleccionada.value = 'Informativo';
   mostrarInputCategoria.value = false;
@@ -461,7 +486,8 @@ watch(() => props.articulo, (nuevoArticulo) => {
       imageUrl: nuevoArticulo.imageUrl || '',
       categorias: nuevoArticulo.categorias || 'Informativo',
       permalink: nuevoArticulo.permalink || '',
-      activo: nuevoArticulo.activo !== undefined ? nuevoArticulo.activo : true
+      activo: nuevoArticulo.activo !== undefined ? nuevoArticulo.activo : true,
+      etiqueta: nuevoArticulo.etiqueta || ''
     };
     // Si la categoría no está en las predefinidas, es personalizada
     const categoria = nuevoArticulo.categorias || 'Informativo';
