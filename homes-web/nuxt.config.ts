@@ -124,7 +124,8 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxt/image-edge",
-    "@nuxtjs/seo",
+    // "@nuxtjs/seo",
+    '@nuxtjs/sitemap',
     "@nuxt/content",
     "@pinia/nuxt",
     "@nuxtjs/color-mode"
@@ -145,11 +146,7 @@ export default defineNuxtConfig({
     sitemap: ['https://homesguatemala.com/sitemap.xml'],
   },
 
-  sitemap: {
-    sources: [
-      '/api/sitemap-urls'
-    ]
-  },
+  // Eliminado: configuración de sitemap para evitar conflictos. El sitemap se genera dinámicamente vía endpoint personalizado.
 
   colorMode: {
     classSuffix: "",

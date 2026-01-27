@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../config'
+import { API_BASE_URL } from '../config.js'
 
 const cache = new Map();
 const defaultTTL = 1000 * 60 * 3; // 3 minutes
