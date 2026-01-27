@@ -1,5 +1,3 @@
-
-
 <template>
   <div v-if="editor" class="bg-gray-50   rounded-lg border border-gray-300  ">
     <div class="p-2 border-b border-gray-300   flex flex-wrap gap-1">
@@ -57,6 +55,20 @@
         aria-label="Lista con viñetas"
       >• Lista
         <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+      </button>
+      <!-- Botón para enlaces -->
+      <button
+        type="button"
+        @click="setLink"
+        :class="{'is-active bg-gray-200': editor.isActive('link')}"
+        class="px-2 py-1 rounded text-sm text-gray-700 hover:bg-gray-200"
+        aria-label="Enlace"
+        title="Insertar/editar enlace"
+      >
+        <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 010 5.656m-3.656-3.656a4 4 0 015.656 0m-7.778 7.778a4 4 0 010-5.656m3.656 3.656a4 4 0 01-5.656 0" />
+        </svg>
+        Enlace
       </button>
       
       <button
@@ -425,6 +437,42 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal para insertar/editar enlace -->
+    <div v-if="showLinkModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 shadow-xl">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Insertar/Editar enlace</h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">URL del enlace</label>
+            <input
+              v-model="linkUrl"
+              type="url"
+              placeholder="https://ejemplo.com"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              @keyup.enter="applyLink"
+            />
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 mt-6">
+          <button
+            type="button"
+            @click="closeLinkModal"
+            class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            @click="applyLink"
+            :disabled="!linkUrl"
+            class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Insertar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -438,6 +486,7 @@ import HardBreak from '@tiptap/extension-hard-break'
 import Image from '@tiptap/extension-image'
 import TextAlign from '@tiptap/extension-text-align'
 import Youtube from '@tiptap/extension-youtube'
+import Link from '@tiptap/extension-link'
 
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 
@@ -623,6 +672,16 @@ const editor = useEditor({
       allowFullscreen: true,
       modestBranding: true,
     }),
+    Link.configure({
+      openOnClick: true,
+      autolink: true,
+      linkOnPaste: true,
+      HTMLAttributes: {
+        rel: 'noopener noreferrer',
+        target: '_blank',
+        class: 'text-blue-600 underline hover:text-blue-800',
+      },
+    }),
   ],
   editorProps: {
     attributes: {
@@ -752,6 +811,34 @@ const setYoutubeAlignment = (alignment) => {
         .run()
     }
   })
+}
+
+// Modal para enlaces
+import { ref as vueRef } from 'vue'
+const showLinkModal = vueRef(false)
+const linkUrl = vueRef('')
+
+const setLink = () => {
+  if (!editor.value) return
+  const previousUrl = editor.value.getAttributes('link').href || ''
+  linkUrl.value = previousUrl
+  showLinkModal.value = true
+}
+
+const applyLink = () => {
+  if (!editor.value) return
+  if (linkUrl.value) {
+    editor.value.chain().focus().extendMarkRange('link').setLink({ href: linkUrl.value }).run()
+  } else {
+    editor.value.chain().focus().unsetLink().run()
+  }
+  showLinkModal.value = false
+  linkUrl.value = ''
+}
+
+const closeLinkModal = () => {
+  showLinkModal.value = false
+  linkUrl.value = ''
 }
 
 watch(() => props.modelValue, (newValue) => {
