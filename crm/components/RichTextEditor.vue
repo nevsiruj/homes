@@ -1,6 +1,7 @@
 <template>
   <div v-if="editor" class="bg-gray-50   rounded-lg border border-gray-300  ">
     <div class="p-2 border-b border-gray-300   flex flex-wrap gap-1">
+      
       <button 
         type="button" 
         @click="editor.chain().focus().toggleBold().run()"
@@ -69,6 +70,21 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 010 5.656m-3.656-3.656a4 4 0 015.656 0m-7.778 7.778a4 4 0 010-5.656m3.656 3.656a4 4 0 01-5.656 0" />
         </svg>
         Enlace
+      </button>
+
+      <!-- Botón para quitar enlace -->
+      <button
+        v-if="editor && editor.isActive('link')"
+        type="button"
+        @click="editor.chain().focus().unsetLink().run()"
+        class="px-2 py-1 rounded text-sm text-red-600 hover:bg-red-100"
+        aria-label="Quitar enlace"
+        title="Quitar enlace"
+      >
+        <svg class="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H7a4 4 0 01-4-4V7" />
+        </svg>
+        Quitar enlace
       </button>
       
       <button
@@ -465,10 +481,9 @@
           <button
             type="button"
             @click="applyLink"
-            :disabled="!linkUrl"
-            class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
-            Insertar
+            {{ linkUrl ? 'Insertar' : 'Quitar enlace' }}
           </button>
         </div>
       </div>
@@ -828,7 +843,7 @@ const setLink = () => {
 const applyLink = () => {
   if (!editor.value) return
   if (linkUrl.value) {
-    editor.value.chain().focus().extendMarkRange('link').setLink({ href: linkUrl.value }).run()
+    editor.value.chain().focus().setLink({ href: linkUrl.value }).run()
   } else {
     editor.value.chain().focus().unsetLink().run()
   }
