@@ -129,11 +129,18 @@ public class AgenteController : ControllerBase
     [HttpPost("changePassword")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        var res = await _authService.ChangePasswordAsync(request);
+        // You need to get the userId, for example from the authenticated user context
+        var userId = User?.Identity?.Name; // Or however you get the userId in your app
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var res = await _authService.ChangePasswordAsync(userId, request.NewPassword);
         if (res.Succeeded)
         {
             return Ok(new { Message = res });
-
         }
         return BadRequest(new { Errors = res.Errors });
     }

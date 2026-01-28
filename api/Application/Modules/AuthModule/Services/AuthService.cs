@@ -55,7 +55,10 @@ public interface IAuthService
     /// <param name="email"></param>
     /// <returns></returns>
     Task<IdentityResult> ResetPasswordAsync(string email);
-    Task<IdentityResult> ChangePasswordAsync(ChangePasswordRequest request);
+
+    // Cambiado: no usar ChangePasswordRequest aquí — sólo userId + newPassword
+    Task<IdentityResult> ChangePasswordAsync(string userId, string newPassword);
+
     Task<bool> Update(UserDTO user);
     Task<IdentityResult> AssignRoleToUser(string userId, string roleName);
     Task<IEnumerable<string>> GetUserRoles(string userId);
@@ -66,7 +69,7 @@ public class AgenteService : IAuthService
     // ... (como anteriormente)
 
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly UserManager<ApplicationUser> _user_manager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
     private readonly RoleManager<IdentityRole> _roleManager;
@@ -77,7 +80,7 @@ public class AgenteService : IAuthService
     public AgenteService(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager, IMapper mapper, IMemoryCache cache)
     {
         _httpContextAccessor = httpContextAccessor;
-        _userManager = userManager;
+        _user_manager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
         _roleManager = roleManager;
@@ -92,10 +95,10 @@ public class AgenteService : IAuthService
 
     public async Task<string> GenerateToken(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _user_manager.FindByEmailAsync(email);
         if (user == null) return null;
 
-        var roles = await _userManager.GetRolesAsync(user);  // Obtén los roles del usuario
+        var roles = await _user_manager.GetRolesAsync(user);  // Obtén los roles del usuario
 
         var claims = new List<Claim>
             {
@@ -122,10 +125,10 @@ public class AgenteService : IAuthService
 
     public async Task<string> GenerateTokenByUsername(string username)
     {
-        var user = await _userManager.FindByNameAsync(username);
+        var user = await _user_manager.FindByNameAsync(username);
         if (user == null) return null;
 
-        var roles = await _userManager.GetRolesAsync(user);  // Obtén los roles del usuario
+        var roles = await _user_manager.GetRolesAsync(user);  // Obtén los roles del usuario
 
         var claims = new List<Claim>
     {
@@ -173,42 +176,15 @@ public class AgenteService : IAuthService
         }
     }
 
-    //public async Task<SignInResult> Login(string email, string password)
-    //{
-    //    var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
-    //    if (result.Succeeded)
-    //    {
-    //        var user = await _userManager.FindByEmailAsync(email);
-    //        var token = await GenerateJwtToken(user);
-
-    //        _httpContextAccessor.HttpContext.Response.Headers.Add("Access-Token", token);
-
-
-    //        var claims = new List<Claim>
-    //        {
-    //            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-    //            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-    //            new Claim("TenantId", user.TenantId.ToString()),
-    //             new Claim(ClaimTypes.Email, user.Email),
-    //        };
-
-
-    //        var claimsIdentity = new ClaimsIdentity(claims, "Jwt");
-    //        _httpContextAccessor.HttpContext.User = new ClaimsPrincipal(claimsIdentity);
-    //    }
-
-    //    return result;
-    //}
-
     public async Task<SignInResult> Login(string email, string password)
     {
         var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent: false, lockoutOnFailure: false);
         if (result.Succeeded)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _user_manager.FindByEmailAsync(email);
             //if()
 
-            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRoles = await _user_manager.GetRolesAsync(user);
             var claims = BuildClaims(user, userRoles);
             var token = GenerateToken(claims);
             _httpContextAccessor.HttpContext.Response.Headers.Add("Access-Token", token);
@@ -219,26 +195,28 @@ public class AgenteService : IAuthService
 
         return result;
     }
-    public async Task<IdentityResult> ChangePasswordAsync(ChangePasswordRequest request)
+
+    // Cambiado: ahora recibe userId + newPassword (no usa OldPassword ni UserName)
+    public async Task<IdentityResult> ChangePasswordAsync(string userId, string newPassword)
     {
-        var user = await _userManager.FindByNameAsync(request.UserName);
-        if (user == null) return IdentityResult.Failed();
+        var user = await _user_manager.FindByIdAsync(userId);
+        if (user == null) return IdentityResult.Failed(new IdentityError { Description = "User not found." });
 
-        var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
-
+        // Generar token interno y resetear la contraseña
+        var resetToken = await _user_manager.GeneratePasswordResetTokenAsync(user);
+        var result = await _user_manager.ResetPasswordAsync(user, resetToken, newPassword);
 
         return result;
-
-
     }
+
     public async Task<IdentityResult> ResetPasswordAsync(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await _user_manager.FindByEmailAsync(email);
         if (user == null) return IdentityResult.Failed(new IdentityError { Description = "NotFound" });
 
         var newPassword = GenerateRandomPassword(user);
-        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var result = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
+        var resetToken = await _user_manager.GeneratePasswordResetTokenAsync(user);
+        var result = await _user_manager.ResetPasswordAsync(user, resetToken, newPassword);
         var message = $"Tu nueva contraseña es: {newPassword}\n";
 
         await SendEmailAsync(email, "Nueva contraseña", message);
@@ -329,12 +307,12 @@ public class AgenteService : IAuthService
         if (emailClaim == null) return null; // Si no hay claim de correo electrónico/nombre, retorna null.
 
         // Intenta encontrar el usuario por correo electrónico.
-        var user = await _userManager.FindByEmailAsync(emailClaim.Value);
+        var user = await _user_manager.FindByEmailAsync(emailClaim.Value);
 
         // Si no se encuentra por correo electrónico, intenta por nombre de usuario.
         if (user == null)
         {
-            user = await _userManager.FindByNameAsync(emailClaim.Value);
+            user = await _user_manager.FindByNameAsync(emailClaim.Value);
         }
 
         if (user == null) return null; // Si no se encuentra el usuario ni por correo electrónico ni por nombre, retorna null.
@@ -411,13 +389,13 @@ public class AgenteService : IAuthService
             return cachedRoles;
         }
 
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _user_manager.FindByIdAsync(userId);
         if (user == null)
         {
             return null;
         }
 
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _user_manager.GetRolesAsync(user);
         
         // Guardar en cache por 5 minutos
         _cache.Set(cacheKey, roles, TimeSpan.FromMinutes(5));
@@ -428,18 +406,18 @@ public class AgenteService : IAuthService
 
     public async Task<IEnumerable<ApplicationUser>> GetUsers()
     {
-        return await _userManager.Users.ToListAsync();
+        return await _user_manager.Users.ToListAsync();
     }
 
     public async Task<List<UserDTO>> GetUsersWithRoles()
     {
         var usersWithRoles = new List<UserDTO>();
 
-        var users = await _userManager.Users.ToListAsync();
+        var users = await _user_manager.Users.ToListAsync();
 
         foreach (var user in users)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRoles = await _user_manager.GetRolesAsync(user);
             UserDTO newUser = _mapper.Map<UserDTO>(user);
             newUser.Rol = userRoles[0];
             usersWithRoles.Add(newUser);
@@ -451,11 +429,11 @@ public class AgenteService : IAuthService
     {
         var usersWithRoles = new List<UserDTO>();
 
-        var users = await _userManager.Users.ToListAsync();
+        var users = await _user_manager.Users.ToListAsync();
 
         foreach (var user in users)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRoles = await _user_manager.GetRolesAsync(user);
             UserDTO newUser = _mapper.Map<UserDTO>(user);
             newUser.Rol = userRoles.Any() ? userRoles[0] : "Rol no asignado";
             usersWithRoles.Add(newUser);
@@ -467,11 +445,11 @@ public class AgenteService : IAuthService
     {
         var usersWithRoles = new List<UserDTO>();
 
-        var users = await _userManager.Users.ToListAsync();
+        var users = await _user_manager.Users.ToListAsync();
 
         foreach (var user in users)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
+            var userRoles = await _user_manager.GetRolesAsync(user);
             UserDTO newUser = _mapper.Map<UserDTO>(user);
             newUser.Rol = userRoles.Any() ? userRoles[0] : "Rol no asignado";
             usersWithRoles.Add(newUser);
@@ -481,7 +459,7 @@ public class AgenteService : IAuthService
     }
     public async Task<bool> Update(UserDTO user)
     {
-        var userExists = await _userManager.FindByIdAsync(user.Id);
+        var userExists = await _user_manager.FindByIdAsync(user.Id);
         if (userExists == null)
         {
             return false;
@@ -492,7 +470,7 @@ public class AgenteService : IAuthService
         userExists.Nombre = user.Nombre;
         userExists.Dni = user.Dni;
 
-        await _userManager.UpdateAsync(userExists);
+        await _user_manager.UpdateAsync(userExists);
         return true;
 
 
@@ -512,18 +490,18 @@ public class AgenteService : IAuthService
             }
         }
         // Crear el usuario
-        var createUserResult = await _userManager.CreateAsync(user, model.Password);
+        var createUserResult = await _user_manager.CreateAsync(user, model.Password);
         if (!createUserResult.Succeeded)
         {
             return createUserResult;
         }
 
         var roleName = model.Rol; // Suponiendo que el nombre del rol está en el objeto RegisterRequest
-        var assignRoleResult = await _userManager.AddToRoleAsync(user, roleName);
+        var assignRoleResult = await _user_manager.AddToRoleAsync(user, roleName);
         if (!assignRoleResult.Succeeded)
         {
             // Si no se pudo asignar el rol, eliminar el usuario recién creado
-            await _userManager.DeleteAsync(user);
+            await _user_manager.DeleteAsync(user);
             return assignRoleResult;
         }
 
@@ -533,8 +511,8 @@ public class AgenteService : IAuthService
 
     public async Task<bool> ValidateCredentials(string email, string password)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user != null && await _userManager.CheckPasswordAsync(user, password))
+        var user = await _user_manager.FindByEmailAsync(email);
+        if (user != null && await _user_manager.CheckPasswordAsync(user, password))
         {
             return true;
         }
@@ -543,8 +521,8 @@ public class AgenteService : IAuthService
 
     public async Task<bool> ValidateCredentialsByUsername(string username, string password)
     {
-        var user = await _userManager.FindByNameAsync(username);
-        if (user != null && await _userManager.CheckPasswordAsync(user, password))
+        var user = await _user_manager.FindByNameAsync(username);
+        if (user != null && await _user_manager.CheckPasswordAsync(user, password))
         {
             return true;
         }
@@ -569,7 +547,7 @@ public class AgenteService : IAuthService
         }
 
         // Obtener el usuario por su ID
-        var user = await _userManager.FindByIdAsync(userId);
+        var user = await _user_manager.FindByIdAsync(userId);
         if (user == null)
         {
             // El usuario no existe
@@ -578,7 +556,7 @@ public class AgenteService : IAuthService
         }
 
         // Remover todos los roles actuales del usuario
-        var resultRemove = await _userManager.RemoveFromRolesAsync(user, await _userManager.GetRolesAsync(user));
+        var resultRemove = await _user_manager.RemoveFromRolesAsync(user, await _user_manager.GetRolesAsync(user));
 
         // Verificar si se pudo remover los roles existentes correctamente
         if (!resultRemove.Succeeded)
@@ -587,7 +565,7 @@ public class AgenteService : IAuthService
         }
 
         // Asignar el nuevo rol al usuario
-        var resultAdd = await _userManager.AddToRoleAsync(user, roleName);
+        var resultAdd = await _user_manager.AddToRoleAsync(user, roleName);
         return resultAdd;
     }
     private async Task SendEmailAsync(string email, string subject, string message)

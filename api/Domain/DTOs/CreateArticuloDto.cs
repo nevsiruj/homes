@@ -13,6 +13,7 @@ namespace Domain.DTOs
         public string Slug { get; set; }
         public string ImagenUrl { get; set; }
         public string Categoria { get; set; }
+        public string? Etiqueta { get; set; } = null;
         public bool? Activo { get; set; }
         public int? Orden { get; set; }
     }

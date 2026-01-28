@@ -15,6 +15,7 @@ namespace Domain.DTOs
         public string Permalink { get; set; }
         public string ImagenUrl { get; set; }
         public string Categoria { get; set; }
+        public string? Etiqueta { get; set; } = null;
         public DateTime FechaCreacion { get; set; }
         public DateTime? FechaActualizacion { get; set; }
         public bool Activo { get; set; }

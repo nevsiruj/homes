@@ -147,27 +147,61 @@ namespace Application.Modules.UsersModule.Controllers
 
             try
             {
-                // Suponiendo que _userService es una instancia de UserService inyectada en el controlador.
+                // Asegurarse de usar el id de la ruta como fuente de verdad
+                updatedUser.Id = id;
+
                 var result = await _userService.Update(updatedUser);
 
                 if (result)
                 {
-                    return Ok( new {ok = true});
+                    return Ok(new { ok = true });
                 }
 
-                // Maneja los errores de Identity
-                return BadRequest();
+                // Si Update devolvió false, comprobar si el usuario existe para devolver el código correcto
+                var userExists = await _userManager.FindByIdAsync(id);
+                if (userExists == null)
+                {
+                    return NotFound();
+                }
+
+                return BadRequest(new { message = "No se pudo actualizar el usuario." });
             }
             catch (KeyNotFoundException knfException)
             {
-                // Manejar el caso de usuario no encontrado
                 return NotFound(knfException.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Loguear el error
                 return StatusCode(500, "Un error ocurrió mientras se procesaba su solicitud.");
             }
+        }
+
+        // PATCH: actualiza solamente la contraseña (New + ConfirmNew)
+        [HttpPatch("{id}/password")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePassword(string id, [FromBody] ChangePasswordRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmNewPassword))
+            {
+                return BadRequest(new { message = "NewPassword and ConfirmNewPassword are required." });
+            }
+
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                return BadRequest(new { message = "NewPassword and ConfirmNewPassword do not match." });
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var result = await _userService.ChangePasswordAsync(id, request.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(new { errors = result.Errors.Select(e => e.Description) });
         }
 
 

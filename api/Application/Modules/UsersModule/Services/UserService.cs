@@ -28,6 +28,8 @@ namespace Application.Modules.UsersModule.Services
         Task<int> GetClientCount();
         Task<bool> Update(UserDTO user);
 
+        // Cambiar contraseña sin oldPassword: genera token y resetea
+        Task<IdentityResult> ChangePasswordAsync(string userId, string newPassword);
     }
     public class UserService : GenericService<ApplicationUser, UserDTO>, IUserService
     {
@@ -141,6 +143,20 @@ namespace Application.Modules.UsersModule.Services
 
             // Aquí continúas con la actualización del usuario en la base de datos.
             var result = await _userManager.UpdateAsync(user);
+            return result;
+        }
+
+        // Implementación: resetea contraseña sin necesitar la antigua (genera token internamente)
+        public async Task<IdentityResult> ChangePasswordAsync(string userId, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, newPassword);
             return result;
         }
 

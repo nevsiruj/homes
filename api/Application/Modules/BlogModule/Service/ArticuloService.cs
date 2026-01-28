@@ -15,39 +15,12 @@ namespace Application.Modules.BlogModule.Services
 {
     public interface IArticuloService : IGenericService<ArticuloDto>
     {
-        /// <summary>
-        /// Obtiene todos los artículos activos
-        /// </summary>
         Task<IEnumerable<ArticuloDto>> GetAllActivosAsync();
-
-        /// <summary>
-        /// Obtiene artículos por categoría
-        /// </summary>
         Task<IEnumerable<ArticuloDto>> GetByCategoriaAsync(string categoria);
-
-        /// <summary>
-        /// Obtiene un artículo por su slug
-        /// </summary>
         Task<ArticuloDto> GetBySlugAsync(string slug);
-
-        /// <summary>
-        /// Obtiene artículos ordenados por orden personalizado
-        /// </summary>
         Task<IEnumerable<ArticuloDto>> GetAllByCustomOrderAsync();
-
-        /// <summary>
-        /// Obtiene artículos activos ordenados por orden personalizado
-        /// </summary>
         Task<IEnumerable<ArticuloDto>> GetAllActivosByCustomOrderAsync();
-
-        /// <summary>
-        /// Reordena los artículos según el orden proporcionado
-        /// </summary>
         Task ReorderArticulosAsync(List<int> articuloIds);
-
-        /// <summary>
-        /// Busca artículos por título o contenido
-        /// </summary>
         Task<IEnumerable<ArticuloDto>> SearchAsync(string termino);
     }
 
@@ -174,7 +147,8 @@ namespace Application.Modules.BlogModule.Services
                 .Where(a => a.Activo && (
                     a.Titulo.ToLower().Contains(terminoLower) ||
                     a.Contenido.ToLower().Contains(terminoLower) ||
-                    a.Categoria.ToLower().Contains(terminoLower)
+                    a.Categoria.ToLower().Contains(terminoLower) ||
+                    a.Etiqueta.ToLower().Contains(terminoLower)
                 ))
                 .OrderBy(a => a.Orden)
                 .ThenByDescending(a => a.FechaCreacion)
@@ -215,6 +189,7 @@ namespace Application.Modules.BlogModule.Services
                 Permalink = permalink,
                 ImagenUrl = articuloDto.ImagenUrl?.Trim(),
                 Categoria = articuloDto.Categoria?.Trim() ?? "Sin categoría",
+                Etiqueta = articuloDto.Etiqueta?.Trim() ?? "Sin etiquetas",
                 Activo = articuloDto.Activo,
                 Orden = proximoOrden,
                 FechaCreacion = DateTime.UtcNow
@@ -255,6 +230,7 @@ namespace Application.Modules.BlogModule.Services
             articulo.Permalink = $"https://homesguatemala.com/{categoriaNormalizada}/{articuloDto.Slug.ToLower()}/";
             articulo.ImagenUrl = articuloDto.ImagenUrl?.Trim();
             articulo.Categoria = articuloDto.Categoria?.Trim() ?? "Sin categoría";
+            articulo.Etiqueta = articuloDto.Etiqueta?.Trim() ?? "Sin etiquetas";
             articulo.Activo = articuloDto.Activo;
             articulo.Orden = articuloDto.Orden;
             articulo.FechaActualizacion = DateTime.UtcNow;

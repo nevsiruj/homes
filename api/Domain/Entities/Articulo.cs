@@ -23,6 +23,8 @@ namespace Domain.Entities
 
         public string Categoria { get; set; }
 
+        public string? Etiqueta { get; set; } = null;
+
         public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
         

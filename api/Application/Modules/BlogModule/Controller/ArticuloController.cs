@@ -222,6 +222,7 @@ namespace Application.Modules.BlogModule.Controller
                     Slug = createArticuloDto.Slug,
                     ImagenUrl = createArticuloDto.ImagenUrl,
                     Categoria = createArticuloDto.Categoria,
+                    Etiqueta = createArticuloDto.Etiqueta,
                     Activo = createArticuloDto.Activo ?? true,
                     Orden = createArticuloDto.Orden ?? 0
                 };
