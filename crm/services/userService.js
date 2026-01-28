@@ -131,6 +131,38 @@ const userService = (() => {
     getAllAgentes: async () => {
       return fetchWithAuth('/user', { method: 'GET' });
     },
+    changePassword: async (agente, newPassword) => {
+      // Construye el objeto esperado por el backend
+      const body = {
+        id: agente.id,
+        userName: agente.userName || agente.UserName || agente.email || '',
+        nombre: agente.nombre,
+        apellido: agente.apellido,
+        email: agente.email,
+        especialidad: agente.especialidad,
+        rol: agente.rol,
+        fechaIngreso: agente.fechaIngreso,
+        password: newPassword
+        // Agrega aquí otros campos requeridos por el backend si es necesario
+      };
+      return fetchWithAuth(`/user/${agente.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    },
+    patchPassword: async (id, newPassword, confirmNewPassword) => {
+      if (!id) {
+        console.error('patchPassword: id no proporcionado');
+        throw new Error('No se proporcionó el id del usuario');
+      }
+      // Usa la ruta con mayúscula para máxima compatibilidad
+      return fetchWithAuth(`/User/${id}/password`, {
+        method: 'PATCH',
+        body: JSON.stringify({ newPassword, confirmNewPassword }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    },
   };
 })();
 

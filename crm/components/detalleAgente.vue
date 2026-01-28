@@ -21,7 +21,7 @@
       >
         <div class="flex flex-col h-full" style="max-height: 90vh;">
           <!-- Header mejorado con gradiente -->
-          <div class="relative bg-gradient-to-r from-green-900 to-green-700 text-white p-6 md:p-8 flex-shrink-0">
+          <div class="relative bg-linear-to-r from-green-900 to-green-700 text-white p-6 md:p-8 shrink-0">
             <button
               @click="closeModal"
               type="button"
@@ -129,11 +129,11 @@
                     Estadísticas Profesionales
                   </h4>
                   <div class="space-y-4">
-                    <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
+                    <div class="bg-linear-to-r from-green-50 to-green-100 p-4 rounded-lg">
                       <span class="text-xs text-green-700 font-medium block mb-1">Especialidad</span>
                       <p class="text-lg font-bold text-green-900">{{ agente.especialidad || 'w' }}</p>
                     </div>
-                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
+                    <div class="bg-linear-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
                       <span class="text-xs text-blue-700 font-medium block mb-1">Experiencia</span>
                       <p class="text-lg font-bold text-blue-900">{{ agente.experiencia || 'N/A' }}</p>
                     </div>
@@ -177,7 +177,7 @@
                       :key="index"
                       class="flex items-start gap-2 p-3 bg-green-50 rounded-lg"
                     >
-                      <svg class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg class="w-5 h-5 text-green-600 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                       </svg>
                       <span class="text-sm text-gray-700">{{ cert }}</span>
@@ -235,11 +235,34 @@
                   {{ agente.notas || "Sin notas adicionales" }}
                 </p>
               </div>
+
+              <!-- Cambiar contraseña -->
+              <div class="bg-white rounded-xl shadow-md p-6 mt-6">
+                <h4 class="text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 2a4 4 0 00-4 4v2H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zm-2 4a2 2 0 114 0v2h-4V6zm8 4v6H4v-6h12z"/>
+                  </svg>
+                  Cambiar contraseña
+                </h4>
+                <form @submit.prevent="handleChangePassword">
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña</label>
+                    <input v-model="newPassword" type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required />
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+                    <input v-model="confirmPassword" type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required />
+                  </div>
+                  <button type="submit" class="px-4 py-2 bg-green-700 text-white rounded hover:bg-green-800 disabled:opacity-50" :disabled="loadingPassword">
+                    {{ loadingPassword ? 'Cambiando...' : 'Cambiar contraseña' }}
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
 
           <!-- Footer mejorado -->
-          <div class="bg-white border-t p-6 flex justify-end gap-3 flex-shrink-0">
+          <div class="bg-white border-t p-6 flex justify-end gap-3 shrink-0">
             <button
               type="button"
               @click="closeModal"
@@ -255,7 +278,8 @@
 </template>
 
 <script setup>
-
+import Swal from 'sweetalert2'
+import userService from '@/services/userService'
 const props = defineProps({
   isOpen: {
     type: Boolean,
@@ -264,6 +288,7 @@ const props = defineProps({
   agente: {
     type: Object,
     default: () => ({
+      id: '',
       nombre: "",
       apellido: "",
       dni: "",
@@ -282,7 +307,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "password-changed"]);
 
 function closeModal() {
   emit('close');
@@ -301,6 +326,53 @@ function formatDate(dateString) {
 
   return `${day}/${month}/${year}`;
 }
+
+// === Cambiar contraseña ===
+const newPassword = ref('')
+const confirmPassword = ref('')
+const loadingPassword = ref(false)
+
+async function handleChangePassword() {
+  if (!props.agente || !props.agente.id) {
+    Swal.fire('Error', 'No se encontró el ID del agente', 'error')
+    return
+  }
+  if (newPassword.value !== confirmPassword.value) {
+    Swal.fire('Error', 'Las contraseñas no coinciden', 'error')
+    return
+  }
+  if (!newPassword.value) {
+    Swal.fire('Error', 'La nueva contraseña no puede estar vacía', 'error')
+    return
+  }
+  loadingPassword.value = true
+  try {
+    await userService.patchPassword(props.agente.id, newPassword.value, confirmPassword.value)
+    Swal.fire('Éxito', 'Contraseña cambiada correctamente', 'success')
+    // Emitir evento para que el padre pueda recargar datos si es necesario
+    emit('password-changed', props.agente.id)
+    newPassword.value = ''
+    confirmPassword.value = ''
+    // Cerrar el modal automáticamente
+    emit('close')
+  } catch (e) {
+    Swal.fire('Error', e.message || 'No se pudo cambiar la contraseña', 'error')
+  } finally {
+    loadingPassword.value = false
+  }
+}
+
+watch(
+  () => props.agente,
+  (nuevo) => {
+    if (nuevo && nuevo.id) {
+      console.log('DetalleAgente id:', nuevo.id)
+    } else {
+      console.warn('DetalleAgente: agente o id no definido', nuevo)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>

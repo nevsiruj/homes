@@ -268,7 +268,13 @@
     <!-- Modal: Detalle del Agente -->
     <DetalleAgente :isOpen="isDetailOpen" :agente="selectedAgente" @close="closeDetailModal" />
 
-    
+    <!-- Modal: Cambiar Password -->
+    <ModalCambiarPassword
+      :isOpen="showPasswordModal"
+      :userId="passwordUserId"
+      @close="closePasswordModal"
+    />
+
   </div>
 </template>
 
@@ -280,6 +286,7 @@ import DetalleAgente from '../../components/detalleAgente.vue';
 import agenteService from '@/services/agenteService';
 import userService from '@/services/userService';
 import { useAuthStore } from "@/stores/auth";
+import ModalCambiarPassword from '../../components/ModalCambiarPassword.vue';
 
 const auth = useAuthStore();
 const isAdmin = computed(() =>
@@ -325,7 +332,7 @@ const agentes = ref([]);
 const searchTerm = ref('');
 const showAgregarModal = ref(false);
 const isDetailOpen = ref(false);
-const selectedAgente = ref(null);
+const selectedAgente = ref({});
 const isLoading = ref(false);
 
 // Paginación
@@ -379,8 +386,23 @@ async function loadAgentes() {
     const data = await agenteService.getUsers(); // Llamada real al backend
 
     // Mapea los datos del backend (asumiendo formato PascalCase)
-    const agentesList = data.$values || data || [];
-    
+    const agentesList = (data.$values || data || []).map(a => ({
+      id: a.id || a.Id || a.ID || '',
+      nombre: a.nombre || a.Nombre || '',
+      apellido: a.apellido || a.Apellido || '',
+      dni: a.dni || a.Dni || a.DNI || '',
+      telefono: a.telefono || a.Telefono || '',
+      email: a.email || a.Email || '',
+      especialidad: a.especialidad || a.Especialidad || '',
+      experiencia: a.experiencia || a.Experiencia || '',
+      propiedadesVendidas: a.propiedadesVendidas || a.PropiedadesVendidas || 0,
+      valorVendidoTotal: a.valorVendidoTotal || a.ValorVendidoTotal || '',
+      fechaIngreso: a.fechaIngreso || a.FechaIngreso || '',
+      rol: a.rol || a.Rol || '',
+      certificaciones: a.certificaciones || a.Certificaciones || [],
+      clientesAtendidos: a.clientesAtendidos || a.ClientesAtendidos || [],
+      notas: a.notas || a.Notas || ''
+    }));
     agentes.value = agentesList;
   } catch (error) {
     console.error("❌ Error al cargar agentes:", error);
@@ -400,9 +422,29 @@ async function loadAgentes() {
 }
 
 // === Abrir modal detalle ===
-function openDetailModal(agente) {
-  selectedAgente.value = agente;
-  isDetailOpen.value = true;
+async function openDetailModal(agente) {
+  // Asegura que el id esté presente y correcto
+  let id = agente.id || agente.Id || agente.ID || '';
+  if (!id) {
+    const found = agentes.value.find(a => a.email === agente.email);
+    if (found && found.id) {
+      id = found.id;
+    } else {
+      Swal.fire('Error', 'No se encontró el id del agente', 'error');
+      return;
+    }
+  }
+  // Obtiene los datos completos del usuario por id
+  isLoading.value = true;
+  try {
+    const user = await userService.getById(id);
+    selectedAgente.value = user;
+    isDetailOpen.value = true;
+  } catch (e) {
+    Swal.fire('Error', 'No se pudo cargar el detalle del agente', 'error');
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 // Función para cerrar modal y recargar datos si es necesario

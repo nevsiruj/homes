@@ -17,6 +17,14 @@
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full ps-3 p-2.5" />
                     </div>
                     <div class="flex gap-2 w-full sm:w-auto">
+                                    <!-- Selector de orden -->
+                                    <select v-model="ordenSeleccionado"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 p-2.5 flex-1 sm:flex-none sm:w-auto">
+                                        <option value="fecha-desc">Más recientes</option>
+                                        <option value="fecha-asc">Más antiguas</option>
+                                        <option value="titulo-asc">Título A-Z</option>
+                                        <option value="titulo-desc">Título Z-A</option>
+                                    </select>
                         <select v-model="filtroCategoria"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 p-2.5 flex-1 sm:flex-none sm:w-auto">
                             <option value="">Todas</option>
@@ -24,7 +32,7 @@
                                 {{ categoria }}
                             </option>
                         </select>
-                        <button type="submit"
+                        <!-- <button type="submit"
                             class="inline-flex items-center justify-center py-2.5 px-4 text-sm font-medium text-white bg-gray-700 rounded-lg border border-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 whitespace-nowrap">
                             <svg class="w-4 h-4 sm:me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                                 viewBox="0 0 20 20">
@@ -32,7 +40,7 @@
                                     d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                             </svg>
                             <span class="hidden sm:inline">Buscar</span>
-                        </button>
+                        </button> -->
                     </div>
                 </form>
             </div>
@@ -50,11 +58,11 @@
                     <span class="inline sm:hidden">+ Artículo</span>
                     <span class="hidden sm:inline">Agregar Artículo</span>
                 </button>
-                <button type="button" @click="mostrarModalImportar = true"
+                <!-- <button type="button" @click="mostrarModalImportar = true"
                     class="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none whitespace-nowrap w-full sm:w-auto">
                     <span class="inline sm:hidden">📥 Importar</span>
                     <span class="hidden sm:inline">📥 Importar JSON</span>
-                </button>
+                </button> -->
             </div>
         </div>
 
@@ -369,6 +377,7 @@ const categoriasDisponibles = computed(() => {
     return [...new Set(categorias)].sort();
 });
 
+const ordenSeleccionado = ref('fecha-desc');
 const filteredArticulos = computed(() => {
     let resultado = articulos.value;
 
@@ -386,6 +395,22 @@ const filteredArticulos = computed(() => {
         );
     }
 
+    // Ordenamiento
+    resultado = [...resultado];
+    switch (ordenSeleccionado.value) {
+        case 'fecha-asc':
+            resultado.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
+            break;
+        case 'fecha-desc':
+            resultado.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+            break;
+        case 'titulo-asc':
+            resultado.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+        case 'titulo-desc':
+            resultado.sort((a, b) => b.title.localeCompare(a.title));
+            break;
+    }
     return resultado;
 });
 
