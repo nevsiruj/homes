@@ -10,23 +10,26 @@ export function clearInmueblesCache() {
 }
 import { API_BASE_URL } from '../config.js'
 
-const cache = new Map();
+// const cache = new Map();
 
-const defaultTTL = 1000 * 60 * 3; // 3 minutos
+// const defaultTTL = 1000 * 60 * 3; // 3 minutos
 
-const getFromCache = (key) => {
-  const entry = cache.get(key);
-  if (!entry) return null;
-  if (Date.now() > entry.expires) {
-    cache.delete(key);
-    return null;
-  }
-  return entry.value;
-};
+// const getFromCache = (key) => {
+//   const entry = cache.get(key);
+//   if (!entry) return null;
+//   if (Date.now() > entry.expires) {
+//     cache.delete(key);
+//     return null;
+//   }
+//   return entry.value;
+// };
 
-const setCache = (key, value, ttl = defaultTTL) => {
-  cache.set(key, { value, expires: Date.now() + ttl });
-};
+// const setCache = (key, value, ttl = defaultTTL) => {
+//   cache.set(key, { value, expires: Date.now() + ttl });
+// };
+
+const getFromCache = (_key) => null;
+const setCache = (_key, _value, _ttl) => {};
 
 export default {
 
