@@ -1,3 +1,5 @@
+#Config ratreo sitemap
+
 User-agent: *
 Allow: /
 Sitemap: https://homesguatemala.com/sitemap.xml
