@@ -260,6 +260,10 @@ export default defineNuxtConfig({
 
 
   nitro: {
+    prerender: {
+      ignore: ['/luxury-homes', '/luxury-homes/**'],
+      failOnError: false
+    },
     compressPublicAssets: {
       gzip: true,
       brotli: true,
