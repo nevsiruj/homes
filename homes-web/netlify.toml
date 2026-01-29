@@ -2,7 +2,7 @@
 [build]
   base = "homes-web"
   publish = ".output/public"
-  command = "rm -rf node_modules package-lock.json && npm install && npm run generate"
+  command = "npm install --ignore-scripts && npm run generate"
 
 [build.environment]
   NODE_VERSION = "20"
