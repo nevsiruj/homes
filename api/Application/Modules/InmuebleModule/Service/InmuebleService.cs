@@ -191,7 +191,8 @@ namespace Application.Modules.InmuebleModule.Services
                         EF.Functions.Like(EF.Functions.Collate(i.Titulo ?? "", ciAi), pattern) ||
                         EF.Functions.Like(EF.Functions.Collate(i.CodigoPropiedad ?? "", ciAi), pattern) ||
                         EF.Functions.Like(EF.Functions.Collate(i.Ubicaciones ?? "", ciAi), pattern) ||
-                        EF.Functions.Like(EF.Functions.Collate(i.Tipos ?? "", ciAi), pattern)
+                        EF.Functions.Like(EF.Functions.Collate(i.Tipos ?? "", ciAi), pattern) ||
+                        EF.Functions.Like(EF.Functions.Collate(i.Contenido ?? "", ciAi), pattern)
                     );
                 }
 

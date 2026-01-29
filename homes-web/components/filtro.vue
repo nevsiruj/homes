@@ -1078,7 +1078,9 @@ const buildBackendFilters = () => {
       return null; // No enviar si el campo está vacío
     }
 
-    backendFilters.SearchTerm = searchTerm; // Enviar como SearchTerm
+    // Buscar tanto en título como en contenido
+    backendFilters.SearchTerm = searchTerm;
+    backendFilters.Contenido = searchTerm;
   } else if (activeTab.value === "codigo") {
     if (filters.value.codigo.trim()) {
       backendFilters.CodigoPropiedad = filters.value.codigo.trim();
@@ -1165,31 +1167,20 @@ const handleSubmit = () => {
     return;
   }
 
+  // Si es búsqueda por palabra clave, unificar el query para que SearchTerm y Contenido viajen igual
+  if (activeTab.value === "nombre" && filters.value.nombre.trim()) {
+    const searchTerm = filters.value.nombre.trim();
+    router.push({
+      path: "/propiedades",
+      query: { ...filtersToSend, SearchTerm: searchTerm, Contenido: searchTerm },
+    });
+    return;
+  }
+
   router.push({ path: "/propiedades", query: filtersToSend });
 };
 
-const handleSearchByKeyword = () => {
-  const rawSearchTerm = filters.value.nombre.trim();
-
-  if (!rawSearchTerm) {
-    return; // Do nothing if the search term is empty
-  }
-
-  // Process the search term to match the backend logic
-  const words = rawSearchTerm
-    .split(/[^a-zA-Z0-9]+/) // Split by non-alphanumeric characters
-    .filter((word) => word.length >= 2) // Ignore words shorter than 2 characters
-    .map((word) => word.toLowerCase()) // Convert to lowercase
-    .join(" "); // Join the processed words back into a single string
-
-  console.log("Processed SearchTerm:", words); // Log the processed search term
-
-  // Update the query parameters to trigger the watcher in `index.vue`
-  router.push({
-    path: "/propiedades",
-    query: { ...route.query, SearchTerm: words },
-  });
-};
+// handleSearchByKeyword ya no es necesario, la lógica está unificada en handleSubmit
 
 watch(activeTab, (newTab, oldTab) => {
   if (newTab !== oldTab) {

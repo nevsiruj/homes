@@ -983,7 +983,9 @@ const buildBackendFilters = () => {
       return null; // No enviar si el campo está vacío
     }
 
-    backendFilters.SearchTerm = searchTerm; // Enviar como SearchTerm
+    // Buscar tanto en título como en contenido
+    backendFilters.SearchTerm = searchTerm;
+    backendFilters.Contenido = searchTerm;
   } else if (activeTab.value === "codigo") {
     if (filters.value.codigo.trim()) {
       backendFilters.CodigoPropiedad = filters.value.codigo.trim();
@@ -1047,6 +1049,16 @@ const handleSubmit = () => {
   const filtersToSend = buildBackendFilters();
 
   if (filtersToSend === null) {
+    return;
+  }
+
+  // Si es búsqueda por palabra clave, unificar el query para que SearchTerm y Contenido viajen igual
+  if (activeTab.value === "nombre" && filters.value.nombre.trim()) {
+    const searchTerm = filters.value.nombre.trim();
+    router.push({
+      path: "/busqueda",
+      query: { ...filtersToSend, SearchTerm: searchTerm, Contenido: searchTerm },
+    });
     return;
   }
 

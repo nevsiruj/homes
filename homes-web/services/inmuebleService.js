@@ -1,3 +1,13 @@
+/**
+ * Limpia el cache de inmuebles (todas las entradas relacionadas)
+ */
+export function clearInmueblesCache() {
+  for (const key of cache.keys()) {
+    if (key.startsWith(`${API_BASE_URL}/Inmueble`) || key.startsWith('getInmuebles:')) {
+      cache.delete(key);
+    }
+  }
+}
 import { API_BASE_URL } from '../config.js'
 
 const cache = new Map();
@@ -46,6 +56,8 @@ export default {
         codigoPropiedad: 'CodigoPropiedad',
         orden: 'Orden',
         luxury: 'Luxury',
+        searchterm: 'SearchTerm',
+        contenido: 'Contenido', // Para búsquedas en el contenido
       };
 
       params.append('PageNumber', pageNumber.toString());

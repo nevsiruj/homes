@@ -58,6 +58,11 @@
                     <span class="inline sm:hidden">+ Artículo</span>
                     <span class="hidden sm:inline">Agregar Artículo</span>
                 </button>
+                <!-- <button type="button" @click="eliminarTodosLosBlogs"
+                    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none whitespace-nowrap w-full sm:w-auto">
+                    <span class="inline sm:hidden">🗑️ Todos</span>
+                    <span class="hidden sm:inline">Eliminar Todos</span>
+                </button> -->
                 <!-- <button type="button" @click="mostrarModalImportar = true"
                     class="text-gray-700 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none whitespace-nowrap w-full sm:w-auto">
                     <span class="inline sm:hidden">📥 Importar</span>
@@ -682,4 +687,61 @@ const eliminarArticulo = async (id) => {
 onMounted(() => {
     cargarArticulos();
 });
+
+// Eliminar todos los blogs
+const eliminarTodosLosBlogs = async () => {
+    const result = await Swal.fire({
+        title: "¿Eliminar todos los artículos?",
+        text: "Esta acción eliminará todos los artículos del blog y no se puede revertir.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#374151",
+        confirmButtonText: "Sí, eliminar todos",
+        cancelButtonText: "Cancelar",
+    });
+    if (result.isConfirmed) {
+        // Eliminar uno por uno
+        const total = articulos.value.length;
+        let exitosos = 0;
+        let fallidos = 0;
+        let errores = [];
+        for (let [i, articulo] of articulos.value.entries()) {
+            try {
+                await blogService.deleteArticulo(articulo.id);
+                exitosos++;
+            } catch (error) {
+                fallidos++;
+                errores.push({ titulo: articulo.title, error: error.message });
+            }
+            // Mostrar progreso
+            await Swal.update({
+                title: `Eliminando artículos... (${i + 1}/${total})`,
+                text: `Eliminados: ${exitosos} | Fallidos: ${fallidos}`,
+                icon: "info",
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false
+            });
+        }
+        let mensajeResultado = `✅ Exitosos: ${exitosos}\n❌ Fallidos: ${fallidos}`;
+        if (errores.length > 0) {
+            mensajeResultado += "\n\nErrores:";
+            errores.slice(0, 5).forEach(err => {
+                mensajeResultado += `\n- ${err.titulo}: ${err.error}`;
+            });
+            if (errores.length > 5) {
+                mensajeResultado += `\n... y ${errores.length - 5} más`;
+            }
+        }
+        await Swal.fire({
+            icon: fallidos === 0 ? "success" : "warning",
+            title: "Eliminación completada",
+            html: `<pre style="text-align: left; font-size: 12px; white-space: pre-wrap;">${mensajeResultado}</pre>`,
+            width: 500,
+        });
+        await cargarArticulos();
+    }
+};
 </script>

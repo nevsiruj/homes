@@ -49,6 +49,38 @@ const mapArticuloFromBackend = (articulo) => {
 };
 
 export default {
+    async deleteAllArticulos() {
+      try {
+        const response = await fetch(`${getApiBaseUrl()}/Articulo`, {
+          method: "DELETE",
+          headers: getAuthHeaders()
+        });
+        if (response.status === 401) {
+          redirectToLogin();
+          throw new Error("Error 401: No autorizado");
+        }
+        if (!response.ok) {
+          // Intenta parsear el error como JSON, pero si falla, lanza un error genérico
+          let errorData = {};
+          try {
+            errorData = await response.json();
+          } catch (e) {}
+          throw new Error(errorData.message || `HTTP status: ${response.status}`);
+        }
+        // Manejar respuesta vacía (sin body)
+        let data = null;
+        try {
+          data = await response.json();
+        } catch (e) {
+          // Si no hay body, asumimos éxito
+          data = { success: true, message: "Todos los artículos eliminados." };
+        }
+        return data;
+      } catch (error) {
+        console.error("Error al eliminar todos los artículos:", error);
+        throw error;
+      }
+    },
   async getAllArticulos() {
     try {
       const response = await fetch(`${getApiBaseUrl()}/Articulo`, {
