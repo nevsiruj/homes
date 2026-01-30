@@ -2,7 +2,7 @@
 [build]
   base = "homes-web"
   publish = ".output/public"
-  command = "npm install --ignore-scripts && npm run generate"
+  command = "npm install && npm run generate"
 
 [build.environment]
   NODE_VERSION = "20"
