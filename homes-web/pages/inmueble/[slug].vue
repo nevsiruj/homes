@@ -562,9 +562,24 @@ watch(
 );
 
 // SEO
-const pageTitle = computed(
-  () => inmuebleDetalle.value?.titulo || "Propiedad en Venta y Alquiler"
-);
+const pageTitle = computed(() => {
+  if (!inmuebleDetalle.value?.titulo) return "Propiedad en Venta y Alquiler | Homes Guatemala";
+  
+  const titulo = inmuebleDetalle.value.titulo;
+  const operacion = inmuebleDetalle.value.operaciones || '';
+  const ubicacion = inmuebleDetalle.value.ubicaciones || '';
+  
+  let fullTitle = titulo;
+  if (operacion) {
+    fullTitle += ` en ${operacion}`;
+  }
+  if (ubicacion) {
+    fullTitle += ` | ${ubicacion}`;
+  }
+  fullTitle += " | Homes Guatemala";
+  
+  return fullTitle;
+});
 const pageDescription = computed(() => {
   if (!inmuebleDetalle.value?.contenido) {
     return "Descubre las mejores propiedades en las zonas más exclusivas de Guatemala.";
@@ -646,7 +661,15 @@ useHead({
     { property: 'og:image:secure_url', content: pageImage },
     { name: 'thumbnail', content: pageImage },
     // Meta para Facebook compartir
-    { property: 'og:image:url', content: pageImage }
+    { property: 'og:image:url', content: pageImage },
+    // Meta tags adicionales de Facebook para mejor scraping
+    { property: 'og:updated_time', content: () => new Date().toISOString() },
+    { property: 'article:modified_time', content: () => new Date().toISOString() },
+    // Meta tags para asegurar que se muestre correctamente
+    { name: 'twitter:label1', content: 'Ubicación' },
+    { name: 'twitter:data1', content: () => inmuebleDetalle.value?.ubicaciones || 'Guatemala' },
+    { name: 'twitter:label2', content: 'Código' },
+    { name: 'twitter:data2', content: () => inmuebleDetalle.value?.codigoPropiedad || 'N/A' }
   ]
 });
 

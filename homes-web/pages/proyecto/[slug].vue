@@ -625,7 +625,15 @@ useHead({
     { property: 'og:image:secure_url', content: pageImage },
     { name: 'thumbnail', content: pageImage },
     // Meta para Facebook compartir
-    { property: 'og:image:url', content: pageImage }
+    { property: 'og:image:url', content: pageImage },
+    // Meta tags adicionales de Facebook para mejor scraping
+    { property: 'og:updated_time', content: () => new Date().toISOString() },
+    { property: 'article:modified_time', content: () => new Date().toISOString() },
+    // Meta tags para asegurar que se muestre correctamente
+    { name: 'twitter:label1', content: 'Ubicación' },
+    { name: 'twitter:data1', content: () => proyectoDetalle.value?.zona || proyectoDetalle.value?.ubicacion || 'Guatemala' },
+    { name: 'twitter:label2', content: 'Código' },
+    { name: 'twitter:data2', content: () => proyectoDetalle.value?.codigoProyecto || 'N/A' }
   ]
 });
 
