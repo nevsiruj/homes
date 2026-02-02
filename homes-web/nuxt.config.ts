@@ -6,6 +6,56 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
 
+  // Generar rutas dinámicas para propiedades y proyectos
+  hooks: {
+    async 'nitro:config'(nitroConfig: any) {
+      if (!nitroConfig.prerender) {
+        nitroConfig.prerender = { routes: [] };
+      }
+      if (!nitroConfig.prerender.routes) {
+        nitroConfig.prerender.routes = [];
+      }
+      
+      try {
+        // Importar servicios dinámicamente
+        const { default: inmuebleService } = await import('./services/inmuebleService.js');
+        const { default: proyectoService } = await import('./services/proyectoService.js');
+
+        // Obtener todas las propiedades
+        console.log('🏠 Generando rutas para propiedades...');
+        const inmuebles = await inmuebleService.getInmueble();
+        if (Array.isArray(inmuebles) && nitroConfig.prerender?.routes) {
+          inmuebles.forEach((item: any) => {
+            const slug = item.slugInmueble || item.SlugInmueble || item.slug || item.Slug;
+            if (slug && nitroConfig.prerender?.routes) {
+              nitroConfig.prerender.routes.push(`/inmueble/${slug}`);
+            }
+          });
+          console.log(`✅ ${inmuebles.length} rutas de propiedades agregadas`);
+        }
+
+        // Obtener todos los proyectos
+        console.log('🏗️ Generando rutas para proyectos...');
+        const proyectos = await proyectoService.getProyecto();
+        if (Array.isArray(proyectos) && nitroConfig.prerender?.routes) {
+          proyectos.forEach((item: any) => {
+            const slug = item.slugProyecto || item.SlugProyecto || item.slug || item.Slug;
+            if (slug && nitroConfig.prerender?.routes) {
+              nitroConfig.prerender.routes.push(`/proyecto/${slug}`);
+            }
+          });
+          console.log(`✅ ${proyectos.length} rutas de proyectos agregadas`);
+        }
+
+        if (nitroConfig.prerender?.routes) {
+          console.log(`🎉 Total de rutas dinámicas: ${nitroConfig.prerender.routes.length}`);
+        }
+      } catch (error) {
+        console.error('⚠️ Error al generar rutas dinámicas:', error);
+      }
+    }
+  },
+
   app: {
     head: {
       htmlAttrs: {
@@ -134,12 +184,6 @@ export default defineNuxtConfig({
     indexable: true,
   },
 
-  robots: {
-    disallow: ['/admin'], // Solo bloquear el panel de administración
-    allow: ['/'],
-    sitemap: ['https://homesguatemala.com/sitemap.xml'],
-  },
-
   // Eliminado: configuración de sitemap para evitar conflictos. El sitemap se genera dinámicamente vía endpoint personalizado.
 
   colorMode: {
@@ -256,7 +300,9 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       ignore: ['/luxury-homes', '/luxury-homes/**'],
-      failOnError: false
+      failOnError: false,
+      crawlLinks: true,
+      routes: ['/sitemap.xml', '/api/sitemap-urls']
     },
     compressPublicAssets: {
       gzip: true,

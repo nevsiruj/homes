@@ -420,13 +420,17 @@ const {
   error,
 } = await useAsyncData(`proyecto-${slug}`, async () => {
   try {
-    if (!slug || typeof slug !== "string" || !slug.trim() || slug === "no-disponible") {
-      throw createError({ statusCode: 404, statusMessage: "Proyecto no encontrado", fatal: true });
-    }
     const data = await proyectoService.getProyectoBySlug(slug);
+    
+    // ✅ Lanzar error 404 real cuando no hay datos
     if (!data || (typeof data === "object" && Object.keys(data).length === 0)) {
-      throw createError({ statusCode: 404, statusMessage: "Proyecto no encontrado", fatal: true });
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Proyecto no encontrado",
+        fatal: true,
+      });
     }
+    
     // Normaliza los datos de la API para amenidades e imágenes
     if (data.amenidades) {
       data.amenidades = Array.isArray(data.amenidades) 
@@ -444,9 +448,14 @@ const {
     }
     return data;
   } catch (err) {
+    // Si ya es un error de Nuxt, re-lanzarlo
+    if (err.statusCode) {
+      throw err;
+    }
+    // Si es otro error, convertirlo a 404
     throw createError({
-      statusCode: err.statusCode || 404,
-      statusMessage: err.statusMessage || "Error al cargar el proyecto",
+      statusCode: 404,
+      statusMessage: "Proyecto no encontrado",
       fatal: true,
     });
   }

@@ -443,9 +443,17 @@ const {
 } = await useAsyncData(`inmueble-${slug}`, async () => {
   try {
     const data = await inmuebleService.getInmuebleBySlug(slug);
+    
+    // ✅ Lanzar error 404 real cuando no hay datos
     if (!data || (typeof data === "object" && Object.keys(data).length === 0)) {
-      return null;
-    } // Normalización de datos de la API (si tienen $values)
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Propiedad no encontrada",
+        fatal: true,
+      });
+    }
+    
+    // Normalización de datos de la API (si tienen $values)
     if (data.imagenesReferencia && data.imagenesReferencia.$values) {
       data.imagenesReferencia = data.imagenesReferencia.$values;
     }
@@ -454,6 +462,11 @@ const {
     }
     return data;
   } catch (err) {
+    // Si ya es un error de Nuxt, re-lanzarlo
+    if (err.statusCode) {
+      throw err;
+    }
+    // Si es otro error, convertirlo a 404
     throw createError({
       statusCode: 404,
       statusMessage: "Inmueble no encontrado",
