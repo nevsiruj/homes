@@ -420,17 +420,13 @@ const {
   error,
 } = await useAsyncData(`proyecto-${slug}`, async () => {
   try {
-    const data = await proyectoService.getProyectoBySlug(slug);
-    
-    // ✅ Lanzar error 404 real cuando no hay datos
-    if (!data || (typeof data === "object" && Object.keys(data).length === 0)) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: "Proyecto no encontrado",
-        fatal: true,
-      });
+    if (!slug || typeof slug !== "string" || !slug.trim() || slug === "no-disponible") {
+      throw createError({ statusCode: 404, statusMessage: "Proyecto no encontrado", fatal: true });
     }
-    
+    const data = await proyectoService.getProyectoBySlug(slug);
+    if (!data || (typeof data === "object" && Object.keys(data).length === 0)) {
+      throw createError({ statusCode: 404, statusMessage: "Proyecto no encontrado", fatal: true });
+    }
     // Normaliza los datos de la API para amenidades e imágenes
     if (data.amenidades) {
       data.amenidades = Array.isArray(data.amenidades) 
@@ -448,14 +444,9 @@ const {
     }
     return data;
   } catch (err) {
-    // Si ya es un error de Nuxt, re-lanzarlo
-    if (err.statusCode) {
-      throw err;
-    }
-    // Si es otro error, convertirlo a 404
     throw createError({
-      statusCode: 404,
-      statusMessage: "Proyecto no encontrado",
+      statusCode: err.statusCode || 404,
+      statusMessage: err.statusMessage || "Error al cargar el proyecto",
       fatal: true,
     });
   }
@@ -482,7 +473,6 @@ const pageTitle = computed(() => {
   }
   fullTitle += " | Homes Guatemala";
   
-  console.log('📝 [PROYECTO SEO] pageTitle:', fullTitle);
   return fullTitle;
 });
 
@@ -525,32 +515,26 @@ const pageDescription = computed(() => {
   }
   
   // Asegurar que no exceda 155 caracteres
-  const finalDescription = description.length > 155 ? description.substring(0, 155) + "..." : description;
-  console.log('📝 [PROYECTO SEO] pageDescription:', finalDescription);
-  return finalDescription;
+  return description.length > 155 ? description.substring(0, 155) + "..." : description;
 });
 
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
   const img = proyectoDetalle.value?.imagenPrincipal;
   
-  // Imagen por defecto si no hay imagen principal
-  if (!img || img.trim() === '') {
+  if (!img) {
+    // Imagen por defecto de Homes Guatemala (mantener extensión original)
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
-  
   // Si ya es una URL completa, la devolvemos tal como está
   if (img.startsWith("http://") || img.startsWith("https://")) {
     return img;
   }
-  
   // Si es una URL relativa, construimos la URL completa sin modificar la extensión
   let cleanImg = img.trim();
   cleanImg = cleanImg.startsWith('/') ? cleanImg.substring(1) : cleanImg;
   const encodedImg = encodeURI(cleanImg);
-  const finalImage = `${DOMINIO_IMAGENES}/${encodedImg}`;
-  console.log('📝 [PROYECTO SEO] pageImage:', finalImage);
-  return finalImage;
+  return `${DOMINIO_IMAGENES}/${encodedImg}`;
 });
 
 const propertyUrl = computed(() => {
@@ -559,14 +543,10 @@ const propertyUrl = computed(() => {
   
   // Asegurar que la URL del proyecto sea específica
   if (!fullPath || fullPath === '/') {
-    const url = `${baseUrl}/proyecto/${slug}`;
-    console.log('📝 [PROYECTO SEO] propertyUrl (fallback):', url);
-    return url;
+    return `${baseUrl}/proyecto/${slug}`;
   }
   
-  const url = `${baseUrl}${fullPath}`;
-  console.log('📝 [PROYECTO SEO] propertyUrl:', url);
-  return url;
+  return `${baseUrl}${fullPath}`;
 });
 
 const formattedPrice = computed(() => {
@@ -582,38 +562,29 @@ const formattedPrice = computed(() => {
 
 // ===== SEO y Meta Tags =====
 // Debug: verificar valores en desarrollo
-if (process.dev) {
-  console.log('SEO Debug:', {
-    title: pageTitle.value,
-    description: pageDescription.value,
-    image: pageImage.value,
-    url: propertyUrl.value,
-    slug: slug
-  });
-}
-
-// Log completo de datos para debugging
 console.log('🔍 [PROYECTO SEO] Datos completos:', {
   proyectoDetalle: proyectoDetalle.value,
-  titulo: proyectoDetalle.value?.titulo,
-  zona: proyectoDetalle.value?.zona,
-  ubicacion: proyectoDetalle.value?.ubicacion,
-  codigoProyecto: proyectoDetalle.value?.codigoProyecto,
-  imagenPrincipal: proyectoDetalle.value?.imagenPrincipal
+  nombre: proyectoDetalle.value?.nombre,
+  imagenPrincipal: proyectoDetalle.value?.imagenPrincipal,
+  ubicacion: proyectoDetalle.value?.ubicacion
 });
+
+console.log('📝 [PROYECTO SEO] pageTitle:', pageTitle.value);
+console.log('📝 [PROYECTO SEO] pageDescription:', pageDescription.value);
+console.log('🖼️ [PROYECTO SEO] pageImage:', pageImage.value);
+console.log('🔗 [PROYECTO SEO] propertyUrl:', propertyUrl.value);
 
 // Meta tags específicas para SEO y redes sociales
 useSeoMeta({
   title: () => pageTitle.value,
   description: () => pageDescription.value,
-  canonical: () => propertyUrl.value,
   ogTitle: () => pageTitle.value,
   ogDescription: () => pageDescription.value,
   ogImage: () => pageImage.value,
   ogImageSecureUrl: () => pageImage.value,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  ogImageType: 'image/webp',
+  // El tipo de imagen se puede dejar vacío o dinámico si se requiere, pero Open Graph lo detecta automáticamente
   ogImageAlt: () => pageTitle.value,
   ogUrl: () => propertyUrl.value,
   ogType: 'article',
@@ -624,8 +595,7 @@ useSeoMeta({
   twitterDescription: () => pageDescription.value,
   twitterImage: () => pageImage.value,
   twitterImageAlt: () => pageTitle.value,
-  twitterSite: '@homesguatemala',
-  twitterCreator: '@homesguatemala',
+  twitterUrl: () => propertyUrl.value,
   robots: 'index, follow',
   author: 'Homes Guatemala',
   articlePublisher: 'https://homesguatemala.com',
@@ -643,17 +613,7 @@ useHead({
   meta: [
     // Meta tags adicionales para WhatsApp
     { property: 'og:image:secure_url', content: () => pageImage.value },
-    { name: 'thumbnail', content: () => pageImage.value },
-    // Meta para Facebook compartir
-    { property: 'og:image:url', content: () => pageImage.value },
-    // Meta tags adicionales de Facebook para mejor scraping
-    { property: 'og:updated_time', content: () => new Date().toISOString() },
-    { property: 'article:modified_time', content: () => new Date().toISOString() },
-    // Meta tags para asegurar que se muestre correctamente
-    { name: 'twitter:label1', content: 'Ubicación' },
-    { name: 'twitter:data1', content: () => proyectoDetalle.value?.zona || proyectoDetalle.value?.ubicacion || 'Guatemala' },
-    { name: 'twitter:label2', content: 'Código' },
-    { name: 'twitter:data2', content: () => proyectoDetalle.value?.codigoProyecto || 'N/A' }
+    { name: 'thumbnail', content: () => pageImage.value }
   ]
 });
 
@@ -843,11 +803,6 @@ onMounted(async () => {
 
   
   <style scoped>
-  @import "swiper/css";
-  @import "swiper/css/free-mode";
-  @import "swiper/css/mousewheel";
-  @import "swiper/css/navigation";
-
   .description-content ul {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -998,4 +953,9 @@ onMounted(async () => {
 .swiper-wrapper {
   align-items: flex-start;
 }
+  
+  @import "swiper/css";
+  @import "swiper/css/free-mode";
+  @import "swiper/css/mousewheel";
+  @import "swiper/css/navigation";
   </style>

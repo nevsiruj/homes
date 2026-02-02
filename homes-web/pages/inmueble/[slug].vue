@@ -562,25 +562,9 @@ watch(
 );
 
 // SEO
-const pageTitle = computed(() => {
-  if (!inmuebleDetalle.value?.titulo) return "Propiedad en Venta y Alquiler | Homes Guatemala";
-  
-  const titulo = inmuebleDetalle.value.titulo;
-  const operacion = inmuebleDetalle.value.operaciones || '';
-  const ubicacion = inmuebleDetalle.value.ubicaciones || '';
-  
-  let fullTitle = titulo;
-  if (operacion) {
-    fullTitle += ` en ${operacion}`;
-  }
-  if (ubicacion) {
-    fullTitle += ` | ${ubicacion}`;
-  }
-  fullTitle += " | Homes Guatemala";
-  
-  console.log('📝 [INMUEBLE SEO] pageTitle:', fullTitle);
-  return fullTitle;
-});
+const pageTitle = computed(
+  () => inmuebleDetalle.value?.titulo || "Propiedad en Venta y Alquiler"
+);
 const pageDescription = computed(() => {
   if (!inmuebleDetalle.value?.contenido) {
     return "Descubre las mejores propiedades en las zonas más exclusivas de Guatemala.";
@@ -589,34 +573,25 @@ const pageDescription = computed(() => {
     .replace(/<[^>]*>?/gm, " ")
     .replace(/\s+/g, " ")
     .trim();
-  const description = cleanText.length > 155
+  return cleanText.length > 155
     ? cleanText.substring(0, 155) + "..."
     : cleanText;
-  console.log('📝 [INMUEBLE SEO] pageDescription:', description);
-  return description;
 });
 
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
   const img = inmuebleDetalle.value?.imagenPrincipal;
-  
-  // Imagen por defecto si no hay imagen principal
-  if (!img || img.trim() === '') {
+  if (!img) {
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
-  
   // Si ya es una URL completa, la devolvemos tal como está
   if (img.startsWith("http://") || img.startsWith("https://")) {
     return img;
   }
-  
   // Si es una URL relativa, construimos la URL completa
-  // Asegurar que no haya doble slash y encoding correcto
+  // Asegurar que no haya doble slash
   const cleanImg = img.startsWith('/') ? img.substring(1) : img;
-  const encodedImg = encodeURI(cleanImg);
-  const finalImage = `${DOMINIO_IMAGENES}/${encodedImg}`;
-  console.log('📝 [INMUEBLE SEO] pageImage:', finalImage);
-  return finalImage;
+  return `${DOMINIO_IMAGENES}/${cleanImg}`;
 });
 
 const propertyUrl = computed(() => {
@@ -661,32 +636,6 @@ useSeoMeta({
   author: 'Homes Guatemala',
   articlePublisher: 'https://homesguatemala.com',
   articleAuthor: 'Homes Guatemala'
-});
-
-// Meta tags adicionales para WhatsApp y Facebook
-useHead({
-  title: () => pageTitle.value,
-  link: [
-    {
-      rel: 'canonical',
-      href: () => propertyUrl.value
-    }
-  ],
-  meta: [
-    // Meta tags adicionales para WhatsApp
-    { property: 'og:image:secure_url', content: () => pageImage.value },
-    { name: 'thumbnail', content: () => pageImage.value },
-    // Meta para Facebook compartir
-    { property: 'og:image:url', content: () => pageImage.value },
-    // Meta tags adicionales de Facebook para mejor scraping
-    { property: 'og:updated_time', content: () => new Date().toISOString() },
-    { property: 'article:modified_time', content: () => new Date().toISOString() },
-    // Meta tags para asegurar que se muestre correctamente
-    { name: 'twitter:label1', content: 'Ubicación' },
-    { name: 'twitter:data1', content: () => inmuebleDetalle.value?.ubicaciones || 'Guatemala' },
-    { name: 'twitter:label2', content: 'Código' },
-    { name: 'twitter:data2', content: () => inmuebleDetalle.value?.codigoPropiedad || 'N/A' }
-  ]
 });
 
 // Schema.org structured data for SEO
@@ -1007,11 +956,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@import "swiper/css";
-@import "swiper/css/free-mode";
-@import "swiper/css/mousewheel";
-@import "swiper/css/navigation";
-
 .description-content ul {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -1077,4 +1021,9 @@ onMounted(() => {
 .description-content :deep(li p) {
   margin: 0 !important;
 }
+
+@import "swiper/css";
+@import "swiper/css/free-mode";
+@import "swiper/css/mousewheel";
+@import "swiper/css/navigation";
 </style>
