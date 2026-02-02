@@ -418,7 +418,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from "vue";
-import { useRoute, useAsyncData, createError } from "#imports";
+import { useRoute, useAsyncData, createError, useHead, useSeoMeta } from "#imports";
 import inmuebleService from "../../services/inmuebleService";
 import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
@@ -623,30 +623,42 @@ console.log('🔗 [INMUEBLE SEO] propertyUrl:', propertyUrl.value);
 useSeoMeta({
   title: () => pageTitle.value,
   description: () => pageDescription.value,
-  canonical: () => propertyUrl.value,
   ogTitle: () => pageTitle.value,
   ogDescription: () => pageDescription.value,
   ogImage: () => pageImage.value,
   ogImageSecureUrl: () => pageImage.value,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  ogImageType: 'image/webp',
   ogImageAlt: () => pageTitle.value,
   ogUrl: () => propertyUrl.value,
-  ogType: "article",
+  ogType: 'article',
   ogSiteName: 'Homes Guatemala',
   ogLocale: 'es_GT',
-  twitterCard: "summary_large_image",
+  twitterCard: 'summary_large_image',
   twitterTitle: () => pageTitle.value,
   twitterDescription: () => pageDescription.value,
   twitterImage: () => pageImage.value,
   twitterImageAlt: () => pageTitle.value,
-  twitterSite: '@homesguatemala',
-  twitterCreator: '@homesguatemala',
+  twitterUrl: () => propertyUrl.value,
   robots: 'index, follow',
   author: 'Homes Guatemala',
   articlePublisher: 'https://homesguatemala.com',
   articleAuthor: 'Homes Guatemala'
+});
+
+useHead({
+  title: () => pageTitle.value,
+  link: [
+    {
+      rel: 'canonical',
+      href: () => propertyUrl.value
+    }
+  ],
+  meta: [
+    // Meta tags adicionales para WhatsApp
+    { property: 'og:image:secure_url', content: () => pageImage.value },
+    { name: 'thumbnail', content: () => pageImage.value }
+  ]
 });
 
 // Schema.org structured data for SEO
