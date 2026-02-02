@@ -4,6 +4,3 @@
 
 # Redirecciones del dominio antiguo al nuevo (opcional)
 https://old-web.homesguatemala.com/luxury-homes https://homesguatemala.com/luxury-homes 301
-
-# Redirecciones SPA para otras rutas
-/* /index.html 200
