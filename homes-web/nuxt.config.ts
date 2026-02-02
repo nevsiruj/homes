@@ -6,26 +6,6 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
 
-  hooks: {
-    async 'nitro:init'(nitro) {
-      try {
-        console.log('🔄 Iniciando generación de rutas...');
-        const generateRoutes = await import('./scripts/generate-routes.js');
-        const routes = await generateRoutes.default();
-        
-        if (nitro.options.prerender?.routes) {
-          nitro.options.prerender.routes.push(...routes);
-        } else if (nitro.options.prerender) {
-          nitro.options.prerender.routes = routes;
-        }
-        
-        console.log(`✅ ${routes.length} rutas configuradas para prerender`);
-      } catch (error) {
-        console.error('⚠️ Error configurando rutas:', error);
-      }
-    }
-  },
-
   app: {
     head: {
       htmlAttrs: {
@@ -80,7 +60,10 @@ export default defineNuxtConfig({
 
         // Hreflang para SEO internacional
         { rel: "alternate", hreflang: "es-GT", href: "https://homesguatemala.com" },
-        { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" }
+        { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" },
+
+        // Preload CSS crítico para mejorar rendimiento
+        { rel: "preload", href: "/assets/css/main.css", as: "style" }
       ],
       script: [
         // ===================================================================
@@ -118,18 +101,21 @@ export default defineNuxtConfig({
         // Carga después del contenido principal para no bloquear render
         // ===================================================================
         {
+          key: "facebook-pixel-script",
+          src: "https://connect.facebook.net/en_US/fbevents.js",
+          async: true,
+          defer: true,
+        },
+        {
           key: "facebook-pixel-init",
           innerHTML: `
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '239174403519612');
-            fbq('track', 'PageView');
+            // Inicializar Facebook Pixel después de que la página cargue
+            window.addEventListener('load', function() {
+              if (typeof fbq !== 'undefined') {
+                fbq('init', '239174403519612');
+                fbq('track', 'PageView');
+              }
+            });
           `,
         }
       ],
@@ -152,6 +138,12 @@ export default defineNuxtConfig({
     description: 'Bienes Raíces de Lujo en Guatemala',
     defaultLocale: 'es',
     indexable: true,
+  },
+
+  robots: {
+    disallow: ['/admin'], // Solo bloquear el panel de administración
+    allow: ['/'],
+    sitemap: ['https://homesguatemala.com/sitemap.xml'],
   },
 
   // Eliminado: configuración de sitemap para evitar conflictos. El sitemap se genera dinámicamente vía endpoint personalizado.
@@ -179,7 +171,7 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@import "@/assets/css/font.css";',
+          additionalData: '@import "@/assets/css/fonts.css";',
         },
       },
     },
@@ -268,12 +260,6 @@ export default defineNuxtConfig({
 
 
   nitro: {
-    prerender: {
-      ignore: ['/luxury-homes', '/luxury-homes/**'],
-      failOnError: false,
-      crawlLinks: true,
-      routes: []
-    },
     compressPublicAssets: {
       gzip: true,
       brotli: true,
