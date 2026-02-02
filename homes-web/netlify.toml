@@ -1,37 +1,42 @@
-# Netlify configuration for Nuxt 3 static site
+# Netlify configuration for Nuxt 3
 [build]
   base = "homes-web"
-  publish = "dist"
-  command = "npm install && npm run generate"
+  publish = "dist" # Cambia a ".output/public" si realmente usas SSR
+  command = "npm run generate" # "npm install" no es necesario ponerlo aquí, Netlify lo hace automático
 
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
 
-# Functions directory
 [functions]
   directory = "netlify/functions"
 
-# Headers for caching
+# Headers corregidos (Usamos minúsculas para evitar el duplicado del log)
 [[headers]]
   for = "/_nuxt/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    cache-control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "/images/*"
   [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+    cache-control = "public, max-age=31536000, immutable"
 
-# Handle API routes
+# Rutas de inmuebles: Permitimos que el bot trabaje con 200 OK
+[[headers]]
+  for = "/inmueble/*"
+  [headers.values]
+    cache-control = "public, max-age=3600, must-revalidate"
+    X-Robots-Tag = "index, follow"
+
+# Redirecciones
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-# SPA fallback SOLO para rutas no encontradas (404)
-# Esto permite que las páginas pre-renderizadas se sirvan primero
+# FALLBACK SPA - CAMBIADO A 200 PARA SEO
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 404
+  status = 200

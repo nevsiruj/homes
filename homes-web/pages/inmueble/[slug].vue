@@ -440,40 +440,52 @@ const {
   data: inmuebleDetalle,
   pending,
   error,
-} = await useAsyncData(`inmueble-${slug}`, async () => {
-  try {
-    const data = await inmuebleService.getInmuebleBySlug(slug);
-    
-    // ✅ Lanzar error 404 real cuando no hay datos
-    if (!data || (typeof data === "object" && Object.keys(data).length === 0)) {
+} = await useAsyncData(
+  `inmueble-${slug}`, 
+  async () => {
+    try {
+      const data = await inmuebleService.getInmuebleBySlug(slug);
+      
+      // ✅ Lanzar error 404 real cuando no hay datos
+      if (!data || (typeof data === "object" && Object.keys(data).length === 0)) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: "Propiedad no encontrada",
+          fatal: true,
+        });
+      }
+      
+      // Normalización de datos de la API (si tienen $values)
+      if (data.imagenesReferencia && data.imagenesReferencia.$values) {
+        data.imagenesReferencia = data.imagenesReferencia.$values;
+      }
+      if (data.amenidades && data.amenidades.$values) {
+        data.amenidades = data.amenidades.$values;
+      }
+      return data;
+    } catch (err) {
+      console.error('[SSR ERROR] Error cargando inmueble:', err);
+      // Si ya es un error de Nuxt, re-lanzarlo
+      if (err.statusCode) {
+        throw err;
+      }
+      // Si es otro error, convertirlo a 404
       throw createError({
         statusCode: 404,
-        statusMessage: "Propiedad no encontrada",
+        statusMessage: "Inmueble no encontrado",
         fatal: true,
       });
     }
-    
-    // Normalización de datos de la API (si tienen $values)
-    if (data.imagenesReferencia && data.imagenesReferencia.$values) {
-      data.imagenesReferencia = data.imagenesReferencia.$values;
-    }
-    if (data.amenidades && data.amenidades.$values) {
-      data.amenidades = data.amenidades.$values;
-    }
-    return data;
-  } catch (err) {
-    // Si ya es un error de Nuxt, re-lanzarlo
-    if (err.statusCode) {
-      throw err;
-    }
-    // Si es otro error, convertirlo a 404
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Inmueble no encontrado",
-      fatal: true,
-    });
+  },
+  {
+    // Asegurar que se ejecute en el servidor
+    server: true,
+    // Lazy false para esperar los datos antes de renderizar
+    lazy: false,
+    // Clave única por slug
+    key: `inmueble-detail-${slug}`,
   }
-});
+);
 
 const isLoading = computed(() => pending?.value ?? false);
 
@@ -561,6 +573,18 @@ watch(
   { immediate: true }
 );
 
+// ** FUNCIÓN para asegurar que el precio se lea como entero (ej: "1,600,000" -> 1600000) **
+const parsePriceValue = (v) => {
+  if (v == null) return null;
+  if (typeof v === "number") return Number(v);
+  const s = String(v).trim();
+  if (s === "") return null;
+  const cleaned = s.replace(/[^\d-]/g, "");
+  if (cleaned === "" || cleaned === "-") return null;
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : null;
+};
+
 // SEO
 const pageTitle = computed(
   () => inmuebleDetalle.value?.titulo || "Propiedad en Venta y Alquiler"
@@ -580,18 +604,25 @@ const pageDescription = computed(() => {
 
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
-  const img = inmuebleDetalle.value?.imagenPrincipal;
-  if (!img) {
-    return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
+  const DEFAULT_IMAGE = `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
+  
+  try {
+    const img = inmuebleDetalle.value?.imagenPrincipal;
+    if (!img || typeof img !== 'string') {
+      return DEFAULT_IMAGE;
+    }
+    // Si ya es una URL completa, la devolvemos tal como está
+    if (img.startsWith("http://") || img.startsWith("https://")) {
+      return img;
+    }
+    // Si es una URL relativa, construimos la URL completa
+    // Asegurar que no haya doble slash
+    const cleanImg = img.startsWith('/') ? img.substring(1) : img;
+    return `${DOMINIO_IMAGENES}/${cleanImg}`;
+  } catch (err) {
+    console.error('[SEO] Error generando pageImage:', err);
+    return DEFAULT_IMAGE;
   }
-  // Si ya es una URL completa, la devolvemos tal como está
-  if (img.startsWith("http://") || img.startsWith("https://")) {
-    return img;
-  }
-  // Si es una URL relativa, construimos la URL completa
-  // Asegurar que no haya doble slash
-  const cleanImg = img.startsWith('/') ? img.substring(1) : img;
-  return `${DOMINIO_IMAGENES}/${cleanImg}`;
 });
 
 const propertyUrl = computed(() => {
@@ -606,81 +637,162 @@ const propertyUrl = computed(() => {
   return `${baseUrl}${fullPath}`;
 });
 
-// Log completo de datos para debugging
-console.log('🔍 [INMUEBLE SEO] Datos completos:', {
-  inmuebleDetalle: inmuebleDetalle.value,
-  titulo: inmuebleDetalle.value?.titulo,
-  ubicaciones: inmuebleDetalle.value?.ubicaciones,
-  codigoPropiedad: inmuebleDetalle.value?.codigoPropiedad,
-  imagenPrincipal: inmuebleDetalle.value?.imagenPrincipal
-});
+// Log completo de datos para debugging (solo en desarrollo)
+if (process.dev) {
+  console.log('🔍 [INMUEBLE SEO] Datos completos:', {
+    inmuebleDetalle: inmuebleDetalle.value,
+    titulo: inmuebleDetalle.value?.titulo,
+    ubicaciones: inmuebleDetalle.value?.ubicaciones,
+    codigoPropiedad: inmuebleDetalle.value?.codigoPropiedad,
+    imagenPrincipal: inmuebleDetalle.value?.imagenPrincipal,
+    slug: slug,
+    error: error.value,
+    pending: pending.value
+  });
+}
 
-console.log('📝 [INMUEBLE SEO] pageTitle:', pageTitle.value);
-console.log('📝 [INMUEBLE SEO] pageDescription:', pageDescription.value);
-console.log('🖼️ [INMUEBLE SEO] pageImage:', pageImage.value);
-console.log('🔗 [INMUEBLE SEO] propertyUrl:', propertyUrl.value);
+// Establecer metadatos inmediatamente con los valores iniciales
+const currentTitle = pageTitle.value;
+const currentDescription = pageDescription.value;
+const currentImage = pageImage.value;
+const currentUrl = propertyUrl.value;
 
+// Log en servidor para debugging de SSR
+if (process.server) {
+  console.log('🌐 [SSR] Generando metadatos para:', slug);
+  console.log('📝 [SSR] pageTitle:', currentTitle);
+  console.log('📝 [SSR] pageDescription:', currentDescription.substring(0, 100) + '...');
+  console.log('🖼️ [SSR] pageImage:', currentImage);
+  console.log('🔗 [SSR] propertyUrl:', currentUrl);
+}
+
+// Configurar metadatos con valores directos (no funciones) para mejor SSR
 useSeoMeta({
-  title: () => pageTitle.value,
-  description: () => pageDescription.value,
-  ogTitle: () => pageTitle.value,
-  ogDescription: () => pageDescription.value,
-  ogImage: () => pageImage.value,
-  ogImageSecureUrl: () => pageImage.value,
+  title: currentTitle,
+  description: currentDescription,
+  ogTitle: currentTitle,
+  ogDescription: currentDescription,
+  ogImage: currentImage,
+  ogImageSecureUrl: currentImage,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  ogImageAlt: () => pageTitle.value,
-  ogUrl: () => propertyUrl.value,
-  ogType: 'article',
+  ogImageAlt: currentTitle,
+  ogUrl: currentUrl,
+  ogType: 'website',
   ogSiteName: 'Homes Guatemala',
   ogLocale: 'es_GT',
   twitterCard: 'summary_large_image',
-  twitterTitle: () => pageTitle.value,
-  twitterDescription: () => pageDescription.value,
-  twitterImage: () => pageImage.value,
-  twitterImageAlt: () => pageTitle.value,
-  twitterUrl: () => propertyUrl.value,
+  twitterTitle: currentTitle,
+  twitterDescription: currentDescription,
+  twitterImage: currentImage,
+  twitterImageAlt: currentTitle,
+  twitterSite: '@homesguatemala',
   robots: 'index, follow',
   author: 'Homes Guatemala',
-  articlePublisher: 'https://homesguatemala.com',
-  articleAuthor: 'Homes Guatemala'
 });
 
 useHead({
-  title: () => pageTitle.value,
+  title: currentTitle,
+  htmlAttrs: {
+    lang: 'es',
+    prefix: 'og: http://ogp.me/ns#'
+  },
   link: [
     {
       rel: 'canonical',
-      href: () => propertyUrl.value
+      href: currentUrl
     }
   ],
   meta: [
-    // Meta tags adicionales para WhatsApp
-    { property: 'og:image:secure_url', content: () => pageImage.value },
-    { name: 'thumbnail', content: () => pageImage.value }
+    // Meta tags básicos
+    { name: 'description', content: currentDescription },
+    { name: 'robots', content: 'index, follow, max-image-preview:large' },
+    
+    // Meta tags adicionales para WhatsApp y Facebook
+    { property: 'og:image:secure_url', content: currentImage },
+    { property: 'og:image:type', content: 'image/jpeg' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { name: 'thumbnail', content: currentImage },
+    { name: 'twitter:image:src', content: currentImage },
+    
+    // Adicional para mejor compatibilidad
+    { property: 'fb:app_id', content: '123456789' }, // Opcional: agregar tu FB App ID real si tienes
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'RealEstateListing',
+        name: currentTitle,
+        description: currentDescription,
+        url: currentUrl,
+        image: {
+          '@type': 'ImageObject',
+          url: currentImage,
+          width: 1200,
+          height: 630
+        },
+        offers: inmuebleDetalle.value?.precio ? {
+          '@type': 'Offer',
+          price: parsePriceValue(inmuebleDetalle.value.precio),
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock'
+        } : undefined,
+        address: inmuebleDetalle.value?.ubicaciones ? {
+          '@type': 'PostalAddress',
+          addressLocality: inmuebleDetalle.value.ubicaciones,
+          addressCountry: 'GT'
+        } : undefined
+      })
+    }
   ]
 });
 
-// Schema.org structured data for SEO
-const realEstateSchema = computed(() => {
-  if (!inmuebleDetalle.value) return null;
-  return useRealEstateListingSchema(inmuebleDetalle.value);
-});
-
-const breadcrumbSchema = computed(() => {
-  if (!inmuebleDetalle.value) return null;
-  return useBreadcrumbSchema([
-    { name: 'Inicio', url: 'https://homesguatemala.com' },
-    { name: 'Propiedades', url: 'https://homesguatemala.com/propiedades' },
-    { name: inmuebleDetalle.value.titulo || 'Propiedad', url: propertyUrl.value }
-  ]);
-});
-
-// Insert schemas into head
-watch([realEstateSchema, breadcrumbSchema], ([realEstate, breadcrumb]) => {
-  if (realEstate) useJsonldSchema(realEstate);
-  if (breadcrumb) useJsonldSchema(breadcrumb);
-}, { immediate: true });
+// Actualizar metadatos cuando cambien los datos
+watch(
+  () => inmuebleDetalle.value,
+  (detalle) => {
+    if (!detalle) return;
+    
+    const newTitle = pageTitle.value;
+    const newDescription = pageDescription.value;
+    const newImage = pageImage.value;
+    const newUrl = propertyUrl.value;
+    
+    useSeoMeta({
+      title: newTitle,
+      description: newDescription,
+      ogTitle: newTitle,
+      ogDescription: newDescription,
+      ogImage: newImage,
+      ogImageSecureUrl: newImage,
+      ogImageAlt: newTitle,
+      ogUrl: newUrl,
+      twitterTitle: newTitle,
+      twitterDescription: newDescription,
+      twitterImage: newImage,
+      twitterImageAlt: newTitle,
+    });
+    
+    useHead({
+      title: newTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: newUrl
+        }
+      ],
+      meta: [
+        { property: 'og:image:secure_url', content: newImage },
+        { property: 'og:image:type', content: 'image/jpeg' },
+        { name: 'thumbnail', content: newImage },
+        { name: 'twitter:image:src', content: newImage }
+      ]
+    });
+  }
+);
 
 // Vista / media / formato
 const isMobile = ref(false);
@@ -805,20 +917,6 @@ const whatsappLink = computed(() => {
   
   return `https://api.whatsapp.com/send/?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
 });
-
-// ** FUNCIÓN para asegurar que el precio se lea como entero (ej: "1,600,000" -> 1600000) **
-const parsePriceValue = (v) => {
-  if (v == null) return null;
-  if (typeof v === "number") return Number(v);
-  const s = String(v).trim();
-  if (s === "") return null; // Elimina cualquier cosa que no sea dígito o guión para manejar separadores (.,)
-
-  const cleaned = s.replace(/[^\d-]/g, "");
-  if (cleaned === "" || cleaned === "-") return null;
-  const n = Number(cleaned);
-  return Number.isFinite(n) ? n : null;
-};
-// ** FIN de parsePriceValue **
 
 const formattedPrice = computed(() => {
   if (inmuebleDetalle.value?.precioActivo === false) {

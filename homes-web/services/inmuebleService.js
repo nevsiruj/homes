@@ -168,27 +168,58 @@ export default {
 
       const cacheKey = `${API_BASE_URL}/Inmueble:slug:${safeSlug}`;
       const cached = getFromCache(cacheKey);
-      if (cached) return cached;
+      if (cached) {
+        console.log(`[CACHE HIT] Inmueble encontrado en caché: ${safeSlug}`);
+        return cached;
+      }
+      
+      console.log(`[API CALL] Solicitando inmueble: ${API_BASE_URL}/Inmueble/by-slug/${safeSlug}`);
+      
       const response = await fetch(`${API_BASE_URL}/Inmueble/by-slug/${safeSlug}`, {
-        headers: { 'Accept': 'application/json' }
+        headers: { 
+          'Accept': 'application/json',
+          'User-Agent': 'HomesGuatemala-Web/1.0'
+        },
+        // Agregar timeout para evitar que se cuelgue
+        signal: AbortSignal.timeout(10000) // 10 segundos timeout
       });
+
+      console.log(`[API RESPONSE] Status: ${response.status} para slug: ${safeSlug}`);
 
       if (!response.ok) {
         const body = await response.text().catch(() => '');
+        console.error(`[API ERROR] ${response.status} ${response.statusText} - ${body}`);
+        
+        if (response.status === 404) {
+          return null; // Retornar null para 404 en lugar de lanzar error
+        }
+        
         throw new Error(`Error al buscar el inmueble: ${response.status} ${response.statusText}. ${body}`);
       }
 
       const data = await response.json();
+      
+      // Validar que los datos sean correctos
+      if (!data || typeof data !== 'object') {
+        console.error('[API ERROR] Respuesta inválida del servidor');
+        return null;
+      }
 
       // (Opcional) asegurar el campo por si llega con otra capitalización
       if (!data.slugInmueble && data.SlugInmueble) {
         data.slugInmueble = data.SlugInmueble;
       }
 
+      console.log(`[SUCCESS] Inmueble cargado: ${data.titulo || safeSlug}`);
       setCache(cacheKey, data);
       return data;
     } catch (error) {
-      //console.error('Error en inmuebleService.getInmuebleBySlug:', error);
+      // Mejorar logging de errores
+      if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+        console.error(`[TIMEOUT] La solicitud para ${slug} excedió el tiempo límite`);
+      } else {
+        console.error('[ERROR] Error en inmuebleService.getInmuebleBySlug:', error.message);
+      }
       throw error;
     }
   }

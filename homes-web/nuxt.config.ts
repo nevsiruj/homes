@@ -140,13 +140,13 @@ export default defineNuxtConfig({
     indexable: true,
   },
 
-  robots: {
-    disallow: ['/admin'], // Solo bloquear el panel de administración
-    allow: ['/'],
-    sitemap: ['https://homesguatemala.com/sitemap.xml'],
-  },
-
   // Eliminado: configuración de sitemap para evitar conflictos. El sitemap se genera dinámicamente vía endpoint personalizado.
+  
+  // robots: {
+  //   disallow: ['/admin'],
+  //   allow: ['/'],
+  //   sitemap: ['https://homesguatemala.com/sitemap.xml'],
+  // },
 
   colorMode: {
     classSuffix: "",
@@ -260,6 +260,7 @@ export default defineNuxtConfig({
 
 
   nitro: {
+    preset: 'netlify',
     compressPublicAssets: {
       gzip: true,
       brotli: true,
@@ -267,6 +268,36 @@ export default defineNuxtConfig({
     minify: true,
     experimental: {
       asyncContext: false
+    },
+    prerender: {
+      // Indicar qué rutas pre-renderizar y cuáles manejar como SSR
+      crawlLinks: true,
+      failOnError: false, // No fallar el build si alguna ruta da error
+      routes: [
+        '/',
+        '/propiedades',
+        '/propiedades/venta',
+        '/propiedades/renta',
+        '/nosotros',
+        '/proyectos-inmobiliarios',
+        '/blog-inmobiliario',
+        '/luxury',
+        '/busqueda',
+        '/custom',
+        '/propiedades/zona/zona-15',
+        '/propiedades/zona/cayala'
+      ],
+      // Ignorar estas rutas que requieren SSR
+      ignore: [
+        '/inmueble/**',
+        '/propiedades/zona/zona-10',
+        '/propiedades/zona/zona-14',
+        '/propiedades/zona/carretera-a-el-salvador',
+        '/blog/**',
+        '/proyecto/**',
+        '/admin/**',
+        '/auth/**'
+      ]
     },
     routeRules: {
       // Proxy para luxury homes (mantener)

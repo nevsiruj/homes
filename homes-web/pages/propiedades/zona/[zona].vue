@@ -97,7 +97,7 @@ const breadcrumbItems = computed(() => [
   { name: zonaNombre.value, url: route.fullPath }
 ]);
 
-// Cargar propiedades por zona
+// Cargar propiedades por zona con manejo de errores mejorado
 const { data: propiedades, pending: isLoading } = await useAsyncData(
   `zona-${zona}`,
   async () => {
@@ -116,6 +116,12 @@ const { data: propiedades, pending: isLoading } = await useAsyncData(
       console.error('Error cargando propiedades por zona:', error);
       return [];
     }
+  },
+  {
+    // No fallar en SSR si la API no responde
+    server: false, // Solo ejecutar en cliente para estas páginas dinámicas
+    lazy: true,
+    default: () => []
   }
 );
 
