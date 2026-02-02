@@ -675,12 +675,6 @@ useSeoMeta({
   ogType: 'website',
   ogSiteName: 'Homes Guatemala',
   ogLocale: 'es_GT',
-  twitterCard: 'summary_large_image',
-  twitterTitle: () => pageTitle.value,
-  twitterDescription: () => pageDescription.value,
-  twitterImage: () => pageImage.value,
-  twitterImageAlt: () => pageTitle.value,
-  twitterSite: '@homesguatemala',
   robots: 'index, follow',
   author: 'Homes Guatemala',
 });
@@ -698,6 +692,13 @@ useHead({
     }
   ],
   meta: [
+    // Twitter Card meta tags
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:site', content: '@homesguatemala' },
+    { name: 'twitter:title', content: () => pageTitle.value },
+    { name: 'twitter:description', content: () => pageDescription.value },
+    { name: 'twitter:image', content: () => pageImage.value },
+    { name: 'twitter:image:alt', content: () => pageTitle.value },
     // Meta tags básicos
     { name: 'description', content: () => pageDescription.value },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
