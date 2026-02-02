@@ -595,9 +595,15 @@ const pageImage = computed(() => {
 });
 
 const propertyUrl = computed(() => {
-  const url = `https://homesguatemala.com${route.fullPath}`;
-  console.log('📝 [INMUEBLE SEO] propertyUrl:', url);
-  return url;
+  const baseUrl = 'https://homesguatemala.com';
+  const fullPath = route.fullPath || route.path || '';
+  
+  // Asegurar que la URL del inmueble sea específica
+  if (!fullPath || fullPath === '/') {
+    return `${baseUrl}/inmueble/${slug}`;
+  }
+  
+  return `${baseUrl}${fullPath}`;
 });
 
 // Log completo de datos para debugging
@@ -608,6 +614,11 @@ console.log('🔍 [INMUEBLE SEO] Datos completos:', {
   codigoPropiedad: inmuebleDetalle.value?.codigoPropiedad,
   imagenPrincipal: inmuebleDetalle.value?.imagenPrincipal
 });
+
+console.log('📝 [INMUEBLE SEO] pageTitle:', pageTitle.value);
+console.log('📝 [INMUEBLE SEO] pageDescription:', pageDescription.value);
+console.log('🖼️ [INMUEBLE SEO] pageImage:', pageImage.value);
+console.log('🔗 [INMUEBLE SEO] propertyUrl:', propertyUrl.value);
 
 useSeoMeta({
   title: () => pageTitle.value,
