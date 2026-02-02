@@ -482,6 +482,7 @@ const pageTitle = computed(() => {
   }
   fullTitle += " | Homes Guatemala";
   
+  console.log('📝 [PROYECTO SEO] pageTitle:', fullTitle);
   return fullTitle;
 });
 
@@ -524,7 +525,9 @@ const pageDescription = computed(() => {
   }
   
   // Asegurar que no exceda 155 caracteres
-  return description.length > 155 ? description.substring(0, 155) + "..." : description;
+  const finalDescription = description.length > 155 ? description.substring(0, 155) + "..." : description;
+  console.log('📝 [PROYECTO SEO] pageDescription:', finalDescription);
+  return finalDescription;
 });
 
 const pageImage = computed(() => {
@@ -545,7 +548,9 @@ const pageImage = computed(() => {
   let cleanImg = img.trim();
   cleanImg = cleanImg.startsWith('/') ? cleanImg.substring(1) : cleanImg;
   const encodedImg = encodeURI(cleanImg);
-  return `${DOMINIO_IMAGENES}/${encodedImg}`;
+  const finalImage = `${DOMINIO_IMAGENES}/${encodedImg}`;
+  console.log('📝 [PROYECTO SEO] pageImage:', finalImage);
+  return finalImage;
 });
 
 const propertyUrl = computed(() => {
@@ -554,10 +559,14 @@ const propertyUrl = computed(() => {
   
   // Asegurar que la URL del proyecto sea específica
   if (!fullPath || fullPath === '/') {
-    return `${baseUrl}/proyecto/${slug}`;
+    const url = `${baseUrl}/proyecto/${slug}`;
+    console.log('📝 [PROYECTO SEO] propertyUrl (fallback):', url);
+    return url;
   }
   
-  return `${baseUrl}${fullPath}`;
+  const url = `${baseUrl}${fullPath}`;
+  console.log('📝 [PROYECTO SEO] propertyUrl:', url);
+  return url;
 });
 
 const formattedPrice = computed(() => {
@@ -583,27 +592,38 @@ if (process.dev) {
   });
 }
 
+// Log completo de datos para debugging
+console.log('🔍 [PROYECTO SEO] Datos completos:', {
+  proyectoDetalle: proyectoDetalle.value,
+  titulo: proyectoDetalle.value?.titulo,
+  zona: proyectoDetalle.value?.zona,
+  ubicacion: proyectoDetalle.value?.ubicacion,
+  codigoProyecto: proyectoDetalle.value?.codigoProyecto,
+  imagenPrincipal: proyectoDetalle.value?.imagenPrincipal
+});
+
 // Meta tags específicas para SEO y redes sociales
 useSeoMeta({
-  title: pageTitle,
-  description: pageDescription,
-  ogTitle: pageTitle,
-  ogDescription: pageDescription,
-  ogImage: pageImage,
-  ogImageSecureUrl: pageImage,
+  title: () => pageTitle.value,
+  description: () => pageDescription.value,
+  canonical: () => propertyUrl.value,
+  ogTitle: () => pageTitle.value,
+  ogDescription: () => pageDescription.value,
+  ogImage: () => pageImage.value,
+  ogImageSecureUrl: () => pageImage.value,
   ogImageWidth: '1200',
   ogImageHeight: '630',
   ogImageType: 'image/webp',
-  ogImageAlt: pageTitle,
-  ogUrl: propertyUrl,
+  ogImageAlt: () => pageTitle.value,
+  ogUrl: () => propertyUrl.value,
   ogType: 'article',
   ogSiteName: 'Homes Guatemala',
   ogLocale: 'es_GT',
   twitterCard: 'summary_large_image',
-  twitterTitle: pageTitle,
-  twitterDescription: pageDescription,
-  twitterImage: pageImage,
-  twitterImageAlt: pageTitle,
+  twitterTitle: () => pageTitle.value,
+  twitterDescription: () => pageDescription.value,
+  twitterImage: () => pageImage.value,
+  twitterImageAlt: () => pageTitle.value,
   twitterSite: '@homesguatemala',
   twitterCreator: '@homesguatemala',
   robots: 'index, follow',
@@ -613,19 +633,19 @@ useSeoMeta({
 });
 
 useHead({
-  title: pageTitle,
+  title: () => pageTitle.value,
   link: [
     {
       rel: 'canonical',
-      href: propertyUrl
+      href: () => propertyUrl.value
     }
   ],
   meta: [
     // Meta tags adicionales para WhatsApp
-    { property: 'og:image:secure_url', content: pageImage },
-    { name: 'thumbnail', content: pageImage },
+    { property: 'og:image:secure_url', content: () => pageImage.value },
+    { name: 'thumbnail', content: () => pageImage.value },
     // Meta para Facebook compartir
-    { property: 'og:image:url', content: pageImage },
+    { property: 'og:image:url', content: () => pageImage.value },
     // Meta tags adicionales de Facebook para mejor scraping
     { property: 'og:updated_time', content: () => new Date().toISOString() },
     { property: 'article:modified_time', content: () => new Date().toISOString() },

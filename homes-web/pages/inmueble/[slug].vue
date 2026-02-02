@@ -578,6 +578,7 @@ const pageTitle = computed(() => {
   }
   fullTitle += " | Homes Guatemala";
   
+  console.log('📝 [INMUEBLE SEO] pageTitle:', fullTitle);
   return fullTitle;
 });
 const pageDescription = computed(() => {
@@ -588,9 +589,11 @@ const pageDescription = computed(() => {
     .replace(/<[^>]*>?/gm, " ")
     .replace(/\s+/g, " ")
     .trim();
-  return cleanText.length > 155
+  const description = cleanText.length > 155
     ? cleanText.substring(0, 155) + "..."
     : cleanText;
+  console.log('📝 [INMUEBLE SEO] pageDescription:', description);
+  return description;
 });
 
 const pageImage = computed(() => {
@@ -611,34 +614,47 @@ const pageImage = computed(() => {
   // Asegurar que no haya doble slash y encoding correcto
   const cleanImg = img.startsWith('/') ? img.substring(1) : img;
   const encodedImg = encodeURI(cleanImg);
-  return `${DOMINIO_IMAGENES}/${encodedImg}`;
+  const finalImage = `${DOMINIO_IMAGENES}/${encodedImg}`;
+  console.log('📝 [INMUEBLE SEO] pageImage:', finalImage);
+  return finalImage;
 });
 
 const propertyUrl = computed(() => {
-  return `https://homesguatemala.com${route.fullPath}`;
+  const url = `https://homesguatemala.com${route.fullPath}`;
+  console.log('📝 [INMUEBLE SEO] propertyUrl:', url);
+  return url;
+});
+
+// Log completo de datos para debugging
+console.log('🔍 [INMUEBLE SEO] Datos completos:', {
+  inmuebleDetalle: inmuebleDetalle.value,
+  titulo: inmuebleDetalle.value?.titulo,
+  ubicaciones: inmuebleDetalle.value?.ubicaciones,
+  codigoPropiedad: inmuebleDetalle.value?.codigoPropiedad,
+  imagenPrincipal: inmuebleDetalle.value?.imagenPrincipal
 });
 
 useSeoMeta({
-  title: pageTitle,
-  description: pageDescription,
-  canonical: propertyUrl,
-  ogTitle: pageTitle,
-  ogDescription: pageDescription,
-  ogImage: pageImage,
-  ogImageSecureUrl: pageImage,
+  title: () => pageTitle.value,
+  description: () => pageDescription.value,
+  canonical: () => propertyUrl.value,
+  ogTitle: () => pageTitle.value,
+  ogDescription: () => pageDescription.value,
+  ogImage: () => pageImage.value,
+  ogImageSecureUrl: () => pageImage.value,
   ogImageWidth: '1200',
   ogImageHeight: '630',
   ogImageType: 'image/webp',
-  ogImageAlt: pageTitle,
-  ogUrl: propertyUrl,
+  ogImageAlt: () => pageTitle.value,
+  ogUrl: () => propertyUrl.value,
   ogType: "article",
   ogSiteName: 'Homes Guatemala',
   ogLocale: 'es_GT',
   twitterCard: "summary_large_image",
-  twitterTitle: pageTitle,
-  twitterDescription: pageDescription,
-  twitterImage: pageImage,
-  twitterImageAlt: pageTitle,
+  twitterTitle: () => pageTitle.value,
+  twitterDescription: () => pageDescription.value,
+  twitterImage: () => pageImage.value,
+  twitterImageAlt: () => pageTitle.value,
   twitterSite: '@homesguatemala',
   twitterCreator: '@homesguatemala',
   robots: 'index, follow',
@@ -649,19 +665,19 @@ useSeoMeta({
 
 // Meta tags adicionales para WhatsApp y Facebook
 useHead({
-  title: pageTitle,
+  title: () => pageTitle.value,
   link: [
     {
       rel: 'canonical',
-      href: propertyUrl
+      href: () => propertyUrl.value
     }
   ],
   meta: [
     // Meta tags adicionales para WhatsApp
-    { property: 'og:image:secure_url', content: pageImage },
-    { name: 'thumbnail', content: pageImage },
+    { property: 'og:image:secure_url', content: () => pageImage.value },
+    { name: 'thumbnail', content: () => pageImage.value },
     // Meta para Facebook compartir
-    { property: 'og:image:url', content: pageImage },
+    { property: 'og:image:url', content: () => pageImage.value },
     // Meta tags adicionales de Facebook para mejor scraping
     { property: 'og:updated_time', content: () => new Date().toISOString() },
     { property: 'article:modified_time', content: () => new Date().toISOString() },
