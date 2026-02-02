@@ -29,9 +29,9 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# SPA fallback for client-side routing
-# This allows dynamic pages to work, but Nuxt will handle 404s internally
+# SPA fallback SOLO para rutas no encontradas (404)
+# Esto permite que las páginas pre-renderizadas se sirvan primero
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
+  status = 404
