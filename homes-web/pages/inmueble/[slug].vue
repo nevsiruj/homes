@@ -651,48 +651,42 @@ if (process.dev) {
   });
 }
 
-// Establecer metadatos inmediatamente con los valores iniciales
-const currentTitle = pageTitle.value;
-const currentDescription = pageDescription.value;
-const currentImage = pageImage.value;
-const currentUrl = propertyUrl.value;
-
 // Log en servidor para debugging de SSR
 if (process.server) {
   console.log('🌐 [SSR] Generando metadatos para:', slug);
-  console.log('📝 [SSR] pageTitle:', currentTitle);
-  console.log('📝 [SSR] pageDescription:', currentDescription.substring(0, 100) + '...');
-  console.log('🖼️ [SSR] pageImage:', currentImage);
-  console.log('🔗 [SSR] propertyUrl:', currentUrl);
+  console.log('📝 [SSR] pageTitle:', pageTitle.value);
+  console.log('📝 [SSR] pageDescription:', pageDescription.value.substring(0, 100) + '...');
+  console.log('🖼️ [SSR] pageImage:', pageImage.value);
+  console.log('🔗 [SSR] propertyUrl:', propertyUrl.value);
 }
 
-// Configurar metadatos con valores directos (no funciones) para mejor SSR
+// Configurar metadatos con funciones reactivas para actualización dinámica
 useSeoMeta({
-  title: currentTitle,
-  description: currentDescription,
-  ogTitle: currentTitle,
-  ogDescription: currentDescription,
-  ogImage: currentImage,
-  ogImageSecureUrl: currentImage,
+  title: () => pageTitle.value,
+  description: () => pageDescription.value,
+  ogTitle: () => pageTitle.value,
+  ogDescription: () => pageDescription.value,
+  ogImage: () => pageImage.value,
+  ogImageSecureUrl: () => pageImage.value,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  ogImageAlt: currentTitle,
-  ogUrl: currentUrl,
+  ogImageAlt: () => pageTitle.value,
+  ogUrl: () => propertyUrl.value,
   ogType: 'website',
   ogSiteName: 'Homes Guatemala',
   ogLocale: 'es_GT',
   twitterCard: 'summary_large_image',
-  twitterTitle: currentTitle,
-  twitterDescription: currentDescription,
-  twitterImage: currentImage,
-  twitterImageAlt: currentTitle,
+  twitterTitle: () => pageTitle.value,
+  twitterDescription: () => pageDescription.value,
+  twitterImage: () => pageImage.value,
+  twitterImageAlt: () => pageTitle.value,
   twitterSite: '@homesguatemala',
   robots: 'index, follow',
   author: 'Homes Guatemala',
 });
 
 useHead({
-  title: currentTitle,
+  title: () => pageTitle.value,
   htmlAttrs: {
     lang: 'es',
     prefix: 'og: http://ogp.me/ns#'
@@ -700,21 +694,21 @@ useHead({
   link: [
     {
       rel: 'canonical',
-      href: currentUrl
+      href: () => propertyUrl.value
     }
   ],
   meta: [
     // Meta tags básicos
-    { name: 'description', content: currentDescription },
+    { name: 'description', content: () => pageDescription.value },
     { name: 'robots', content: 'index, follow, max-image-preview:large' },
     
     // Meta tags adicionales para WhatsApp y Facebook
-    { property: 'og:image:secure_url', content: currentImage },
+    { property: 'og:image:secure_url', content: () => pageImage.value },
     { property: 'og:image:type', content: 'image/jpeg' },
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
-    { name: 'thumbnail', content: currentImage },
-    { name: 'twitter:image:src', content: currentImage },
+    { name: 'thumbnail', content: () => pageImage.value },
+    { name: 'twitter:image:src', content: () => pageImage.value },
     
     // Adicional para mejor compatibilidad
     { property: 'fb:app_id', content: '123456789' }, // Opcional: agregar tu FB App ID real si tienes
@@ -749,50 +743,6 @@ useHead({
     }
   ]
 });
-
-// Actualizar metadatos cuando cambien los datos
-watch(
-  () => inmuebleDetalle.value,
-  (detalle) => {
-    if (!detalle) return;
-    
-    const newTitle = pageTitle.value;
-    const newDescription = pageDescription.value;
-    const newImage = pageImage.value;
-    const newUrl = propertyUrl.value;
-    
-    useSeoMeta({
-      title: newTitle,
-      description: newDescription,
-      ogTitle: newTitle,
-      ogDescription: newDescription,
-      ogImage: newImage,
-      ogImageSecureUrl: newImage,
-      ogImageAlt: newTitle,
-      ogUrl: newUrl,
-      twitterTitle: newTitle,
-      twitterDescription: newDescription,
-      twitterImage: newImage,
-      twitterImageAlt: newTitle,
-    });
-    
-    useHead({
-      title: newTitle,
-      link: [
-        {
-          rel: 'canonical',
-          href: newUrl
-        }
-      ],
-      meta: [
-        { property: 'og:image:secure_url', content: newImage },
-        { property: 'og:image:type', content: 'image/jpeg' },
-        { name: 'thumbnail', content: newImage },
-        { name: 'twitter:image:src', content: newImage }
-      ]
-    });
-  }
-);
 
 // Vista / media / formato
 const isMobile = ref(false);
