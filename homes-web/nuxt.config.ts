@@ -6,52 +6,22 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   ssr: true,
 
-  // Generar rutas dinámicas para propiedades y proyectos
   hooks: {
-    async 'nitro:config'(nitroConfig: any) {
-      if (!nitroConfig.prerender) {
-        nitroConfig.prerender = { routes: [] };
-      }
-      if (!nitroConfig.prerender.routes) {
-        nitroConfig.prerender.routes = [];
-      }
-      
+    async 'nitro:init'(nitro) {
       try {
-        // Importar servicios dinámicamente
-        const { default: inmuebleService } = await import('./services/inmuebleService.js');
-        const { default: proyectoService } = await import('./services/proyectoService.js');
-
-        // Obtener todas las propiedades
-        console.log('🏠 Generando rutas para propiedades...');
-        const inmuebles = await inmuebleService.getInmueble();
-        if (Array.isArray(inmuebles) && nitroConfig.prerender?.routes) {
-          inmuebles.forEach((item: any) => {
-            const slug = item.slugInmueble || item.SlugInmueble || item.slug || item.Slug;
-            if (slug && nitroConfig.prerender?.routes) {
-              nitroConfig.prerender.routes.push(`/inmueble/${slug}`);
-            }
-          });
-          console.log(`✅ ${inmuebles.length} rutas de propiedades agregadas`);
+        console.log('🔄 Iniciando generación de rutas...');
+        const generateRoutes = await import('./scripts/generate-routes.js');
+        const routes = await generateRoutes.default();
+        
+        if (nitro.options.prerender?.routes) {
+          nitro.options.prerender.routes.push(...routes);
+        } else if (nitro.options.prerender) {
+          nitro.options.prerender.routes = routes;
         }
-
-        // Obtener todos los proyectos
-        console.log('🏗️ Generando rutas para proyectos...');
-        const proyectos = await proyectoService.getProyecto();
-        if (Array.isArray(proyectos) && nitroConfig.prerender?.routes) {
-          proyectos.forEach((item: any) => {
-            const slug = item.slugProyecto || item.SlugProyecto || item.slug || item.Slug;
-            if (slug && nitroConfig.prerender?.routes) {
-              nitroConfig.prerender.routes.push(`/proyecto/${slug}`);
-            }
-          });
-          console.log(`✅ ${proyectos.length} rutas de proyectos agregadas`);
-        }
-
-        if (nitroConfig.prerender?.routes) {
-          console.log(`🎉 Total de rutas dinámicas: ${nitroConfig.prerender.routes.length}`);
-        }
+        
+        console.log(`✅ ${routes.length} rutas configuradas para prerender`);
       } catch (error) {
-        console.error('⚠️ Error al generar rutas dinámicas:', error);
+        console.error('⚠️ Error configurando rutas:', error);
       }
     }
   },
@@ -302,7 +272,7 @@ export default defineNuxtConfig({
       ignore: ['/luxury-homes', '/luxury-homes/**'],
       failOnError: false,
       crawlLinks: true,
-      routes: ['/sitemap.xml', '/api/sitemap-urls']
+      routes: []
     },
     compressPublicAssets: {
       gzip: true,
