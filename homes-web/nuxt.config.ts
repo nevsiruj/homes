@@ -60,10 +60,7 @@ export default defineNuxtConfig({
 
         // Hreflang para SEO internacional
         { rel: "alternate", hreflang: "es-GT", href: "https://homesguatemala.com" },
-        { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" },
-
-        // Preload CSS crítico para mejorar rendimiento
-        { rel: "preload", href: "/assets/css/main.css", as: "style" }
+        { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" }
       ],
       script: [
         // ===================================================================
@@ -101,21 +98,18 @@ export default defineNuxtConfig({
         // Carga después del contenido principal para no bloquear render
         // ===================================================================
         {
-          key: "facebook-pixel-script",
-          src: "https://connect.facebook.net/en_US/fbevents.js",
-          async: true,
-          defer: true,
-        },
-        {
           key: "facebook-pixel-init",
           innerHTML: `
-            // Inicializar Facebook Pixel después de que la página cargue
-            window.addEventListener('load', function() {
-              if (typeof fbq !== 'undefined') {
-                fbq('init', '239174403519612');
-                fbq('track', 'PageView');
-              }
-            });
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '239174403519612');
+            fbq('track', 'PageView');
           `,
         }
       ],
@@ -171,7 +165,7 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: '@import "@/assets/css/fonts.css";',
+          additionalData: '@import "@/assets/css/font.css";',
         },
       },
     },

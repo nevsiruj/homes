@@ -54,13 +54,26 @@
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
           Casas y Apartamentos Destacados
         </h2>
+        
+        <!-- Skeleton Loader -->
+        <div v-if="destacadasProperties.length === 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="n in 3" :key="n" class="bg-gray-100 rounded-xl overflow-hidden animate-pulse">
+            <div class="h-64 bg-gray-300"></div>
+            <div class="p-6 space-y-3">
+              <div class="h-6 bg-gray-300 rounded w-3/4"></div>
+              <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+              <div class="h-8 bg-gray-300 rounded w-1/3"></div>
+            </div>
+          </div>
+        </div>
+        
         <div v-if="destacadasProperties.length > 0">
           <Swiper
             :modules="[Pagination, Autoplay]"
             :slides-per-view="1"
             :space-between="20"
             :pagination="{ clickable: true }"
-            :autoplay="{ delay: 5000 }"
+            :autoplay="{ delay: 5000, disableOnInteraction: false }"
             :breakpoints="{
               '768': { slidesPerView: 2 },
               '1024': { slidesPerView: 3 }
@@ -71,7 +84,7 @@
               <div class="bg-gray-50 rounded-xl shadow-md overflow-hidden h-full group border border-gray-100">
                 <NuxtLink :to="getPropertyUrl(p)">
                    <div class="relative h-64 overflow-hidden">
-                     <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
+                     <img :src="getImageUrl(p.imagenPrincipal)" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                      <div v-if="p.operacion" class="absolute top-4 left-4 bg-gray-900 text-white px-3 py-1 text-xs font-bold uppercase rounded">
                         {{ p.operacion }}
                      </div>
@@ -95,6 +108,19 @@
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
           Casas y Apartamentos en Venta
         </h2>
+        
+        <!-- Skeleton Loader -->
+        <div v-if="ventaProperties.length === 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="n in 3" :key="n" class="bg-white rounded-xl overflow-hidden animate-pulse shadow-md">
+            <div class="h-64 bg-gray-300"></div>
+            <div class="p-6 space-y-3">
+              <div class="h-6 bg-gray-300 rounded w-3/4"></div>
+              <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+              <div class="h-8 bg-gray-300 rounded w-1/3"></div>
+            </div>
+          </div>
+        </div>
+        
         <div v-if="ventaProperties.length > 0">
           <Swiper
             :modules="[Pagination, Autoplay]"
@@ -111,7 +137,7 @@
               <div class="bg-white rounded-xl shadow-md overflow-hidden h-full group">
                 <NuxtLink :to="getPropertyUrl(p)">
                    <div class="relative h-64 overflow-hidden">
-                     <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
+                     <img :src="getImageUrl(p.imagenPrincipal)" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                      <div class="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-bold uppercase rounded">Venta</div>
                    </div>
                    <div class="p-6">
@@ -136,6 +162,19 @@
         <h2 class="title-alta-2 text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center uppercase">
           Casas y Apartamentos en Renta
         </h2>
+        
+        <!-- Skeleton Loader -->
+        <div v-if="rentaProperties.length === 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="n in 3" :key="n" class="bg-gray-100 rounded-xl overflow-hidden animate-pulse shadow-md">
+            <div class="h-64 bg-gray-300"></div>
+            <div class="p-6 space-y-3">
+              <div class="h-6 bg-gray-300 rounded w-3/4"></div>
+              <div class="h-4 bg-gray-300 rounded w-1/2"></div>
+              <div class="h-8 bg-gray-300 rounded w-1/3"></div>
+            </div>
+          </div>
+        </div>
+        
         <div v-if="rentaProperties.length > 0">
           <Swiper
             :modules="[Pagination, Autoplay]"
@@ -152,7 +191,7 @@
               <div class="bg-gray-50 rounded-xl shadow-md overflow-hidden h-full group border border-gray-100">
                 <NuxtLink :to="getPropertyUrl(p)">
                    <div class="relative h-64 overflow-hidden">
-                     <img :src="p.imagenPrincipal" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" />
+                     <img :src="getImageUrl(p.imagenPrincipal)" :alt="p.titulo" class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                      <div class="absolute top-4 left-4 bg-gray-600 text-white px-3 py-1 text-xs font-bold uppercase rounded">Renta</div>
                    </div>
                    <div class="p-6">
@@ -251,11 +290,20 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 
-// --- ⚡️ SSR DATA FETCHING ---
+// --- ⚡️ CLIENT-SIDE DATA FETCHING (para evitar problemas SSR con localhost) ---
 const [{ data: destacadasData }, { data: ventaData }, { data: rentaData }] = await Promise.all([
-  useAsyncData('home-destacadas', () => inmuebleService.getInmueblesPaginados(1, 10, { Destacado: true })),
-  useAsyncData('home-venta', () => inmuebleService.getInmueblesPaginados(1, 6, { Operaciones: 'Venta', Destacado: true })),
-  useAsyncData('home-renta', () => inmuebleService.getInmueblesPaginados(1, 6, { Operaciones: 'Renta', Destacado: true }))
+  useAsyncData('home-destacadas', () => inmuebleService.getInmueblesPaginados(1, 6, { Destacado: true }), { 
+    server: false,
+    lazy: true 
+  }),
+  useAsyncData('home-venta', () => inmuebleService.getInmueblesPaginados(1, 4, { Operaciones: 'Venta', Destacado: true }), { 
+    server: false,
+    lazy: true 
+  }),
+  useAsyncData('home-renta', () => inmuebleService.getInmueblesPaginados(1, 4, { Operaciones: 'Renta', Destacado: true }), { 
+    server: false,
+    lazy: true 
+  })
 ]);
 
 const destacadasProperties = computed(() => destacadasData.value?.items || []);
@@ -272,6 +320,14 @@ const featuredBlogs = computed(() => {
 const getPropertyUrl = (p) => {
   const slug = encodeURIComponent(String(p?.slugInmueble || p?.slug || '').trim());
   return slug ? `/inmueble/${slug}` : '#';
+};
+
+const getImageUrl = (img) => {
+  if (!img) return 'https://app-pool.vylaris.online/dcmigserver/homes/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp';
+  if (img.startsWith('http://') || img.startsWith('https://')) return img;
+  const DOMINIO_IMAGENES = 'https://app-pool.vylaris.online/dcmigserver/homes';
+  const cleanImg = img.startsWith('/') ? img.substring(1) : img;
+  return `${DOMINIO_IMAGENES}/${cleanImg}`;
 };
 
 const faqs = [

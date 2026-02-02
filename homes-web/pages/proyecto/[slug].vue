@@ -522,14 +522,16 @@ const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
   const img = proyectoDetalle.value?.imagenPrincipal;
   
-  if (!img) {
-    // Imagen por defecto de Homes Guatemala (mantener extensión original)
+  // Imagen por defecto si no hay imagen principal
+  if (!img || img.trim() === '') {
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
+  
   // Si ya es una URL completa, la devolvemos tal como está
   if (img.startsWith("http://") || img.startsWith("https://")) {
     return img;
   }
+  
   // Si es una URL relativa, construimos la URL completa sin modificar la extensión
   let cleanImg = img.trim();
   cleanImg = cleanImg.startsWith('/') ? cleanImg.substring(1) : cleanImg;
@@ -582,7 +584,7 @@ useSeoMeta({
   ogImageSecureUrl: pageImage,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  // El tipo de imagen se puede dejar vacío o dinámico si se requiere, pero Open Graph lo detecta automáticamente
+  ogImageType: 'image/webp',
   ogImageAlt: pageTitle,
   ogUrl: propertyUrl,
   ogType: 'article',
@@ -593,7 +595,8 @@ useSeoMeta({
   twitterDescription: pageDescription,
   twitterImage: pageImage,
   twitterImageAlt: pageTitle,
-  twitterUrl: propertyUrl,
+  twitterSite: '@homesguatemala',
+  twitterCreator: '@homesguatemala',
   robots: 'index, follow',
   author: 'Homes Guatemala',
   articlePublisher: 'https://homesguatemala.com',
@@ -611,7 +614,9 @@ useHead({
   meta: [
     // Meta tags adicionales para WhatsApp
     { property: 'og:image:secure_url', content: pageImage },
-    { name: 'thumbnail', content: pageImage }
+    { name: 'thumbnail', content: pageImage },
+    // Meta para Facebook compartir
+    { property: 'og:image:url', content: pageImage }
   ]
 });
 
@@ -801,6 +806,11 @@ onMounted(async () => {
 
   
   <style scoped>
+  @import "swiper/css";
+  @import "swiper/css/free-mode";
+  @import "swiper/css/mousewheel";
+  @import "swiper/css/navigation";
+
   .description-content ul {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -951,9 +961,4 @@ onMounted(async () => {
 .swiper-wrapper {
   align-items: flex-start;
 }
-  
-  @import "swiper/css";
-  @import "swiper/css/free-mode";
-  @import "swiper/css/mousewheel";
-  @import "swiper/css/navigation";
   </style>

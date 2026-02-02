@@ -10,26 +10,23 @@ export function clearInmueblesCache() {
 }
 import { API_BASE_URL } from '../config.js'
 
-// const cache = new Map();
+const cache = new Map();
 
-// const defaultTTL = 1000 * 60 * 3; // 3 minutos
+const defaultTTL = 1000 * 60 * 5; // 5 minutos de caché
 
-// const getFromCache = (key) => {
-//   const entry = cache.get(key);
-//   if (!entry) return null;
-//   if (Date.now() > entry.expires) {
-//     cache.delete(key);
-//     return null;
-//   }
-//   return entry.value;
-// };
+const getFromCache = (key) => {
+  const entry = cache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expires) {
+    cache.delete(key);
+    return null;
+  }
+  return entry.value;
+};
 
-// const setCache = (key, value, ttl = defaultTTL) => {
-//   cache.set(key, { value, expires: Date.now() + ttl });
-// };
-
-const getFromCache = (_key) => null;
-const setCache = (_key, _value, _ttl) => {};
+const setCache = (key, value, ttl = defaultTTL) => {
+  cache.set(key, { value, expires: Date.now() + ttl });
+};
 
 export default {
 
@@ -88,23 +85,21 @@ export default {
       }
 
       const url = `${API_BASE_URL}/Inmueble?${params.toString()}`;
-      console.log("API URL:", url);
 
       const cacheKey = `getInmuebles:${url}`;
       const cached = getFromCache(cacheKey);
       if (cached) {
-        console.log("Returning cached result");
         return cached;
       }
+      
       const response = await fetch(url);
+      
       if (!response.ok) {
         const errorBody = await response.text();
         throw new Error(`Error al obtener inmuebles paginados: ${response.statusText} (Status: ${response.status}). Detalles: ${errorBody}`);
       }
 
       const rawData = await response.json();
-      console.log("Raw API Response:", rawData);
-      console.log("Items type:", typeof rawData.items, "Is Array:", Array.isArray(rawData.items));
       
       // Manejar items que pueden venir como array directo o como {$values: [...]}
       let items = [];
@@ -113,8 +108,6 @@ export default {
       } else if (rawData.items && rawData.items.$values && Array.isArray(rawData.items.$values)) {
         items = rawData.items.$values;
       }
-      
-      console.log("Processed items count:", items.length);
       
       const pagedResult = {
         items: items,

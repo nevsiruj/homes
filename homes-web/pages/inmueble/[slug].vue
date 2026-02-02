@@ -568,17 +568,22 @@ const pageDescription = computed(() => {
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
   const img = inmuebleDetalle.value?.imagenPrincipal;
-  if (!img) {
+  
+  // Imagen por defecto si no hay imagen principal
+  if (!img || img.trim() === '') {
     return `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   }
+  
   // Si ya es una URL completa, la devolvemos tal como está
   if (img.startsWith("http://") || img.startsWith("https://")) {
     return img;
   }
+  
   // Si es una URL relativa, construimos la URL completa
-  // Asegurar que no haya doble slash
+  // Asegurar que no haya doble slash y encoding correcto
   const cleanImg = img.startsWith('/') ? img.substring(1) : img;
-  return `${DOMINIO_IMAGENES}/${cleanImg}`;
+  const encodedImg = encodeURI(cleanImg);
+  return `${DOMINIO_IMAGENES}/${encodedImg}`;
 });
 
 const propertyUrl = computed(() => {
@@ -592,6 +597,7 @@ useSeoMeta({
   ogTitle: pageTitle,
   ogDescription: pageDescription,
   ogImage: pageImage,
+  ogImageSecureUrl: pageImage,
   ogImageWidth: '1200',
   ogImageHeight: '630',
   ogImageType: 'image/webp',
@@ -605,10 +611,30 @@ useSeoMeta({
   twitterDescription: pageDescription,
   twitterImage: pageImage,
   twitterImageAlt: pageTitle,
+  twitterSite: '@homesguatemala',
+  twitterCreator: '@homesguatemala',
   robots: 'index, follow',
   author: 'Homes Guatemala',
   articlePublisher: 'https://homesguatemala.com',
   articleAuthor: 'Homes Guatemala'
+});
+
+// Meta tags adicionales para WhatsApp y Facebook
+useHead({
+  title: pageTitle,
+  link: [
+    {
+      rel: 'canonical',
+      href: propertyUrl
+    }
+  ],
+  meta: [
+    // Meta tags adicionales para WhatsApp
+    { property: 'og:image:secure_url', content: pageImage },
+    { name: 'thumbnail', content: pageImage },
+    // Meta para Facebook compartir
+    { property: 'og:image:url', content: pageImage }
+  ]
 });
 
 // Schema.org structured data for SEO
@@ -929,6 +955,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+@import "swiper/css";
+@import "swiper/css/free-mode";
+@import "swiper/css/mousewheel";
+@import "swiper/css/navigation";
+
 .description-content ul {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -994,9 +1025,4 @@ onMounted(() => {
 .description-content :deep(li p) {
   margin: 0 !important;
 }
-
-@import "swiper/css";
-@import "swiper/css/free-mode";
-@import "swiper/css/mousewheel";
-@import "swiper/css/navigation";
 </style>

@@ -16,20 +16,6 @@ import Seccion1 from "./seccion1.vue";
 // Componentes no críticos - carga diferida (async)
 const Footer = defineAsyncComponent(() => import('~/components/footer.vue'));
 const RedesFlotantes = defineAsyncComponent(() => import('~/components/redesFlotantes.vue'));
-
-// Precargar fuentes críticas
-useHead({
-  link: [
-    // Preload fuentes críticas para evitar FOIT (Flash of Invisible Text)
-    {
-      rel: 'preload',
-      href: '/assets/font/ralewey/raleway-v36-latin-300.woff2',
-      as: 'font',
-      type: 'font/woff2',
-      crossorigin: 'anonymous'
-    }
-  ]
-});
 </script>
 
 <style>
