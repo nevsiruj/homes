@@ -9,7 +9,7 @@
                 <Skeleton v-for="n in 9" :key="n" />
             </div>
             <div v-else-if="error" class="flex justify-center items-center py-20">
-                <div class="text-red-600 text-xl font-semibold p-4 border border-red-300 rounded-md bg-red-50">
+                <div class="text-red-500 text-xl font-semibold p-4 border border-red-300 rounded-md bg-red-50">
                     Error al cargar los blogs: {{ error }}
                 </div>
             </div>
