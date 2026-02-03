@@ -608,19 +608,15 @@ const pageImage = computed(() => {
   
   try {
     const img = inmuebleDetalle.value?.imagenPrincipal;
-    if (!img || typeof img !== 'string') {
-      return DEFAULT_IMAGE;
-    }
-    // Si ya es una URL completa, la devolvemos tal como está
-    if (img.startsWith("http://") || img.startsWith("https://")) {
-      return img;
-    }
-    // Si es una URL relativa, construimos la URL completa
-    // Asegurar que no haya doble slash
+    if (!img) return DEFAULT_IMAGE;
+    
+    // Si ya es absoluta, retornar
+    if (img.startsWith("http")) return img.replace("http://", "https://");
+    
+    // Si es relativa, construir
     const cleanImg = img.startsWith('/') ? img.substring(1) : img;
     return `${DOMINIO_IMAGENES}/${cleanImg}`;
   } catch (err) {
-    console.error('[SEO] Error generando pageImage:', err);
     return DEFAULT_IMAGE;
   }
 });

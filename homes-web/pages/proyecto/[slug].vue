@@ -574,7 +574,7 @@ console.log('📝 [PROYECTO SEO] pageDescription:', pageDescription.value);
 console.log('🖼️ [PROYECTO SEO] pageImage:', pageImage.value);
 console.log('🔗 [PROYECTO SEO] propertyUrl:', propertyUrl.value);
 
-// Meta tags específicas para SEO y redes sociales
+// Configurar metadatos SEO - Fuera de watchers para detección SSR
 useSeoMeta({
   title: () => pageTitle.value,
   description: () => pageDescription.value,
@@ -584,7 +584,6 @@ useSeoMeta({
   ogImageSecureUrl: () => pageImage.value,
   ogImageWidth: '1200',
   ogImageHeight: '630',
-  // El tipo de imagen se puede dejar vacío o dinámico si se requiere, pero Open Graph lo detecta automáticamente
   ogImageAlt: () => pageTitle.value,
   ogUrl: () => propertyUrl.value,
   ogType: 'article',
@@ -594,12 +593,7 @@ useSeoMeta({
   twitterTitle: () => pageTitle.value,
   twitterDescription: () => pageDescription.value,
   twitterImage: () => pageImage.value,
-  twitterImageAlt: () => pageTitle.value,
-  twitterUrl: () => propertyUrl.value,
   robots: 'index, follow',
-  author: 'Homes Guatemala',
-  articlePublisher: 'https://homesguatemala.com',
-  articleAuthor: 'Homes Guatemala'
 });
 
 useHead({
@@ -618,8 +612,8 @@ useHead({
     { property: 'og:image:width', content: '1200' },
     { property: 'og:image:height', content: '630' },
     { name: 'thumbnail', content: () => pageImage.value },
-    { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:image', content: () => pageImage.value }
+    { name: 'twitter:image', content: () => pageImage.value },
+    { property: 'fb:app_id', content: '239174403519612' }
   ]
 });
 
