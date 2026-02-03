@@ -8,9 +8,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      htmlAttrs: {
-        lang: 'es'
-      },
+      htmlAttrs: { lang: 'es' },
       title: 'Venta y Renta de Propiedades | Homes Guatemala',
       meta: [
         { charset: 'utf-8' },
@@ -28,47 +26,26 @@ export default defineNuxtConfig({
         { rel: "icon", type: "image/x-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
         { rel: "apple-touch-icon", href: "https://app-pool.vylaris.online/dcmigserver/homes/0ecfe259-77d7-450f-afb3-4ec21231dc6f.webp" },
         { rel: "canonical", href: "https://homesguatemala.com" },
-
-        // ===================================================================
-        // OPTIMIZACIÓN: Preconnect para recursos externos
-        // ===================================================================
         { rel: "preconnect", href: "https://app-pool.vylaris.online" },
         { rel: "dns-prefetch", href: "https://app-pool.vylaris.online" },
-
-        // ===================================================================
-        // OPTIMIZACIÓN: Google Fonts - Non-blocking
-        // Preconnect acelera la conexión, preload prioriza fuentes críticas
-        // ===================================================================
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
-
-        // Preload de fuentes críticas (Raleway 300 y 400 son las más usadas)
         {
           rel: "preload",
           as: "style",
           href: "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&family=Roboto+Condensed:wght@300;400&display=swap"
         },
-
-        // Carga asíncrona de fuentes (no bloquea render)
-        // Técnica: media="print" + onload para cargar sin bloquear
         {
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&family=Roboto+Condensed:wght@300;400&display=swap",
           media: "print",
           onload: "this.media='all'"
         },
-
-        // Hreflang para SEO internacional
         { rel: "alternate", hreflang: "es-GT", href: "https://homesguatemala.com" },
         { rel: "alternate", hreflang: "x-default", href: "https://homesguatemala.com" },
-
-        // Preload CSS crítico para mejorar rendimiento
         { rel: "preload", href: "/assets/css/main.css", as: "style" }
       ],
       script: [
-        // ===================================================================
-        // Schema.org - SEO Structured Data (no bloquea render)
-        // ===================================================================
         {
           key: "schema-org",
           type: "application/ld+json",
@@ -96,10 +73,6 @@ export default defineNuxtConfig({
             ]
           })
         },
-        // ===================================================================
-        // OPTIMIZACIÓN: Facebook Pixel - Async + Defer
-        // Carga después del contenido principal para no bloquear render
-        // ===================================================================
         {
           key: "facebook-pixel-script",
           src: "https://connect.facebook.net/en_US/fbevents.js",
@@ -109,7 +82,6 @@ export default defineNuxtConfig({
         {
           key: "facebook-pixel-init",
           innerHTML: `
-            // Inicializar Facebook Pixel después de que la página cargue
             window.addEventListener('load', function() {
               if (typeof fbq !== 'undefined') {
                 fbq('init', '239174403519612');
@@ -124,14 +96,12 @@ export default defineNuxtConfig({
 
   modules: [
     "@nuxt/image-edge",
-    // "@nuxtjs/seo",
     '@nuxtjs/sitemap',
     "@nuxt/content",
     "@pinia/nuxt",
     "@nuxtjs/color-mode"
   ],
 
-  // Sitemap configuration
   site: {
     url: 'https://homesguatemala.com',
     name: 'Homes Guatemala',
@@ -140,13 +110,11 @@ export default defineNuxtConfig({
     indexable: true,
   },
 
-  // Eliminado: configuración de sitemap para evitar conflictos. El sitemap se genera dinámicamente vía endpoint personalizado.
-
-  // robots: {
-  //   disallow: ['/admin'],
-  //   allow: ['/'],
-  //   sitemap: ['https://homesguatemala.com/sitemap.xml'],
-  // },
+  // Configuración de Sitemap corregida para incluir rutas dinámicas
+  sitemap: {
+    dynamicUrlsApiEndpoint: '/__sitemap__/urls', // Opcional: si creas un server route
+    exclude: ['/admin/**', '/auth/**'],
+  },
 
   colorMode: {
     classSuffix: "",
@@ -176,45 +144,36 @@ export default defineNuxtConfig({
       },
     },
     build: {
-      // Consolidar CSS en menos archivos
-      cssCodeSplit: false, // Genera un solo archivo CSS en lugar de múltiples
+      cssCodeSplit: false,
       target: 'esnext',
-      minify: 'terser', // Terser suele comprimir mejor que esbuild para JS complejo
+      minify: 'terser',
       terserOptions: {
         compress: {
-          drop_console: true, // Eliminar console.log en producción
+          drop_console: true,
           drop_debugger: true,
-          pure_funcs: ['console.log', 'console.info', 'console.debug']
         }
       },
       rollupOptions: {
         output: {
-          // Agrupar chunks de manera más eficiente
           manualChunks: {
             'vendor': ['vue', 'vue-router'],
             'swiper': ['swiper'],
           },
-          // Optimizar nombres de chunks para mejor caching
           chunkFileNames: '_nuxt/[name]-[hash].js',
           entryFileNames: '_nuxt/[name]-[hash].js',
           assetFileNames: '_nuxt/[name]-[hash].[ext]'
         },
       },
-      // Inline CSS pequeños (menos de 4kb)
       assetsInlineLimit: 4096,
-      // Minificar CSS
       cssMinify: true,
-      // Reportar tamaño de chunks comprimidos
       reportCompressedSize: true,
-      // Chunk size warnings
-      chunkSizeWarningLimit: 1000,
     },
   },
 
   experimental: {
-    payloadExtraction: true, // Mejora la carga de datos en navegación SPA
+    payloadExtraction: true,
     renderJsonPayloads: true,
-    viewTransition: false, // Desactivar si no se usa
+    viewTransition: false,
   },
 
   image: {
@@ -223,66 +182,45 @@ export default defineNuxtConfig({
     quality: 80,
     format: ['webp', 'avif', 'jpg'],
     screens: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-      xxl: 1536,
+      xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536,
     },
     presets: {
-      card: {
-        modifiers: {
-          format: 'webp',
-          quality: 80,
-          width: 400,
-          height: 256
-        }
-      },
-      thumbnail: {
-        modifiers: {
-          format: 'webp',
-          quality: 75,
-          width: 150,
-          height: 150
-        }
-      },
-      hero: {
-        modifiers: {
-          format: 'webp',
-          quality: 85,
-          width: 1200,
-          height: 600
-        }
-      }
+      card: { modifiers: { format: 'webp', quality: 80, width: 400, height: 256 } },
+      thumbnail: { modifiers: { format: 'webp', quality: 75, width: 150, height: 150 } },
+      hero: { modifiers: { format: 'webp', quality: 85, width: 1200, height: 600 } }
     }
   },
 
-
   hooks: {
     async 'nitro:config'(config) {
-      if (process.env.NODE_ENV === 'production') {
+      // Solo prerenderizar en producción para no ralentizar el desarrollo
+      if (process.env.NODE_ENV === 'production' || process.env.PRERENDER === 'true') {
         try {
-          // Obtener inmuebles
+          console.log('Fetching dynamic routes for Nitro Prerender...');
+          
+          // Inmuebles
           const inmueblesRes = await fetch('https://api-pool.vylaris.online/api/Homes/GetInmueblesPaginados?page=1&pageSize=500');
           const inmueblesData: any = await inmueblesRes.json();
           const inmuebles = inmueblesData.items || inmueblesData || [];
+          
           if (Array.isArray(inmuebles)) {
             inmuebles.forEach((item: any) => {
               const slug = item.slugInmueble || item.slug || item.id;
-              if (slug && config.prerender?.routes) config.prerender.routes.push(`/inmueble/${slug}`);
+              if (slug) config.prerender?.routes?.push(`/inmueble/${slug}`);
             });
           }
 
-          // Obtener proyectos
+          // Proyectos
           const proyectosRes = await fetch('https://api-pool.vylaris.online/api/Homes/GetProyectos');
           const proyectos: any = await proyectosRes.json();
           if (Array.isArray(proyectos)) {
             proyectos.forEach((item: any) => {
               const slug = item.slugProyecto || item.slug || item.id;
-              if (slug && config.prerender?.routes) config.prerender.routes.push(`/proyecto/${slug}`);
+              if (slug) config.prerender?.routes?.push(`/proyecto/${slug}`);
             });
           }
+          
+          console.log(`Prerendering ${config.prerender?.routes?.length} total routes.`);
         } catch (e) {
           console.error('Error fetching dynamic routes for prerender:', e);
         }
@@ -292,162 +230,35 @@ export default defineNuxtConfig({
 
   nitro: {
     preset: 'netlify',
-    compressPublicAssets: {
-      gzip: true,
-      brotli: true,
-    },
+    compressPublicAssets: true,
     minify: true,
-    experimental: {
-      asyncContext: false
-    },
     prerender: {
       crawlLinks: true,
       failOnError: false,
+      // Rutas base que siempre deben existir como HTML
       routes: [
         '/',
         '/propiedades',
+        '/inmueble',
         '/proyectos-inmobiliarios',
         '/blog-inmobiliario',
         '/luxury',
-        '/inmueble/**',
-        '/proyecto/**',  
         '/busqueda',
         '/custom',
-        '/propiedades/zona/zona-15',
-        '/propiedades/zona/cayala'
+        '/nosotros',
+        '/propiedades/renta',
+        '/propiedades/venta'
       ],
-      ignore: [
-        '/propiedades/zona/zona-10',
-        '/propiedades/zona/zona-14',
-        '/propiedades/zona/carretera-a-el-salvador',
-        '/blog/**',
-        '/admin/**',
-        '/auth/**'
-      ]
+      ignore: ['/admin/**', '/auth/**']
     },
     routeRules: {
-      // Proxy para luxury homes (mantener)
-      '/luxury-homes/**': {
-        proxy: 'https://old-web.homesguatemala.com/luxury-homes/**'
-      },
-      '/luxury-homes': {
-        proxy: 'https://old-web.homesguatemala.com/luxury-homes'
-      },
-
-      // // Redirecciones para URLs antiguas de propiedades (301 para SEO)
-      // '/propiedad/**': { redirect: { to: '/propiedades', statusCode: 301 } },
-      // '/property/**': { redirect: { to: '/propiedades', statusCode: 301 } },
-      // // '/inmueble/**': { redirect: '/propiedades' }, // REMOVIDO: Esta regla impedía ver detalles de inmuebles
-      // '/listing/**': { redirect: { to: '/propiedades', statusCode: 301 } },
-
-      // // Redirecciones de URLs comunes mal escritas (301 para SEO)
-      // // '/home': { redirect: { to: '/', statusCode: 301 } },
-      // '/inicio': { redirect: { to: '/', statusCode: 301 } },
-      // '/index': { redirect: { to: '/', statusCode: 301 } },
-      // '/index.html': { redirect: { to: '/', statusCode: 301 } },
-      // '/index.php': { redirect: { to: '/', statusCode: 301 } },
-
-      // // Redirecciones de secciones antiguas (301 para SEO)
-      // '/contacto': { redirect: { to: '/nosotros', statusCode: 301 } },
-      // '/contact': { redirect: { to: '/nosotros', statusCode: 301 } },
-      // '/about': { redirect: { to: '/nosotros', statusCode: 301 } },
-      // '/acerca-de': { redirect: { to: '/nosotros', statusCode: 301 } },
-
-      // // ===================================================================
-      // // REDIRECCIONES LEGACY WORDPRESS - Fix 404 errors Google Search Console
-      // // ===================================================================
-
-      // // NOTA: Ya no redirigimos /informativo/**, /tops/**, /consejos/** 
-      // // porque ahora usamos esas rutas para el blog con estructura [category]/[slug]
-
-      // // Redirecciones de /propiedades-en-venta/ -> /propiedades?Operaciones=Venta
-      // '/propiedades-en-venta/casas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Casa', statusCode: 301 } },
-      // '/propiedades-en-venta/casas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Casa', statusCode: 301 } },
-      // '/propiedades-en-venta/apartamentos-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Apartamento', statusCode: 301 } },
-      // '/propiedades-en-venta/apartamentos-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Apartamento', statusCode: 301 } },
-      // '/propiedades-en-venta/terrenos-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Terreno', statusCode: 301 } },
-      // '/propiedades-en-venta/terrenos-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Terreno', statusCode: 301 } },
-      // '/propiedades-en-venta/oficinas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Oficina', statusCode: 301 } },
-      // '/propiedades-en-venta/oficinas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Oficina', statusCode: 301 } },
-      // '/propiedades-en-venta/bodegas-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Bodega', statusCode: 301 } },
-      // '/propiedades-en-venta/bodegas-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Bodega', statusCode: 301 } },
-      // '/propiedades-en-venta/locales-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Local', statusCode: 301 } },
-      // '/propiedades-en-venta/locales-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta&Tipos=Local', statusCode: 301 } },
-      // '/propiedades-en-venta/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
-      // '/propiedades-en-venta/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
-      // '/propiedades-en-venta/**': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
-      // '/propiedades-en-venta': { redirect: { to: '/propiedades?Operaciones=Venta', statusCode: 301 } },
-
-      // // Redirecciones de /propiedades-en-renta/ -> /propiedades?Operaciones=Renta
-      // '/propiedades-en-renta/casas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      // '/propiedades-en-renta/casas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      // '/propiedades-en-renta/apartamentos-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      // '/propiedades-en-renta/apartamentos-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      // '/propiedades-en-renta/terrenos-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      // '/propiedades-en-renta/terrenos-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      // '/propiedades-en-renta/oficinas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      // '/propiedades-en-renta/oficinas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      // '/propiedades-en-renta/bodegas-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      // '/propiedades-en-renta/bodegas-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      // '/propiedades-en-renta/locales-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      // '/propiedades-en-renta/locales-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      // '/propiedades-en-renta/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      // '/propiedades-en-renta/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      // '/propiedades-en-renta/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      // '/propiedades-en-renta': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-
-      // // Redirecciones de /propiedades-en-alquiler/ -> /propiedades?Operaciones=Renta
-      // '/propiedades-en-alquiler/casas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      // '/propiedades-en-alquiler/casas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Casa', statusCode: 301 } },
-      // '/propiedades-en-alquiler/apartamentos-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      // '/propiedades-en-alquiler/apartamentos-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Apartamento', statusCode: 301 } },
-      // '/propiedades-en-alquiler/terrenos-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      // '/propiedades-en-alquiler/terrenos-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Terreno', statusCode: 301 } },
-      // '/propiedades-en-alquiler/oficinas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      // '/propiedades-en-alquiler/oficinas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Oficina', statusCode: 301 } },
-      // '/propiedades-en-alquiler/bodegas-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      // '/propiedades-en-alquiler/bodegas-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Bodega', statusCode: 301 } },
-      // '/propiedades-en-alquiler/locales-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      // '/propiedades-en-alquiler/locales-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta&Tipos=Local', statusCode: 301 } },
-      // '/propiedades-en-alquiler/ubicaciones': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      // '/propiedades-en-alquiler/ubicaciones/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      // '/propiedades-en-alquiler/**': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-      // '/propiedades-en-alquiler': { redirect: { to: '/propiedades?Operaciones=Renta', statusCode: 301 } },
-
-      // // Otras URLs legacy comunes
-      // '/category/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
-      // '/tag/**': { redirect: { to: '/blog-inmobiliario', statusCode: 301 } },
-      // '/page/**': { redirect: { to: '/', statusCode: 301 } },
-      // '/wp-content/**': { redirect: { to: '/', statusCode: 301 } },
-      // '/wp-admin/**': { redirect: { to: '/', statusCode: 301 } },
-      // '/wp-includes/**': { redirect: { to: '/', statusCode: 301 } },
-      // '/feed': { redirect: { to: '/', statusCode: 301 } },
-      // '/feed/**': { redirect: { to: '/', statusCode: 301 } },
-      // '/author/**': { redirect: { to: '/nosotros', statusCode: 301 } },
-
-      // Cache para assets estáticos (mejorar rendimiento)
-      '/_nuxt/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable'
-        }
-      },
-      '/images/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable'
-        }
-      },
-
-      // Headers de seguridad y SEO para todas las páginas
-      // '/**': {
-      //   headers: {
-      //     'X-Robots-Tag': 'index, follow',
-      //     'X-Content-Type-Options': 'nosniff',
-      //     'X-Frame-Options': 'SAMEORIGIN',
-      //     'Referrer-Policy': 'strict-origin-when-cross-origin',
-      //     'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
-      //     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
-      //   }
-      // }
+      // Proxy para evitar problemas de CORS y mantener SEO en luxury-homes
+      '/luxury-homes/**': { proxy: 'https://old-web.homesguatemala.com/luxury-homes/**' },
+      '/luxury-homes': { proxy: 'https://old-web.homesguatemala.com/luxury-homes' },
+      
+      // Cache optimizada
+      '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+      '/images/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
     }
   }
 });
