@@ -604,7 +604,7 @@ const pageDescription = computed(() => {
 
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
-  const DEFAULT_IMAGE = `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
+  // const DEFAULT_IMAGE = `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   
   try {
     const img = inmuebleDetalle.value?.imagenPrincipal;
