@@ -199,7 +199,7 @@ export default defineNuxtConfig({
           console.log('Fetching dynamic routes for Nitro Prerender...');
           
           // Inmuebles
-          const inmueblesRes = await fetch('https://api-pool.vylaris.online/api/Homes/GetInmueblesPaginados?page=1&pageSize=500');
+          const inmueblesRes = await fetch('https://app-pool.vylaris.online/homes/api/Homes/GetInmueblesPaginados?page=1&pageSize=500');
           const inmueblesData: any = await inmueblesRes.json();
           const inmuebles = inmueblesData.items || inmueblesData || [];
           
@@ -211,7 +211,7 @@ export default defineNuxtConfig({
           }
 
           // Proyectos
-          const proyectosRes = await fetch('https://api-pool.vylaris.online/api/Homes/GetProyectos');
+          const proyectosRes = await fetch('https://app-pool.vylaris.online/homes/api/Homes/GetProyectos');
           const proyectos: any = await proyectosRes.json();
           if (Array.isArray(proyectos)) {
             proyectos.forEach((item: any) => {
