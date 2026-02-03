@@ -141,7 +141,7 @@ export default defineNuxtConfig({
   },
 
   // Eliminado: configuración de sitemap para evitar conflictos. El sitemap se genera dinámicamente vía endpoint personalizado.
-  
+
   // robots: {
   //   disallow: ['/admin'],
   //   allow: ['/'],
@@ -283,6 +283,7 @@ export default defineNuxtConfig({
         '/blog-inmobiliario',
         '/luxury',
         '/inmueble/**',
+        '/proyecto/**',  // Agregado para que WhatsApp/Facebook lean los meta OG
         '/busqueda',
         '/custom',
         '/propiedades/zona/zona-15',
@@ -294,7 +295,7 @@ export default defineNuxtConfig({
         '/propiedades/zona/zona-14',
         '/propiedades/zona/carretera-a-el-salvador',
         '/blog/**',
-        '/proyecto/**',
+        // '/proyecto/**' - REMOVIDO: Necesita pre-render para meta OG (WhatsApp/Facebook)
         '/admin/**',
         '/auth/**'
       ]
