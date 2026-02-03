@@ -301,7 +301,7 @@
   
   <script setup>
 import { ref, computed, onMounted, nextTick, watch } from "vue";
-import { useRoute, useAsyncData, createError, useHead, useSeoMeta } from "#imports";
+import { useRoute, useAsyncData, createError, useHead, useSeoMeta, useRequestURL } from "#imports";
 import proyectoService from "../../services/proyectoService";
 import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
@@ -538,15 +538,21 @@ const pageImage = computed(() => {
 });
 
 const propertyUrl = computed(() => {
-  const baseUrl = 'https://homesguatemala.com';
+  let origin = 'https://homesguatemala.com';
+  try {
+    const requestUrl = useRequestURL();
+    if (requestUrl.origin && !requestUrl.origin.includes('localhost')) {
+      origin = requestUrl.origin;
+    }
+  } catch (e) {}
+
   const fullPath = route.fullPath || route.path || '';
   
-  // Asegurar que la URL del proyecto sea específica
   if (!fullPath || fullPath === '/') {
-    return `${baseUrl}/proyecto/${slug}`;
+    return `${origin}/proyecto/${slug}`;
   }
   
-  return `${baseUrl}${fullPath}`;
+  return `${origin}${fullPath}`;
 });
 
 const formattedPrice = computed(() => {

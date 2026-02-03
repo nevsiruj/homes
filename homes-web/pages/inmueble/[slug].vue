@@ -418,7 +418,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick, watch } from "vue";
-import { useRoute, useAsyncData, createError, useHead, useSeoMeta } from "#imports";
+import { useRoute, useAsyncData, createError, useHead, useSeoMeta, useRequestURL } from "#imports";
 import inmuebleService from "../../services/inmuebleService";
 import Header from "../../components/header.vue";
 import Footer from "../../components/footer.vue";
@@ -604,7 +604,7 @@ const pageDescription = computed(() => {
 
 const pageImage = computed(() => {
   const DOMINIO_IMAGENES = "https://app-pool.vylaris.online/dcmigserver/homes";
-  // const DEFAULT_IMAGE = `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
+  const DEFAULT_IMAGE = `${DOMINIO_IMAGENES}/fa005e24-05c6-4ff0-a81b-3db107ce477e.webp`;
   
   try {
     const img = inmuebleDetalle.value?.imagenPrincipal;
@@ -622,15 +622,21 @@ const pageImage = computed(() => {
 });
 
 const propertyUrl = computed(() => {
-  const baseUrl = 'https://homesguatemala.com';
+  let origin = 'https://homesguatemala.com';
+  try {
+    const requestUrl = useRequestURL();
+    if (requestUrl.origin && !requestUrl.origin.includes('localhost')) {
+      origin = requestUrl.origin;
+    }
+  } catch (e) {}
+
   const fullPath = route.fullPath || route.path || '';
   
-  // Asegurar que la URL del inmueble sea específica
   if (!fullPath || fullPath === '/') {
-    return `${baseUrl}/inmueble/${slug}`;
+    return `${origin}/inmueble/${slug}`;
   }
   
-  return `${baseUrl}${fullPath}`;
+  return `${origin}${fullPath}`;
 });
 
 // Log completo de datos para debugging (solo en desarrollo)
