@@ -7,4 +7,4 @@
  
 # 3. LA REGLA PARA BOTS Y SEO
 # Esto asegura que cualquier ruta devuelva un 200 y el index.html
-/* /index.html  200
+# /* /index.html  200
