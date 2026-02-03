@@ -259,6 +259,37 @@ export default defineNuxtConfig({
   },
 
 
+  hooks: {
+    async 'nitro:config'(config) {
+      if (process.env.NODE_ENV === 'production') {
+        try {
+          // Obtener inmuebles
+          const inmueblesRes = await fetch('https://api-pool.vylaris.online/api/Homes/GetInmueblesPaginados?page=1&pageSize=500');
+          const inmueblesData: any = await inmueblesRes.json();
+          const inmuebles = inmueblesData.items || inmueblesData || [];
+          if (Array.isArray(inmuebles)) {
+            inmuebles.forEach((item: any) => {
+              const slug = item.slugInmueble || item.slug || item.id;
+              if (slug && config.prerender?.routes) config.prerender.routes.push(`/inmueble/${slug}`);
+            });
+          }
+
+          // Obtener proyectos
+          const proyectosRes = await fetch('https://api-pool.vylaris.online/api/Homes/GetProyectos');
+          const proyectos: any = await proyectosRes.json();
+          if (Array.isArray(proyectos)) {
+            proyectos.forEach((item: any) => {
+              const slug = item.slugProyecto || item.slug || item.id;
+              if (slug && config.prerender?.routes) config.prerender.routes.push(`/proyecto/${slug}`);
+            });
+          }
+        } catch (e) {
+          console.error('Error fetching dynamic routes for prerender:', e);
+        }
+      }
+    }
+  },
+
   nitro: {
     preset: 'netlify',
     compressPublicAssets: {
@@ -270,15 +301,11 @@ export default defineNuxtConfig({
       asyncContext: false
     },
     prerender: {
-      // Indicar qué rutas pre-renderizar y cuáles manejar como SSR
       crawlLinks: true,
-      failOnError: false, // No fallar el build si alguna ruta da error
+      failOnError: false,
       routes: [
         '/',
         '/propiedades',
-        '/propiedades/venta',
-        '/propiedades/renta',
-        '/nosotros',
         '/proyectos-inmobiliarios',
         '/blog-inmobiliario',
         '/luxury',
@@ -289,13 +316,11 @@ export default defineNuxtConfig({
         '/propiedades/zona/zona-15',
         '/propiedades/zona/cayala'
       ],
-      // Ignorar estas rutas que requieren SSR
       ignore: [
         '/propiedades/zona/zona-10',
         '/propiedades/zona/zona-14',
         '/propiedades/zona/carretera-a-el-salvador',
         '/blog/**',
-        // '/proyecto/**' - REMOVIDO: Necesita pre-render para meta OG (WhatsApp/Facebook)
         '/admin/**',
         '/auth/**'
       ]

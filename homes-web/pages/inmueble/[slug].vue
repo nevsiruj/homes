@@ -608,19 +608,15 @@ const pageImage = computed(() => {
   
   try {
     const img = inmuebleDetalle.value?.imagenPrincipal;
-    if (!img || typeof img !== 'string') {
-      return DEFAULT_IMAGE;
-    }
-    // Si ya es una URL completa, la devolvemos tal como está
-    if (img.startsWith("http://") || img.startsWith("https://")) {
-      return img;
-    }
-    // Si es una URL relativa, construimos la URL completa
-    // Asegurar que no haya doble slash
+    if (!img) return DEFAULT_IMAGE;
+    
+    // Si ya es absoluta, retornar
+    if (img.startsWith("http")) return img.replace("http://", "https://");
+    
+    // Si es relativa, construir
     const cleanImg = img.startsWith('/') ? img.substring(1) : img;
     return `${DOMINIO_IMAGENES}/${cleanImg}`;
   } catch (err) {
-    console.error('[SEO] Error generando pageImage:', err);
     return DEFAULT_IMAGE;
   }
 });
@@ -660,99 +656,91 @@ if (process.server) {
   console.log('🔗 [SSR] propertyUrl:', propertyUrl.value);
 }
 
-// Configurar metadatos SEO - Usar watch para asegurar que se ejecuten después de que los datos estén disponibles
-watch(
-  () => inmuebleDetalle.value,
-  (detalle) => {
-    if (!detalle) return;
+// Configurar metadatos SEO - Fuera del watch para que SSR/Prerender los detecte correctamente
+useSeoMeta({
+  title: () => pageTitle.value,
+  description: () => pageDescription.value,
+  ogTitle: () => pageTitle.value,
+  ogDescription: () => pageDescription.value,
+  ogImage: () => pageImage.value,
+  ogImageSecureUrl: () => pageImage.value,
+  ogImageWidth: '1200',
+  ogImageHeight: '630',
+  ogImageAlt: () => pageTitle.value,
+  ogUrl: () => propertyUrl.value,
+  ogType: 'website',
+  ogSiteName: 'Homes Guatemala',
+  ogLocale: 'es_GT',
+  robots: 'index, follow',
+  author: 'Homes Guatemala',
+});
 
-    // Configurar meta tags después de que los datos estén disponibles
-    useSeoMeta({
-      title: pageTitle.value,
-      description: pageDescription.value,
-      ogTitle: pageTitle.value,
-      ogDescription: pageDescription.value,
-      ogImage: pageImage.value,
-      ogImageSecureUrl: pageImage.value,
-      ogImageWidth: '1200',
-      ogImageHeight: '630',
-      ogImageAlt: pageTitle.value,
-      ogUrl: propertyUrl.value,
-      ogType: 'website',
-      ogSiteName: 'Homes Guatemala',
-      ogLocale: 'es_GT',
-      robots: 'index, follow',
-      author: 'Homes Guatemala',
-    });
-
-    useHead({
-      title: pageTitle.value,
-      htmlAttrs: {
-        lang: 'es',
-        prefix: 'og: http://ogp.me/ns#'
-      },
-      link: [
-        {
-          rel: 'canonical',
-          href: propertyUrl.value
-        }
-      ],
-      meta: [
-        // Twitter Card meta tags
-        { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:site', content: '@homesguatemala' },
-        { name: 'twitter:title', content: pageTitle.value },
-        { name: 'twitter:description', content: pageDescription.value },
-        { name: 'twitter:image', content: pageImage.value },
-        { name: 'twitter:image:alt', content: pageTitle.value },
-        // Meta tags básicos
-        { name: 'description', content: pageDescription.value },
-        { name: 'robots', content: 'index, follow, max-image-preview:large' },
-
-        // Meta tags adicionales para WhatsApp y Facebook
-        { property: 'og:image:secure_url', content: pageImage.value },
-        { property: 'og:image:type', content: 'image/webp' },
-        { property: 'og:image:width', content: '1200' },
-        { property: 'og:image:height', content: '630' },
-        { name: 'thumbnail', content: pageImage.value },
-        { name: 'twitter:image:src', content: pageImage.value },
-
-        // FB App ID
-        { property: 'fb:app_id', content: '239174403519612' },
-      ],
-      script: [
-        {
-          type: 'application/ld+json',
-          children: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'RealEstateListing',
-            name: pageTitle.value,
-            description: pageDescription.value,
-            url: propertyUrl.value,
-            image: {
-              '@type': 'ImageObject',
-              url: pageImage.value,
-              width: 1200,
-              height: 630
-            },
-            offers: detalle?.precio ? {
-              '@type': 'Offer',
-              price: parsePriceValue(detalle.precio),
-              priceCurrency: 'USD',
-              availability: 'https://schema.org/InStock'
-            } : undefined,
-            address: detalle?.ubicaciones ? {
-              '@type': 'PostalAddress',
-              addressLocality: detalle.ubicaciones,
-              addressCountry: 'GT'
-            } : undefined
-          })
-        }
-      ]
-    });
+useHead({
+  title: () => pageTitle.value,
+  htmlAttrs: {
+    lang: 'es',
+    prefix: 'og: http://ogp.me/ns#'
   },
-  { immediate: true }
-);
+  link: [
+    {
+      rel: 'canonical',
+      href: () => propertyUrl.value
+    }
+  ],
+  meta: [
+    // Twitter Card meta tags
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:site', content: '@homesguatemala' },
+    { name: 'twitter:title', content: () => pageTitle.value },
+    { name: 'twitter:description', content: () => pageDescription.value },
+    { name: 'twitter:image', content: () => pageImage.value },
+    { name: 'twitter:image:alt', content: () => pageTitle.value },
+    // Meta tags básicos
+    { name: 'description', content: () => pageDescription.value },
+    { name: 'robots', content: 'index, follow, max-image-preview:large' },
+
+    // Meta tags adicionales para WhatsApp y Facebook
+    { property: 'og:image', content: () => pageImage.value },
+    { property: 'og:image:secure_url', content: () => pageImage.value },
+    { property: 'og:image:type', content: 'image/webp' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { name: 'thumbnail', content: () => pageImage.value },
+    { name: 'twitter:image:src', content: () => pageImage.value },
+
+    // FB App ID
+    { property: 'fb:app_id', content: '239174403519612' },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: computed(() => JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'RealEstateListing',
+        name: pageTitle.value,
+        description: pageDescription.value,
+        url: propertyUrl.value,
+        image: {
+          '@type': 'ImageObject',
+          url: pageImage.value,
+          width: 1200,
+          height: 630
+        },
+        offers: inmuebleDetalle.value?.precio ? {
+          '@type': 'Offer',
+          price: parsePriceValue(inmuebleDetalle.value.precio),
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock'
+        } : undefined,
+        address: inmuebleDetalle.value?.ubicaciones ? {
+          '@type': 'PostalAddress',
+          addressLocality: inmuebleDetalle.value.ubicaciones,
+          addressCountry: 'GT'
+        } : undefined
+      }))
+    }
+  ]
+});
 
 // Vista / media / formato
 const isMobile = ref(false);
