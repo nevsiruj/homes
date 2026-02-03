@@ -282,6 +282,7 @@ export default defineNuxtConfig({
         '/proyectos-inmobiliarios',
         '/blog-inmobiliario',
         '/luxury',
+        '/inmueble/**',
         '/busqueda',
         '/custom',
         '/propiedades/zona/zona-15',
@@ -289,7 +290,6 @@ export default defineNuxtConfig({
       ],
       // Ignorar estas rutas que requieren SSR
       ignore: [
-        '/inmueble/**',
         '/propiedades/zona/zona-10',
         '/propiedades/zona/zona-14',
         '/propiedades/zona/carretera-a-el-salvador',
