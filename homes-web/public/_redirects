@@ -1,6 +1,10 @@
-# Proxy para luxury-homes - muestra contenido del dominio antiguo
-/luxury-homes/* https://old-web.homesguatemala.com/luxury-homes/:splat 200
-/luxury-homes https://old-web.homesguatemala.com/luxury-homes 200
+# 1. Proxies y rutas específicas (Van primero)
+/luxury-homes/* https://old-web.homesguatemala.com/luxury-homes/:splat  200
+/luxury-homes    https://old-web.homesguatemala.com/luxury-homes         200
 
-# Redirecciones del dominio antiguo al nuevo (opcional)
-https://old-web.homesguatemala.com/luxury-homes https://homesguatemala.com/luxury-homes 301
+# 2. Redirección de API (Si no la tienes en el toml)
+/api/* /.netlify/functions/:splat  200
+
+# 3. LA REGLA MAESTRA PARA BOTS Y SEO (La que te faltaba)
+# Esto asegura que cualquier ruta devuelva un 200 y el index.html
+/* /index.html  200
