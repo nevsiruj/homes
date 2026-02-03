@@ -710,6 +710,7 @@ watch(
         { name: 'robots', content: 'index, follow, max-image-preview:large' },
 
         // Meta tags adicionales para WhatsApp y Facebook
+        { property: 'og:image', content: pageImage.value },
         { property: 'og:image:secure_url', content: pageImage.value },
         { property: 'og:image:type', content: 'image/webp' },
         { property: 'og:image:width', content: '1200' },

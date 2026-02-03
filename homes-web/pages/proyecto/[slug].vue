@@ -611,9 +611,15 @@ useHead({
     }
   ],
   meta: [
-    // Meta tags adicionales para WhatsApp
+    // Meta tags adicionales para WhatsApp y Redes Sociales
+    { property: 'og:image', content: () => pageImage.value },
     { property: 'og:image:secure_url', content: () => pageImage.value },
-    { name: 'thumbnail', content: () => pageImage.value }
+    { property: 'og:image:type', content: 'image/webp' },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { name: 'thumbnail', content: () => pageImage.value },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: () => pageImage.value }
   ]
 });
 
