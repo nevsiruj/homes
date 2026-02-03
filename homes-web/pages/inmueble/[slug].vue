@@ -660,90 +660,94 @@ if (process.server) {
   console.log('🔗 [SSR] propertyUrl:', propertyUrl.value);
 }
 
-// Configurar metadatos con funciones reactivas para actualización dinámica
-useSeoMeta({
-  title: () => pageTitle.value,
-  description: () => pageDescription.value,
-  ogTitle: () => pageTitle.value,
-  ogDescription: () => pageDescription.value,
-  ogImage: () => pageImage.value,
-  ogImageSecureUrl: () => pageImage.value,
-  ogImageWidth: '1200',
-  ogImageHeight: '630',
-  ogImageAlt: () => pageTitle.value,
-  ogUrl: () => propertyUrl.value,
-  ogType: 'website',
-  ogSiteName: 'Homes Guatemala',
-  ogLocale: 'es_GT',
-  robots: 'index, follow',
-  author: 'Homes Guatemala',
-});
+// Configurar metadatos - Usar watch para actualización reactiva correcta en SSR
+watch([pageTitle, pageDescription, pageImage, propertyUrl, inmuebleDetalle], ([title, desc, img, url, detalle]) => {
+  if (!detalle) return;
+  
+  useSeoMeta({
+    title: title,
+    description: desc,
+    ogTitle: title,
+    ogDescription: desc,
+    ogImage: img,
+    ogImageSecureUrl: img,
+    ogImageWidth: '1200',
+    ogImageHeight: '630',
+    ogImageAlt: title,
+    ogUrl: url,
+    ogType: 'website',
+    ogSiteName: 'Homes Guatemala',
+    ogLocale: 'es_GT',
+    robots: 'index, follow',
+    author: 'Homes Guatemala',
+  });
 
-useHead({
-  title: () => pageTitle.value,
-  htmlAttrs: {
-    lang: 'es',
-    prefix: 'og: http://ogp.me/ns#'
-  },
-  link: [
-    {
-      rel: 'canonical',
-      href: () => propertyUrl.value
-    }
-  ],
-  meta: [
-    // Twitter Card meta tags
-    { name: 'twitter:card', content: 'summary_large_image' },
-    { name: 'twitter:site', content: '@homesguatemala' },
-    { name: 'twitter:title', content: () => pageTitle.value },
-    { name: 'twitter:description', content: () => pageDescription.value },
-    { name: 'twitter:image', content: () => pageImage.value },
-    { name: 'twitter:image:alt', content: () => pageTitle.value },
-    // Meta tags básicos
-    { name: 'description', content: () => pageDescription.value },
-    { name: 'robots', content: 'index, follow, max-image-preview:large' },
-    
-    // Meta tags adicionales para WhatsApp y Facebook
-    { property: 'og:image:secure_url', content: () => pageImage.value },
-    { property: 'og:image:type', content: 'image/jpeg' },
-    { property: 'og:image:width', content: '1200' },
-    { property: 'og:image:height', content: '630' },
-    { name: 'thumbnail', content: () => pageImage.value },
-    { name: 'twitter:image:src', content: () => pageImage.value },
-    
-    // Adicional para mejor compatibilidad
-    { property: 'fb:app_id', content: '123456789' }, // Opcional: agregar tu FB App ID real si tienes
-  ],
-  script: [
-    {
-      type: 'application/ld+json',
-      children: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'RealEstateListing',
-        name: currentTitle,
-        description: currentDescription,
-        url: currentUrl,
-        image: {
-          '@type': 'ImageObject',
-          url: currentImage,
-          width: 1200,
-          height: 630
-        },
-        offers: inmuebleDetalle.value?.precio ? {
-          '@type': 'Offer',
-          price: parsePriceValue(inmuebleDetalle.value.precio),
-          priceCurrency: 'USD',
-          availability: 'https://schema.org/InStock'
-        } : undefined,
-        address: inmuebleDetalle.value?.ubicaciones ? {
-          '@type': 'PostalAddress',
-          addressLocality: inmuebleDetalle.value.ubicaciones,
-          addressCountry: 'GT'
-        } : undefined
-      })
-    }
-  ]
-});
+  useHead({
+    title: title,
+    htmlAttrs: {
+      lang: 'es',
+      prefix: 'og: http://ogp.me/ns#'
+    },
+    link: [
+      {
+        rel: 'canonical',
+        href: url
+      }
+    ],
+    meta: [
+      // Twitter Card meta tags
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:site', content: '@homesguatemala' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: desc },
+      { name: 'twitter:image', content: img },
+      { name: 'twitter:image:alt', content: title },
+      // Meta tags básicos
+      { name: 'description', content: desc },
+      { name: 'robots', content: 'index, follow, max-image-preview:large' },
+      
+      // Meta tags adicionales para WhatsApp y Facebook
+      { property: 'og:image:secure_url', content: img },
+      { property: 'og:image:type', content: 'image/webp' },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { name: 'thumbnail', content: img },
+      { name: 'twitter:image:src', content: img },
+      
+      // FB App ID
+      { property: 'fb:app_id', content: '239174403519612' },
+    ],
+    script: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'RealEstateListing',
+          name: title,
+          description: desc,
+          url: url,
+          image: {
+            '@type': 'ImageObject',
+            url: img,
+            width: 1200,
+            height: 630
+          },
+          offers: detalle?.precio ? {
+            '@type': 'Offer',
+            price: parsePriceValue(detalle.precio),
+            priceCurrency: 'USD',
+            availability: 'https://schema.org/InStock'
+          } : undefined,
+          address: detalle?.ubicaciones ? {
+            '@type': 'PostalAddress',
+            addressLocality: detalle.ubicaciones,
+            addressCountry: 'GT'
+          } : undefined
+        })
+      }
+    ]
+  });
+}, { immediate: true });
 
 // Vista / media / formato
 const isMobile = ref(false);
