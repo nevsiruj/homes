@@ -35,9 +35,8 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# FALLBACK - CAMBIADO A 404 PARA EVITAR SOFT 404 Y MEJORAR SEO
-# Si una ruta no existe como archivo estático, debe dar 404 para que los bots no indexen el index.html vacío
+# FALLBACK SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 404
+  status = 200
