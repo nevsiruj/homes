@@ -130,6 +130,9 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    server: {
+      allowedHosts: ["devserver-imendoza-fixes--homes-test.netlify.app"]
+    },
     plugins: [
       (await import("@tailwindcss/vite")).default(),
     ],
@@ -197,12 +200,12 @@ export default defineNuxtConfig({
       if (process.env.NODE_ENV === 'production' || process.env.PRERENDER === 'true') {
         try {
           console.log('Fetching dynamic routes for Nitro Prerender...');
-          
+
           // Inmuebles
           const inmueblesRes = await fetch('https://app-pool.vylaris.online/homes/api/Homes/GetInmueblesPaginados?page=1&pageSize=500');
           const inmueblesData: any = await inmueblesRes.json();
           const inmuebles = inmueblesData.items || inmueblesData || [];
-          
+
           if (Array.isArray(inmuebles)) {
             inmuebles.forEach((item: any) => {
               const slug = item.slugInmueble || item.slug || item.id;
@@ -219,7 +222,7 @@ export default defineNuxtConfig({
               if (slug) config.prerender?.routes?.push(`/proyecto/${slug}`);
             });
           }
-          
+
           console.log(`Prerendering ${config.prerender?.routes?.length} total routes.`);
         } catch (e) {
           console.error('Error fetching dynamic routes for prerender:', e);
@@ -255,7 +258,7 @@ export default defineNuxtConfig({
       // Proxy para evitar problemas de CORS y mantener SEO en luxury-homes
       '/luxury-homes/**': { proxy: 'https://old-web.homesguatemala.com/luxury-homes/**' },
       '/luxury-homes': { proxy: 'https://old-web.homesguatemala.com/luxury-homes' },
-      
+
       // Cache optimizada
       '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
       '/images/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
