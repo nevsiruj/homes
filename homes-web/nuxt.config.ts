@@ -282,7 +282,7 @@ export default defineNuxtConfig({
         '/proyectos-inmobiliarios',
         '/blog-inmobiliario',
         '/luxury',
-        '/inmueble/**',
+        // '/inmueble/**' REMOVIDO: Siempre SSR para OG/meta dinámico
         '/proyecto/**',  // Agregado para que WhatsApp/Facebook lean los meta OG
         '/busqueda',
         '/custom',
