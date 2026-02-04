@@ -50,6 +50,15 @@
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 p-2"
             title="Hasta"
           />
+          <button
+            v-if="dateFrom || dateTo || searchTerm"
+            @click="clearFilters"
+            type="button"
+            class="bg-red-100 hover:bg-red-200 text-red-700 text-sm rounded-lg px-3 py-2 whitespace-nowrap"
+            title="Limpiar filtros"
+          >
+            Limpiar
+          </button>
         </div>
       </form>
     </div>
@@ -630,10 +639,18 @@ const filteredClientes = computed(() => {
       : null;
 
     filteredList = filteredList.filter((c) => {
-      const t = new Date(c.fechaRegistro).getTime();
-      if (isNaN(t)) return false; // ignora fechas inválidas
-      if (fromTime && t < fromTime) return false;
-      if (toTime && t > toTime) return false;
+      // Manejar diferentes formatos de fecha
+      const fechaStr = c.fechaRegistro || c.FechaRegistro;
+      if (!fechaStr) return false; // Si no hay fecha, no incluir
+      
+      const t = new Date(fechaStr).getTime();
+      if (isNaN(t)) {
+        console.warn('Fecha inválida para cliente:', c.id, fechaStr);
+        return false; // ignora fechas inválidas
+      }
+      
+      if (fromTime && !isNaN(fromTime) && t < fromTime) return false;
+      if (toTime && !isNaN(toTime) && t > toTime) return false;
       return true;
     });
   }
@@ -784,9 +801,9 @@ const loadClientes = async () => {
   
   isLoading.value = true;
   try {
-    // Aumentar pageSize a 1000 para cargar más clientes
+    // Aumentar pageSize a 5000 para cargar más clientes
     // Forzar recarga sin cache
-    const response = await clienteService.getAllClientes(1, 1000, null, false);
+    const response = await clienteService.getAllClientes(1, 5000, null, false);
     
     // Verificar si viene en el nuevo formato con data o $values
     const clientesData = response.$values || response.data || response;
@@ -837,6 +854,13 @@ const loadClientes = async () => {
     // Solo actualizar el estado si el componente no se está desmontando
     if (!isUnmounting.value) {
       clientes.value = processedClients;
+      console.log(`✅ ${processedClients.length} clientes cargados correctamente`);
+      
+      // Log de fechas para debugging
+      if (processedClients.length > 0) {
+        const fechas = processedClients.map(c => c.fechaRegistro).sort();
+        console.log('📅 Rango de fechas:', fechas[0], 'a', fechas[fechas.length - 1]);
+      }
     }
   } catch (err) {
     console.error("Error al cargar clientes:", err);
@@ -940,6 +964,31 @@ const eliminarCliente = async (id) => {
 // Guardado/actualización
 const handleClientAddedOrUpdated = async () => {
   await loadClientes();
+  
+  // Si hay filtros de fecha activos, informar al usuario
+  if (dateFrom.value || dateTo.value) {
+    const mensaje = dateFrom.value && dateTo.value
+      ? `Nota: Hay filtros de fecha activos (${dateFrom.value} - ${dateTo.value}). Si no ves el cliente, verifica los filtros.`
+      : dateFrom.value
+      ? `Nota: Hay un filtro de fecha "Desde" activo (${dateFrom.value}). Si no ves el cliente, verifica los filtros.`
+      : `Nota: Hay un filtro de fecha "Hasta" activo (${dateTo.value}). Si no ves el cliente, verifica los filtros.`;
+    
+    Swal.fire({
+      icon: 'info',
+      title: 'Cliente guardado',
+      text: mensaje,
+      confirmButtonText: 'Entendido'
+    });
+  }
+};
+
+// Limpiar todos los filtros
+const clearFilters = () => {
+  searchTerm.value = "";
+  dateFrom.value = null;
+  dateTo.value = null;
+  selectedAgent.value = "all";
+  currentPage.value = 1;
 };
 
 // --- Nuevo helper: normalizar objeto inmueble para el modal (imagenes como array de URLs, amenidades como objetos) ---
