@@ -179,15 +179,32 @@
 > 📅 **Servicio mensual:** USD $99 a $349/mes
 > (hosting + soporte + actualizaciones)
 > 
+> 🚀 **OFERTA DE ESTA SEMANA (Pack Star):**
+> **USD $500** - Incluye:
+> • Licencia Única (sin vencimiento)
+> • CRM Administrativo
+> • Portal Web Profesional
+> • Configuración Inicial 
+> 
 > Para darte un precio exacto necesito saber:
 > 1️⃣ ¿Cuántos agentes tienen?
 > 2️⃣ ¿Cuántas propiedades manejan aprox?
 > 
 > Con eso te armo una propuesta en 24hs 📋
 
----
+### 2.6 Respuesta Rápida: Oferta Flash (Copiar y Pegar)
 
-## Etapa 3: Agendar Demo
+> 🚀 **¡Esta semana tenemos un paquete de oferta!**
+> 
+> **CRM ADMINISTRATIVO + PORTAL WEB**
+> 
+> 💎 **LICENCIA ÚNICA + CONFIGURACIÓN: $500 USD** ✅
+> 
+> *(Incluye todo el sistema para tu inmobiliaria, sin pagos mensuales obligatorios por el software)*
+> 
+> ---
+> 
+> ## Etapa 3: Agendar Demo
 
 **🎯 Objetivo:** Conseguir fecha y hora para demo en vivo
 
@@ -420,6 +437,23 @@
 > 
 > ¿Querés que te pase el contacto de alguno para que hables directo con ellos?
 
+### 5.8 Consultas Técnicas: "Dudas sobre IA e Integraciones"
+
+**P: ¿El sistema trae un chatbot o un agente IA?**
+> Es un **Agente IA Avanzado**. No solo responde texto, sino que puede interpretar mensajes de voz, enviar fotos de propiedades relevantes y entender el contexto de la conversación. Es lo más parecido a un asistente humano 24/7.
+
+**P: ¿Se integra con Google Calendar?**
+> Sí, absolutamente. El sistema puede agendar visitas directamente en tu calendario de Google y en el del prospecto de forma automática cuando detecta interés en una propiedad.
+
+**P: ¿Puedo captar leads de Meta (Facebook/Instagram) y Google?**
+> Exacto. Tenemos integración nativa para que los leads de tus campañas de Meta Ads y Google Ads caigan directamente al CRM y sean atendidos por la IA en segundos.
+
+**P: ¿Puedo agregar propiedades de otros colegas a mi sitio?**
+> Sí, contamos con una funcionalidad de **Colaboración MLS**. Podés importar propiedades de colegas y mostrarlas en tu web (con tu diseño), gestionando el lead vos mismo.
+
+**P: ¿La licencia única incluye actualizaciones?**
+> Sí. El pago de la licencia es por **propiedad perpetua** del software, y esto incluye todas las actualizaciones de seguridad y mejoras core del sistema sin costo adicional.
+
 ---
 
 ## Etapa 6: Cierre
@@ -429,9 +463,10 @@
 > [NOMBRE], recapitulando lo que hablamos:
 > 
 > ✅ Plan [PLAN]
-> ✅ Inversión: USD $[MONTO] + $[MENSUAL]/mes
-> ✅ Arrancamos en 10 días
-> ✅ Migración de tus [X] propiedades incluida
+> ✅ Inversión: USD $[MONTO] (Ej. Oferta $500)
+> ✅ Arrancamos en 7-10 días
+> ✅ Licencia Única sin vencimiento de actualizaciones
+> ✅ Integraciones: AI Agent + Google Calendar (opcional)
 > 
 > Si estamos de acuerdo, el próximo paso es:
 > 
