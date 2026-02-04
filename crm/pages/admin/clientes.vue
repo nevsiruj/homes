@@ -614,7 +614,7 @@ const filteredClientes = computed(() => {
   // Primero filtramos por el agente seleccionado
   let filteredList = list;
 
-  if (selectedAgent.value !== "all") {
+  if (selectedAgent.value && selectedAgent.value !== "all") {
     filteredList = list.filter(
       (cliente) => cliente.agenteId === selectedAgent.value
     );
@@ -798,37 +798,34 @@ const loadClientes = async () => {
     const processedClients = clientesData.map((c) => {
       const preferencias = c.preferencias || {};
       
-      // Buscar el agente en el mapa usando el agenteId
-      const agenteId = c.agenteId || c.AgenteId || null;
+      // Buscar el agente en el mapa usando todas las variantes posibles
+      const agenteId = c.AgenteId || c.agenteId || c.Agente?.Id || c.agente?.Id || c.agente?.id || null;
       const agenteAsignado = agenteId ? agentesMap.value[agenteId] : null;
 
       return {
         id: c.id,
-        fechaRegistro: c.fechaRegistro || "N/A",
-        nombre: c.nombre || "N/A",
-        apellido: c.apellido || "",
-        telefono: c.telefono || "N/A",
-        email: c.email || "N/A",
-        notas: c.notas || "",
-        // importante para filtrar por dueño:
+        fechaRegistro: c.fechaRegistro || c.FechaRegistro || "N/A",
+        nombre: c.nombre || c.Nombre || "N/A",
+        apellido: c.apellido || c.Apellido || "",
+        telefono: c.telefono || c.Telefono || "N/A",
+        email: c.email || c.Email || "N/A",
+        notas: c.notas || c.Notas || "",
         agenteId: agenteId,
-        agente: agenteAsignado || null, // objeto agente completo
-        tipo: preferencias.tipo || "N/A",
-        operacion: preferencias.operacion || "N/A",
-        ubicacion: preferencias.ubicacion || "N/A",
+        agente: agenteAsignado || null,
+        tipo: preferencias.tipo || preferencias.Tipo || "N/A",
+        operacion: preferencias.operacion || preferencias.Operacion || "N/A",
+        ubicacion: preferencias.ubicacion || preferencias.Ubicacion || "N/A",
         precioMin:
-          preferencias.precioMin !== null &&
-          preferencias.precioMin !== undefined
+          preferencias.precioMin !== null && preferencias.precioMin !== undefined
             ? `$${parseFloat(preferencias.precioMin).toLocaleString()}`
             : "N/A",
         precioMax:
-          preferencias.precioMax !== null &&
-          preferencias.precioMax !== undefined
+          preferencias.precioMax !== null && preferencias.precioMax !== undefined
             ? `$${parseFloat(preferencias.precioMax).toLocaleString()}`
             : "N/A",
-        habitaciones: preferencias.habitaciones ?? "N/A",
-        banos: preferencias.banos ?? "N/A",
-        metrosCuadrados: preferencias.metrosCuadrados ?? "N/A",
+        habitaciones: preferencias.habitaciones ?? preferencias.Habitaciones ?? "N/A",
+        banos: preferencias.banos ?? preferencias.Banos ?? "N/A",
+        metrosCuadrados: preferencias.metrosCuadrados ?? preferencias.MetrosCuadrados ?? "N/A",
         amenidades: Array.isArray(preferencias.preferenciaAmenidades?.$values)
           ? preferencias.preferenciaAmenidades.$values.map(
               (a) => a.amenidadInmueble?.nombre || "Amenidad"

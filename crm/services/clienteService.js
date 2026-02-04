@@ -33,7 +33,7 @@ const getAuthHeaders = () => {
 };
 
 export default {
-  async getAllClientes(page = 1, pageSize = 50, agenteId = null, useCache = true) {
+  async getAllClientes(page = 1, pageSize = 1000, agenteId = null, useCache = true) {
     try {
       // Verificar si hay cache válido
       const now = Date.now();
@@ -65,6 +65,17 @@ export default {
       }
 
       const data = await response.json();
+
+      // Mostrar en consola los clientes capturados
+      if (Array.isArray(data)) {
+        console.log('Clientes capturados:', data.map(c => ({ id: c.id, nombre: c.nombre, apellido: c.apellido })));
+      } else if (Array.isArray(data?.$values)) {
+        console.log('Clientes capturados:', data.$values.map(c => ({ id: c.id, nombre: c.nombre, apellido: c.apellido })));
+      } else if (Array.isArray(data?.data)) {
+        console.log('Clientes capturados:', data.data.map(c => ({ id: c.id, nombre: c.nombre, apellido: c.apellido })));
+      } else {
+        console.log('Clientes capturados (formato desconocido):', data);
+      }
 
       // Guardar en cache
       clientesCache = data;
