@@ -34,6 +34,7 @@ import Footer from "~/components/footer.vue";
 import { useRoute } from "vue-router";
 import blogService from "~/services/blogService.js";
 import { computed, ref, onMounted } from 'vue';
+import { useRequestURL } from "#imports";
 
 const route = useRoute();
 
@@ -70,7 +71,14 @@ onMounted(async () => {
     }
 })
 
-const DOMINIO_BASE = 'https://homesguatemala.com';
+const dynamicDomain = computed(() => {
+    try {
+        const url = useRequestURL();
+        if (url.origin && !url.origin.includes('localhost')) return url.origin;
+    } catch (e) {}
+    return 'https://homesguatemala.com';
+});
+const DOMINIO_BASE = dynamicDomain.value;
 const FALLBACK_IMAGE_URL = 'https://app-pool.vylaris.online/dcmigserver/homes/5ba8e587-bc89-4bac-952a-2edf8a1291c4.webp';
 
 // Obtener la imagen principal (primera imagen del array)

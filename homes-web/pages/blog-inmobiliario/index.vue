@@ -136,6 +136,11 @@ function paginate(number) {
 }
 
 function truncate(html, limit = 120) {
+    if (typeof document === 'undefined') {
+        // Fallback para SSR
+        const cleanText = (html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        return cleanText.length > limit ? cleanText.slice(0, limit) + '...' : cleanText;
+    }
     const div = document.createElement('div')
     div.innerHTML = html || ''
     const text = div.innerText || ''
