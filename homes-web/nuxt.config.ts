@@ -111,10 +111,18 @@ export default defineNuxtConfig({
   },
 
   // Configuración de Sitemap corregida para incluir rutas dinámicas
+  // sitemap: {
+  //   dynamicUrlsApiEndpoint: '/__sitemap__/urls', // Opcional: si creas un server route
+  //   exclude: ['/admin/**', '/auth/**'],
+  // },
+
   sitemap: {
-    dynamicUrlsApiEndpoint: '/__sitemap__/urls', // Opcional: si creas un server route
-    exclude: ['/admin/**', '/auth/**'],
-  },
+  sources: [
+    '/api/_sitemap-urls',
+    
+  ],
+  exclude: ['/admin/**', '/auth/**'],
+},
 
   colorMode: {
     classSuffix: "",

@@ -1,6 +1,5 @@
 // server/api/_sitemap-urls.ts
 
-// Definimos la interfaz para el objeto de ruta del sitemap
 interface SitemapUrl {
   loc: string;
   lastmod?: Date | string;
@@ -9,27 +8,29 @@ interface SitemapUrl {
 }
 
 export default defineEventHandler(async () => {
+  // La URL base correcta según tu config.js
   const API_BASE_URL = 'https://app-pool.vylaris.online/homes/api';
 
   try {
+    // IMPORTANTE: Cambiamos las URLs a las que SI funcionan en tus services
     const [inmueblesData, proyectosData] = await Promise.allSettled([
       $fetch<any>(`${API_BASE_URL}/Inmueble?PageNumber=1&PageSize=500`),
       $fetch<any>(`${API_BASE_URL}/Proyecto`)
     ]);
 
-    // Especificamos que routes es un array de objetos tipo SitemapUrl
     const routes: SitemapUrl[] = [];
 
     // --- Procesar Inmuebles ---
     if (inmueblesData.status === 'fulfilled') {
       const raw = inmueblesData.value;
+      // Manejamos el formato $values que usa tu API de .NET
       let items: any[] = [];
-      
       if (Array.isArray(raw.items)) items = raw.items;
       else if (raw.items?.$values) items = raw.items.$values;
       else if (Array.isArray(raw)) items = raw;
 
       items.forEach((item: any) => {
+        // Usamos los campos exactos de tu service
         const slug = item.slugInmueble || item.SlugInmueble || item.slug || item.id;
         if (slug) {
           routes.push({
@@ -46,7 +47,6 @@ export default defineEventHandler(async () => {
     if (proyectosData.status === 'fulfilled') {
       const raw = proyectosData.value;
       let items: any[] = [];
-      
       if (Array.isArray(raw)) items = raw;
       else if (raw?.$values) items = raw.$values;
 
@@ -65,7 +65,7 @@ export default defineEventHandler(async () => {
 
     return routes;
   } catch (error) {
-    console.error('Sitemap Generation Error:', error);
+    console.error('Error crítico en sitemap-urls:', error);
     return [];
   }
 });
