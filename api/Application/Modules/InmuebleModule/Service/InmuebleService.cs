@@ -20,6 +20,9 @@ namespace Application.Modules.InmuebleModule.Services
         Task<PagedResult<InmuebleDTO>> GetAllPagedAsync(PaginationParamsDTO paginationParams);
         Task<Inmueble> GetBySlugAsync(string slugInmueble);
         Task UpdatePrecioActivoAsync(int id, bool isPrecioActivo);
+
+        //Para sugeridos
+        Task<Domain.DTOs.Sugeridos> GetSugeridosByPriceAsync(decimal precio);
     }
 
     internal static class PredicateBuilder
@@ -371,6 +374,39 @@ namespace Application.Modules.InmuebleModule.Services
                 throw new KeyNotFoundException($"Inmueble con ID {id} no encontrado.");
             inmueble.PrecioActivo = isPrecioActivo;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Domain.DTOs.Sugeridos> GetSugeridosByPriceAsync(decimal precio)
+        {
+            if (precio <= 0) return new Domain.DTOs.Sugeridos { Igual = 0m, Bajo = 0m, Alto = 0m };
+
+            var baseQuery = _context.Set<Inmueble>()
+                .Where(i => i.PrecioActivo == true)
+                .AsQueryable();
+
+            var equalEntity = await baseQuery
+                .Where(i => i.Precio == precio)
+                .OrderBy(i => i.Id)
+                .FirstOrDefaultAsync();
+
+            var lowerEntity = await baseQuery
+                .Where(i => i.Precio < precio)
+                .OrderByDescending(i => i.Precio)
+                .ThenBy(i => i.Id)
+                .FirstOrDefaultAsync();
+
+            var higherEntity = await baseQuery
+                .Where(i => i.Precio > precio)
+                .OrderBy(i => i.Precio)
+                .ThenBy(i => i.Id)
+                .FirstOrDefaultAsync();
+
+            return new Domain.DTOs.Sugeridos
+            {
+                Igual = equalEntity?.Precio ?? 0m,
+                Bajo = lowerEntity?.Precio ?? 0m,
+                Alto = higherEntity?.Precio ?? 0m
+            };
         }
     }
 }

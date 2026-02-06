@@ -102,5 +102,14 @@ namespace Application.Modules.InmuebleModule.Controllers
             await _InmuebleService.DeleteAsync(id);
             return NoContent();
         }
+
+        [HttpGet("sugeridos")]
+        public async Task<IActionResult> GetSugeridos([FromQuery] decimal precio)
+        {
+            if (precio <= 0) return BadRequest(new { message = "El parámetro 'precio' debe ser mayor que cero." });
+
+            var sugeridos = await _InmuebleService.GetSugeridosByPriceAsync(precio);
+            return Ok(sugeridos);
+        }
     }
 }
