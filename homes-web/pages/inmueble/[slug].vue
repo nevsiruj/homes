@@ -717,120 +717,135 @@ const formattedPrice = computed(() => {
 });
 
 // ----------------- LÓGICA SUGERENCIAS: PRIORIDAD ZONA / PRECIO -----------------
-const PRICE_MARGIN = 0.35; // 35% por defecto (ajustable)
 const MAX_SUGGESTIONS = 3;
 
 const loadSuggestedProperties = async () => {
   try {
-    // Optimización: Reducido de 200 a 20 para evitar over-fetching
-    // Solo necesitamos 3 sugerencias, no tiene sentido cargar 200 propiedades
-    const responseData = await inmuebleService.getInmueblesPaginados(1, 20);
-    const allRaw = Array.isArray(responseData?.items)
-      ? responseData.items
-      : Array.isArray(responseData)
-        ? responseData
-        : [];
-
-    if (!allRaw.length || !inmuebleDetalle.value) {
+    if (!inmuebleDetalle.value) {
       suggestedProperties.value = [];
       return;
     }
 
     const current = inmuebleDetalle.value;
     const currentId = current?.id ?? null;
+    const currentZone = current?.zona ?? current?.ubicaciones ?? current?.ubicacion ?? current?.zonaPropiedad ?? null;
+    const currentPrice = parsePriceValue(current?.precio ?? current?.valor ?? current?.price ?? null);
 
-    const getZone = (p) => p?.zona ?? p?.ubicaciones ?? p?.ubicacion ?? p?.zonaPropiedad ?? null;
-    const getRawPrice = (p) => p?.precio ?? p?.valor ?? p?.price ?? null;
+    // Si no hay precio válido, no podemos obtener sugerencias
+    if (!currentPrice || currentPrice <= 0) {
+      suggestedProperties.value = [];
+      return;
+    }
 
-    const currentZone = getZone(current);
-    const currentPrice = parsePriceValue(getRawPrice(current));
+    // 1. Obtener los rangos de precio sugeridos desde el backend
+    let priceRanges = null;
+    try {
+      priceRanges = await inmuebleService.getSugerenciasPrecio(currentPrice);
+      console.log('📊 Rangos de precio obtenidos:', priceRanges);
+    } catch (error) {
+      console.error("Error al obtener rangos de precio:", error);
+      // Si falla el endpoint, usar rangos por defecto (±35%)
+      priceRanges = {
+        igual: currentPrice,
+        bajo: currentPrice * 0.65,
+        alto: currentPrice * 1.35
+      };
+    }
 
-    // Si no hay precio válido, igual seguimos con zonas y relleno aleatorio
-    // Construir lista parseada y aplicar heurística de escala si parece necesario
-    const SCALE_THRESHOLD = 10000;
-    const SCALE_FACTOR = 1000;
+    const { bajo: precioMinimo, alto: precioMaximo } = priceRanges;
 
-    const parsedList = allRaw.map((p) => {
-      const copy = { ...p };
-      const raw = getRawPrice(copy);
-      let parsed = parsePriceValue(raw);
-      // heurística: si current tiene precio grande y este tiene un número pequeño, escalar
-      if (currentPrice != null && currentPrice > 100000 && parsed != null && parsed < SCALE_THRESHOLD) {
-        parsed = parsed * SCALE_FACTOR;
-        copy.precio = parsed;
-      }
-      return { original: copy, parsedPrice: parsed };
+    console.log(`🔍 Buscando propiedades entre $${precioMinimo.toLocaleString()} y $${precioMaximo.toLocaleString()}`);
+
+    // 2. Obtener propiedades con filtro de rango de precios
+    const responseData = await inmuebleService.getInmueblesPaginados(1, 50, {
+      precioMinimo: Math.floor(precioMinimo),
+      precioMaximo: Math.ceil(precioMaximo)
     });
 
-    const available = parsedList.filter((x) => x.original?.id !== currentId);
+    const allRaw = Array.isArray(responseData?.items)
+      ? responseData.items
+      : Array.isArray(responseData)
+        ? responseData
+        : [];
 
-    const isPriceSimilar = (a, b) => {
-      if (a == null || b == null) return false;
-      const max = Math.max(a, b);
-      const min = Math.min(a, b);
-      if (min === 0) return false;
-      return (max - min) / min <= PRICE_MARGIN;
-    };
+    console.log(`📦 Propiedades recibidas del backend: ${allRaw.length}`);
 
-    // Prioridades solicitadas:
-    // 1) misma Zona + Precio similar
-    // 2) misma Zona, precio no similar
-    // 3) precio similar, diferente zona
+    if (!allRaw.length) {
+      suggestedProperties.value = [];
+      return;
+    }
 
-    const zoneAndPrice = available
-      .filter((x) => {
-        const z = getZone(x.original);
-        return z && currentZone && z === currentZone && isPriceSimilar(x.parsedPrice, currentPrice);
-      })
-      .map((x) => x.original);
+    // Filtrar la propiedad actual y validar que estén en el rango
+    const available = allRaw.filter((p) => {
+      if (p?.id === currentId) return false;
+      
+      // Validación adicional: asegurarse de que la propiedad esté en el rango
+      const price = parsePriceValue(p?.precio ?? p?.valor ?? p?.price);
+      if (price == null) {
+        console.warn(`⚠️ Propiedad sin precio válido:`, p?.titulo);
+        return false;
+      }
+      
+      const inRange = price >= precioMinimo && price <= precioMaximo;
+      if (!inRange) {
+        console.warn(`⚠️ Propiedad fuera de rango: ${p?.titulo} - $${price.toLocaleString()} (rango: $${precioMinimo.toLocaleString()} - $${precioMaximo.toLocaleString()})`);
+      }
+      
+      return inRange;
+    });
 
-    const zoneOnly = available
-      .filter((x) => {
-        const z = getZone(x.original);
-        return z && currentZone && z === currentZone && !isPriceSimilar(x.parsedPrice, currentPrice);
-      })
-      .map((x) => x.original);
+    console.log(`✅ Propiedades válidas en rango: ${available.length}`);
 
-    const priceOnly = available
-      .filter((x) => {
-        const z = getZone(x.original);
-        const sameZone = z && currentZone && z === currentZone;
-        return !sameZone && isPriceSimilar(x.parsedPrice, currentPrice);
-      })
-      .map((x) => x.original);
+    // El backend ya filtró por precio, solo necesitamos priorizar por zona
+    // Prioridad 1: Misma zona (todas ya están en rango de precio)
+    const sameZone = available.filter((p) => {
+      const zone = p?.zona ?? p?.ubicaciones ?? p?.ubicacion ?? p?.zonaPropiedad;
+      return zone && currentZone && zone === currentZone;
+    });
 
-    // Combinar en orden y deduplicar
+    // Prioridad 2: Diferente zona (todas ya están en rango de precio)
+    const differentZone = available.filter((p) => {
+      const zone = p?.zona ?? p?.ubicaciones ?? p?.ubicacion ?? p?.zonaPropiedad;
+      return !zone || !currentZone || zone !== currentZone;
+    });
+
+    console.log(`🏘️ Misma zona: ${sameZone.length}, Diferente zona: ${differentZone.length}`);
+
+    // Combinar en orden de prioridad y deduplicar
     const combined = [];
     const seen = new Set();
-    const push = (list) => {
-      for (const it of list) {
-        if (!it || !it.id) continue;
-        if (!seen.has(it.id)) {
-          combined.push(it);
-          seen.add(it.id);
+    
+    const addToResults = (list, label) => {
+      for (const item of list) {
+        if (!item || !item.id) continue;
+        if (!seen.has(item.id)) {
+          console.log(`➕ Agregando ${label}: ${item.titulo} - $${parsePriceValue(item.precio)?.toLocaleString()}`);
+          combined.push(item);
+          seen.add(item.id);
         }
         if (combined.length >= MAX_SUGGESTIONS) return;
       }
     };
 
-    push(zoneAndPrice);
-    if (combined.length < MAX_SUGGESTIONS) push(zoneOnly);
-    if (combined.length < MAX_SUGGESTIONS) push(priceOnly);
-
-    // Rellenar con aleatorias si hace falta
+    // Primero las de la misma zona
+    addToResults(sameZone, 'misma zona');
+    
+    // Luego las de diferente zona si faltan
     if (combined.length < MAX_SUGGESTIONS) {
-      const remaining = available.map((x) => x.original).filter((p) => !seen.has(p.id));
+      addToResults(differentZone, 'diferente zona');
+    }
+
+    // Rellenar con aleatorias si aún faltan (mezclar todas las disponibles)
+    if (combined.length < MAX_SUGGESTIONS) {
+      const remaining = available.filter((p) => !seen.has(p.id));
       const shuffled = shuffleArray(remaining);
-      for (const r of shuffled) {
-        if (combined.length >= MAX_SUGGESTIONS) break;
-        combined.push(r);
-        seen.add(r.id);
-      }
+      addToResults(shuffled, 'aleatoria');
     }
 
     suggestedProperties.value = combined.slice(0, MAX_SUGGESTIONS);
+    console.log(`🎯 Total de sugerencias: ${suggestedProperties.value.length}`);
   } catch (err) {
-    //console.error("Error al cargar propiedades sugeridas:", err);
+    console.error("❌ Error al cargar propiedades sugeridas:", err);
     suggestedProperties.value = [];
   }
 };

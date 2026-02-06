@@ -222,6 +222,49 @@ export default {
       }
       throw error;
     }
+  },
+
+  /**
+   * Obtiene sugerencias de rango de precios basado en un precio dado
+   * @param {number} precio - El precio base para calcular los rangos
+   * @returns {Promise<object>} Un objeto con los precios { igual, bajo, alto }
+   */
+  async getSugerenciasPrecio(precio) {
+    try {
+      if (!precio || precio <= 0) {
+        throw new Error('Precio inválido para sugerencias');
+      }
+
+      const cacheKey = `${API_BASE_URL}/Inmueble:sugeridos:${precio}`;
+      const cached = getFromCache(cacheKey);
+      if (cached) {
+        return cached;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/Inmueble/sugeridos?precio=${precio}`, {
+        headers: { 
+          'Accept': 'application/json',
+        },
+        signal: AbortSignal.timeout(5000) // 5 segundos timeout
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error al obtener sugerencias de precio: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Validar estructura de respuesta
+      if (!data || typeof data !== 'object') {
+        throw new Error('Respuesta inválida del servidor');
+      }
+
+      setCache(cacheKey, data);
+      return data;
+    } catch (error) {
+      console.error('Error en inmuebleService.getSugerenciasPrecio:', error.message);
+      throw error;
+    }
   }
 
 
