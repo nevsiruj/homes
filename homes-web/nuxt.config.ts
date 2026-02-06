@@ -110,19 +110,29 @@ export default defineNuxtConfig({
     indexable: true,
   },
 
-  // Configuración de Sitemap corregida para incluir rutas dinámicas
-  // sitemap: {
-  //   dynamicUrlsApiEndpoint: '/__sitemap__/urls', // Opcional: si creas un server route
-  //   exclude: ['/admin/**', '/auth/**'],
-  // },
-
+  // Configuración de Sitemap para SEO
   sitemap: {
-  sources: [
-    '/api/_sitemap-urls',
-    
-  ],
-  exclude: ['/admin/**', '/auth/**'],
-},
+    sources: [
+      '/api/_sitemap-urls', // Rutas dinámicas (inmuebles, proyectos, artículos)
+    ],
+    urls: [
+      // Rutas estáticas principales
+      { loc: '/', changefreq: 'daily', priority: 1.0 },
+      { loc: '/propiedades', changefreq: 'daily', priority: 0.9 },
+      { loc: '/proyectos-inmobiliarios', changefreq: 'weekly', priority: 0.8 },
+      { loc: '/luxury', changefreq: 'weekly', priority: 0.8 },
+      { loc: '/nosotros', changefreq: 'monthly', priority: 0.7 },
+      { loc: '/busqueda', changefreq: 'weekly', priority: 0.7 },
+      // Categorías de propiedades
+      { loc: '/propiedades/venta', changefreq: 'daily', priority: 0.9 },
+      { loc: '/propiedades/renta', changefreq: 'daily', priority: 0.9 },
+      // Categorías de blog
+      { loc: '/informativo', changefreq: 'weekly', priority: 0.6 },
+      { loc: '/consejos', changefreq: 'weekly', priority: 0.6 },
+      { loc: '/tops', changefreq: 'weekly', priority: 0.6 },
+    ],
+    exclude: ['/admin/**', '/auth/**', '/custom/**'],
+  },
 
   colorMode: {
     classSuffix: "",
@@ -209,6 +219,17 @@ export default defineNuxtConfig({
         try {
           console.log('Fetching dynamic routes for Nitro Prerender...');
 
+          // Función para normalizar categorías
+          const normalizeCategory = (category: string): string => {
+            if (!category) return 'blog';
+            return category
+              .toLowerCase()
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+              .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+              .trim();
+          };
+
           // Inmuebles
           const inmueblesRes = await fetch('https://app-pool.vylaris.online/homes/api/Homes/GetInmueblesPaginados?page=1&pageSize=500');
           const inmueblesData: any = await inmueblesRes.json();
@@ -229,6 +250,28 @@ export default defineNuxtConfig({
               const slug = item.slugProyecto || item.slug || item.id;
               if (slug) config.prerender?.routes?.push(`/proyecto/${slug}`);
             });
+          }
+
+          // Artículos del blog
+          const articulosRes = await fetch('https://app-pool.vylaris.online/homes/api/Articulo/activos');
+          const articulosData: any = await articulosRes.json();
+          
+          if (articulosData?.success && Array.isArray(articulosData.data)) {
+            const categorias = new Set<string>();
+            
+            articulosData.data.forEach((item: any) => {
+              const slug = item.slug || item.id;
+              const categoria = item.categoria || 'blog';
+              const categoryNormalized = normalizeCategory(categoria);
+              
+              if (slug) {
+                config.prerender?.routes?.push(`/${categoryNormalized}/${slug}`);
+                categorias.add(`/${categoryNormalized}`);
+              }
+            });
+            
+            // Agregar páginas de índice de categorías
+            categorias.forEach(cat => config.prerender?.routes?.push(cat));
           }
 
           console.log(`Prerendering ${config.prerender?.routes?.length} total routes.`);
@@ -258,7 +301,11 @@ export default defineNuxtConfig({
         '/custom',
         '/nosotros',
         '/propiedades/renta',
-        '/propiedades/venta'
+        '/propiedades/venta',
+        // Categorías de blog
+        '/informativo',
+        '/consejos',
+        '/tops'
       ],
       ignore: ['/admin/**', '/auth/**']
     },

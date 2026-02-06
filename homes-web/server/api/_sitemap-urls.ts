@@ -11,11 +11,23 @@ export default defineEventHandler(async () => {
   // La URL base correcta según tu config.js
   const API_BASE_URL = 'https://app-pool.vylaris.online/homes/api';
 
+  // Función para normalizar categorías (igual que en [category]/[slug].vue)
+  const normalizeCategory = (category: string): string => {
+    if (!category) return 'blog';
+    return category
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos
+      .replace(/\s+/g, '-') // Reemplazar espacios con guiones
+      .trim();
+  };
+
   try {
     // IMPORTANTE: Cambiamos las URLs a las que SI funcionan en tus services
-    const [inmueblesData, proyectosData] = await Promise.allSettled([
+    const [inmueblesData, proyectosData, articulosData] = await Promise.allSettled([
       $fetch<any>(`${API_BASE_URL}/Inmueble?PageNumber=1&PageSize=500`),
-      $fetch<any>(`${API_BASE_URL}/Proyecto`)
+      $fetch<any>(`${API_BASE_URL}/Proyecto`),
+      $fetch<any>(`${API_BASE_URL}/Articulo/activos`)
     ]);
 
     const routes: SitemapUrl[] = [];
@@ -58,6 +70,37 @@ export default defineEventHandler(async () => {
             lastmod: new Date(),
             changefreq: 'monthly',
             priority: 0.7
+          });
+        }
+      });
+    }
+
+     // --- Procesar articulos ---
+    if (articulosData.status === 'fulfilled') {
+      const raw = articulosData.value;
+      let items: any[] = [];
+      
+      // La API de artículos devuelve { success: true, data: [...] }
+      if (raw?.success && Array.isArray(raw.data)) {
+        items = raw.data;
+      } else if (Array.isArray(raw)) {
+        items = raw;
+      } else if (raw?.$values) {
+        items = raw.$values;
+      }
+
+      items.forEach((item: any) => {
+        // El backend devuelve 'slug' y 'categoria'
+        const slug = item.slug || item.id;
+        const categoria = item.categoria || 'blog';
+        const categoryNormalized = normalizeCategory(categoria);
+        
+        if (slug) {
+          routes.push({
+            loc: `/${categoryNormalized}/${slug}`,
+            lastmod: item.fechaActualizacion || item.fechaCreacion || new Date(),
+            changefreq: 'monthly',
+            priority: 0.6
           });
         }
       });
