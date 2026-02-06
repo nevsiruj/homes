@@ -1,4 +1,4 @@
-/* 
+/*
  * OPTIMIZACIÓN: Google Fonts ahora se cargan de forma asíncrona en nuxt.config.ts
  * Esto elimina el render blocking y mejora FCP (First Contentful Paint)
  * Fallback fonts aseguran que el texto sea visible inmediatamente

@@ -109,9 +109,6 @@
 import { ref, watch, computed } from 'vue';
 import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
 import { getOptimizedImageUrl, getSrcset } from "../helpers/useImageOptimization.js";
 import { BedIcon, BathIcon, CarIcon } from "../components/icons";
 
@@ -161,7 +158,6 @@ watch(isHovering, (newValue) => {
 
 .property-card {
     position: relative;
-    will-change: transform;
     transition: transform 0.3s ease-in-out;
 }
 

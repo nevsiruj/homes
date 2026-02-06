@@ -26,6 +26,7 @@
     </NuxtLink>
   </div>
 
+<<<<<<< HEAD
   <div v-if="!isLoading && !notFound" class="max-w-[1080px] mx-auto p-4 bg-white mt-24 lg:mt-12">
     <div class="mb-5 mt-5">
       <h1 ref="tituloRef"
@@ -54,6 +55,67 @@
             <iframe :src="videoEmbedUrl" frameborder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen class="w-full h-full"></iframe>
+=======
+    <div v-if="!isLoading && !notFound" class="max-w-[1080px] mx-auto p-4 bg-white mt-24 lg:mt-12">
+      <div class="mb-5 mt-5">
+        <h1
+          ref="tituloRef"
+          class="title-alta-2 text-xl font-bold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl"
+        >
+          {{ proyectoDetalle.titulo || "Cargando..." }}
+        </h1>
+      </div>
+  
+      <div
+        class="grid grid-cols-1 md:grid-cols-6 md:grid-rows-3 gap-8 h-auto md:h-[600px]"
+      >
+        <div class="md:col-span-5 md:row-span-3 relative">
+          <button
+            @click="prevMedia"
+            class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white hover:bg-gray-200 rounded-full shadow-md p-2 md:p-3 focus:outline-none"
+            aria-label="Contenido anterior"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              class="w-5 h-5 md:w-6 md:h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+  
+          <div class="w-full h-auto md:h-[600px] relative">
+            <img
+              v-if="!showVideo"
+              :src="getOptimizedImageUrl(mainImage)"
+              :data-original-src="mainImage"
+              class="w-full h-full object-cover"
+              alt="Imagen principal del proyecto"
+              @error="handleImageError($event)"
+            />
+  
+            <div
+              v-if="showVideo && proyectoDetalle.video && videoEmbedUrl"
+              class="w-full h-full flex items-center justify-center bg-gray-900"
+            >
+              <iframe
+                :src="videoEmbedUrl"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                playsinline
+                loading="lazy"
+                class="w-full h-full"
+              ></iframe>
+            </div>
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
           </div>
         </div>
 
@@ -202,10 +264,6 @@ import { useProjectSchema, useBreadcrumbSchema, useJsonldSchema } from "~/compos
 
 // Swiper
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/mousewheel";
-import "swiper/css/navigation";
 import { FreeMode, Mousewheel, Navigation } from "swiper/modules";
 
 // ===== Variables reactivas =====
@@ -848,9 +906,13 @@ onMounted(async () => {
 .swiper-wrapper {
   align-items: flex-start;
 }
+<<<<<<< HEAD
 
 @import "swiper/css";
 @import "swiper/css/free-mode";
 @import "swiper/css/mousewheel";
 @import "swiper/css/navigation";
 </style>
+=======
+  </style>
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d

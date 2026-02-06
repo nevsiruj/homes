@@ -18,6 +18,7 @@
                     No hay blogs disponibles para mostrar.
                 </div>
                 <div class="grid gap-10 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+<<<<<<< HEAD
                     <div v-for="blog in paginatedBlogs" :key="`blog-${blog.id}-${blog.Slug}`"
                         class="group flex flex-col bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 h-full"
                         style="min-height: 280px;">
@@ -42,6 +43,27 @@
                                         Seguir viendo
                                     </span>
                                 </div>
+=======
+                    <NuxtLink v-for="blog in paginatedBlogs" :key="blog.id" :to="`/${blog['Categorías'].toLowerCase()}/${blog.Slug}`"
+                        class="group flex flex-col bg-white border border-gray-200 rounded-lg shadow hover:shadow-lg transition-shadow duration-300 h-full"
+                        style="min-height: 280px;">
+                        <div v-if="blog['Image URL']" class="overflow-hidden rounded-t-lg w-full">
+                            <img :src="blog['Image URL']" :alt="blog.Title"
+                                class="w-full h-auto max-h-[400px] object-contain sm:h-60 sm:object-cover object-center transition-transform duration-500 group-hover:scale-105" />
+                        </div>
+                        <div class="flex flex-col flex-1 px-4 pt-4 pb-6 text-center">
+                            <h2 class="font-semibold text-lg mb-1 text-gray-900 tracking-tight">
+                                {{ blog.Title }}
+                            </h2>
+                            <div class="text-sm font-light text-gray-700 min-h-[48px]"
+                                v-html="truncate(blog.Content, 120)"></div>
+                            <div class="mt-auto pt-4">
+                                <span
+                                    class="bg-black hover:bg-gray-900 text-white text-sm px-5 py-2 rounded transition-colors duration-200 font-light cursor-pointer select-none"
+                                    style="outline: none;">
+                                    Seguir viendo
+                                </span>
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
                             </div>
                         </NuxtLink>
                     </div>

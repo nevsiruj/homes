@@ -14,6 +14,7 @@
                 {{ blog.Title }}
             </h1>
             <hr class="w-48 h-1 mx-auto my-2 mb-6 bg-gray-100 border-0 rounded-sm" />
+<<<<<<< HEAD
             
             <!-- Imagen principal del blog -->
             <div v-if="mainImage" class="overflow-hidden rounded-lg shadow-lg mb-8">
@@ -23,6 +24,13 @@
             
             <!-- Contenido del blog -->
             <article class="blog-content prose prose-lg max-w-none" v-html="blog.Content"></article>
+=======
+            <div v-if="blog['Image URL']" class="overflow-hidden rounded-lg shadow-lg mb-6">
+                <img :src="blog['Image URL']" :alt="`${blog.Title} - Homes Guatemala`"
+                    class="w-full h-auto max-h-[400px] object-cover object-center rounded-lg" />
+            </div>
+            <div class="prose max-w-none text-lg mb-8" v-html="blog.Content"></div>
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
         </div>
         <Footer />
     </div>
@@ -37,6 +45,10 @@ import { computed, ref, onMounted } from 'vue';
 import { useRequestURL } from "#imports";
 
 const route = useRoute();
+<<<<<<< HEAD
+=======
+const blog = blogs.find((b) => b.Slug === route.params.slug && b['Categorías'].toLowerCase() === route.params.category);
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
 
 // Función para normalizar categorías (igual que en index.vue)
 function normalizeCategory(category) {
@@ -54,6 +66,7 @@ const blog = ref(null)
 const loading = ref(true)
 const error = ref(null)
 
+<<<<<<< HEAD
 onMounted(async () => {
     try {
         blog.value = await blogService.getBlogBySlug(route.params.slug)
@@ -101,21 +114,47 @@ const metaDescription = computed(() => {
         .replace(/\s+/g, ' ')
         .replace(/&nbsp;/g, ' ')
         .trim();
+=======
+const metaDescription = computed(() => {
+    if (!blog?.Content) {
+        return 'Un artículo interesante de nuestro blog.';
+    }
+    const cleanText = blog.Content.replace(/<[^>]*>/g, '').trim();
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
     return cleanText.substring(0, 155) + (cleanText.length > 155 ? '...' : '');
 });
 
 const metaImage = computed(() => {
+<<<<<<< HEAD
     return mainImage.value;
 });
 
 useHead({
     title: () => blog.value?.Title || 'Blog - Homes Guatemala',
+=======
+    const imageUrl = blog?.['Image URL'];
+    if (!imageUrl) {
+        return FALLBACK_IMAGE_URL;
+    }
+    if (imageUrl.startsWith('http')) {
+        return imageUrl;
+    }
+    return `${DOMINIO_BASE}${imageUrl}`;
+});
+
+useHead({
+    title: () => blog?.Title || 'Nuestro Blog',
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
     meta: [
         // Metas estándar
         { name: 'description', content: () => metaDescription.value },
 
         // Open Graph (para Facebook, LinkedIn, etc.)
+<<<<<<< HEAD
         { property: 'og:title', content: () => blog.value?.Title },
+=======
+        { property: 'og:title', content: () => blog?.Title },
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
         { property: 'og:description', content: () => metaDescription.value },
         { property: 'og:image', content: () => metaImage.value },           
         { property: 'og:url', content: () => `${DOMINIO_BASE}${route.path}` },
@@ -123,12 +162,45 @@ useHead({
 
         // Twitter Cards (para Twitter)
         { name: 'twitter:card', content: 'summary_large_image' },
+<<<<<<< HEAD
         { name: 'twitter:title', content: () => blog.value?.Title },
+=======
+        { name: 'twitter:title', content: () => blog?.Title },
+>>>>>>> c8fd38bb209e225ec7aac7ab9596f47db110d11d
         { name: 'twitter:description', content: () => metaDescription.value },
         { name: 'twitter:image', content: () => metaImage.value },       
     ],
     link: [
         { rel: 'canonical', href: () => `${DOMINIO_BASE}${route.path}` }
+    ],
+    script: [
+        {
+            type: 'application/ld+json',
+            children: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Article',
+                headline: blog?.Title || 'Artículo de blog',
+                description: metaDescription.value,
+                image: metaImage.value,
+                author: {
+                    '@type': 'Organization',
+                    name: 'Homes Guatemala',
+                    url: DOMINIO_BASE
+                },
+                publisher: {
+                    '@type': 'Organization',
+                    name: 'Homes Guatemala',
+                    logo: {
+                        '@type': 'ImageObject',
+                        url: `${DOMINIO_BASE}/logo.png`
+                    }
+                },
+                mainEntityOfPage: {
+                    '@type': 'WebPage',
+                    '@id': `${DOMINIO_BASE}${route.path}`
+                }
+            })
+        }
     ]
 });
 </script>

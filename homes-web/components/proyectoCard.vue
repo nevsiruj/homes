@@ -3,7 +3,7 @@
         <NuxtLink :to="proyectoPath"
             class="fuente-raleway property-card w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden relative">
 
-            <img class="w-full h-64 object-cover" :src="proyecto.image" :alt="proyecto.title" />
+            <img class="w-full h-64 object-cover" :src="proyecto.image" :alt="proyecto.title" loading="lazy" decoding="async" />
 
             <div class="p-5 pb-20">
                 <p class="text-xl max-w-xl subtitle-optima font-bold tracking-tight text-gray-900">
@@ -85,7 +85,6 @@ const truncateText = (text, maxLength) => {
 
 .property-card {
     position: relative;
-    will-change: transform;
     transition: transform 0.3s ease-in-out;
 }
 

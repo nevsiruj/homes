@@ -141,7 +141,14 @@ export default defineNuxtConfig({
     storageKey: "nuxt-color-mode",
   },
 
-  css: ["~/assets/css/main.css"],
+  css: [
+    "~/assets/css/main.css",
+    "swiper/css",
+    "swiper/css/navigation",
+    "swiper/css/pagination",
+    "swiper/css/free-mode",
+    "swiper/css/mousewheel"
+  ],
 
   build: {
     transpile: ["flowbite", "swiper"],

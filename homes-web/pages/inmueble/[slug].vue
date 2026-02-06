@@ -254,13 +254,9 @@ import RedesFlotantes from "../../components/redesFlotantes.vue";
 import SugerenciaCard from "~/components/SugerenciaCard.vue";
 import SlugSkeleton from "~/components/slugSkeleton.vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/mousewheel";
-import "swiper/css/navigation";
 import { FreeMode, Mousewheel, Navigation } from "swiper/modules";
 
-//  1. CARGA DE DATOS ASÍNCRONA EN EL SERVIDOR (SSR)
+//  1. CARGA DE DATOS ASÍNCRONA EN EL SERVIDOR (SSR)
 const route = useRoute();
 const slug = route.params.slug;
 
